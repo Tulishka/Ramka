@@ -17,7 +17,7 @@ from .transform import *
 
 from .rigidbody import *
 from .game import *
-from .rotationstyles import *
+from .transform_modifiers import *
 from .component import *
 from .gameobject import *
 from .sprite import *

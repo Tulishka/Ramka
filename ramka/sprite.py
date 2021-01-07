@@ -1,7 +1,6 @@
 import math
 from typing import Dict
 
-from .rotationstyles import RotationFree
 from .gameobject import GameObject
 
 from .animation import Animation, FlipStyle
@@ -17,7 +16,6 @@ class Sprite(GameObject):
         self.animations = animations
         self.state = state
         self.last_animation = None
-        self.transform.modifier_func = RotationFree(2).transform
 
     def curr_animation(self):
         ani = self.animations.get(self.state.animation)
@@ -48,7 +46,9 @@ class Sprite(GameObject):
         if wtr.rotate != 0:
             img = pygame.transform.rotate(img, wtr.rotate)
 
+        # wtr.offset *= self.transform.scale.elementwise()
         rotated_offset = wtr.offset if wtr.rotate == 0 else wtr.offset.rotate(-wtr.rotate)
+
         rect = img.get_rect(center=wtr.pos - rotated_offset)
 
         dest.blit(img, rect)  # , special_flags=pygame.BLEND_ALPHA_SDL2
@@ -56,5 +56,5 @@ class Sprite(GameObject):
         if options.get("show_box") == True:
             pygame.draw.rect(dest, (255, 100, 100), rect, 2)
 
-        if options.get("show_offset") == True:
-            pygame.draw.circle(dest, (255, 100, 100), wtr.pos, 2)
+        # if options.get("show_offset") == True:
+        pygame.draw.circle(dest, (255, 100, 100), wtr.pos, 2)

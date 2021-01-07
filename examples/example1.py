@@ -2,8 +2,7 @@ import math
 from random import random
 from typing import Dict
 
-from ramka import pygame, Vector, FlipStyle, generate_flip, slice_image, Game, Sprite, RotationNone, \
-     RotationFree, RotationFlip, RotationTarget, Animation
+from ramka import pygame, Vector, FlipStyle, generate_flip, slice_image, Game, Sprite, Animation
 
 class Test(Sprite):
     def __init__(self, animations: Dict[str, Animation]):
@@ -29,10 +28,12 @@ class Animal(Sprite):
     def update(self, deltaTime: float):
         super().update(deltaTime)
 
-        self.vx = 1 if Vector(1, 0).rotate(self.transform.parent.rotate if self.transform.parent else 0).y < 0 else -1
+        # self.vx = 1 if Vector(1, 0).rotate(self.transform.parent.rotate if self.transform.parent else 0).y < 0 else -1
         self.transform.pos.x += self.vx * deltaTime * 80
+        # self.transform.scale = (1 + 2 * abs(math.cos(self.time*0.2))) * Vector(1.0)
         if self.transform.parent and abs(self.transform.pos.x) > 50:
             self.transform.pos.x = math.copysign(50, self.transform.pos.x)
+            self.vx *= -1
 
 
 Game.init('Рамка')
@@ -53,25 +54,25 @@ h_idle = Animation(generate_flip(slice_image(hyena_idle), (True, False)), 6, Tru
 h_walk = Animation(generate_flip(slice_image(hyena_walk), (True, False)), 12, True)
 
 
-for i in range(1):
+for i in range(3):
     hyena = Animal({"idle": h_idle, "default": h_walk})
     Game.add_object(hyena)
     hyena.transform.pos.xy = test_img.get_width() * random() - test_img.get_width() // 2, test_img.get_height() / 2
+    hyena.transform.scale = Vector(1 + 0.5*i)
     hyena.transform.offset.xy = 0, hyena_walk.get_height() / 2
     hyena.transform.set_parent(test)
-    h=hyena
 
-h.transform.detach(1)
-h.transform.set_parent(test,1)
 
 # === RUN GAME
 Game.run()
 
 
 # todo: стиль вращения: нет, отражение (ХХ / YY / XY), свободное вращение (дискрет), готовые направления (угол), цель (трансформ), свое
+# todo: скорость анимации множитель
+# todo: offset-направление
 # todo: сортировка объектов
 # todo: группы / слои, сортировка слоев
 # todo: упрощеное создание анимаций
 # todo: состояния
-# todo: оптимизация: кэширование, невидимые объекты
+
 

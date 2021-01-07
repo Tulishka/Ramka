@@ -1,34 +1,57 @@
+from typing import Union, List
+
+from .transformbase import TransformBase
 from .shared import Vector
 
 
-class Transform:
-    ...
+class Transform(TransformBase):
+    pass
 
 
-class Transform:
+class Transform(TransformBase):
+    def __init__(self, game_oject: Transform.GameObject, pos: Vector = None, rotate: float = 0.0,
+                 scale: Vector = None, offset: Vector = None, modifier_func=None, parent: Transform = None):
 
-    def __init__(self, pos: Vector = None, rotate: float = 0.0, scale: Vector = None, offset: Vector = None, modifier_func = None):
-        self.pos: Vector = pos if not pos is None else Vector()
-        self.rotate = rotate
-        self.scale: Vector = scale if not scale is None else Vector(1.0)
-        self.offset: Vector = offset if not offset is None else Vector()
-        self.modifier_func = modifier_func
+        super().__init__(game_oject, pos, rotate, scale, offset, modifier_func)
+        self.parent: Union[Transform, None] = parent
+        self.children: List[Transform] = []
 
-    def copy(self):
-        return Transform(Vector(self.pos), self.rotate, Vector(self.scale), Vector(self.offset), self.modifier_func)
-
-    def get_modified(self):
-        if self.modifier_func:
-            return self.modifier_func(self)
+    def get_world_transform(self) -> TransformBase:
+        if self.parent is None:
+            return self.get_modified()
         else:
-            return self.copy()
+            return self.add(self.parent.get_world_transform()).get_modified()
 
-    def use(self, transform: Transform):
-        np = Vector(self.pos)
-        if transform.scale.x != 1 or transform.scale.y != 1:
-            np *= transform.scale.elementwise()
-        if transform.rotate != 0:
-            np = np - transform.offset
-            np.rotate_ip(-transform.rotate)
-        return Transform(transform.pos + transform.offset + np, self.rotate + transform.rotate,
-                         self.scale.elementwise() * transform.scale, self.offset.elementwise() * transform.scale,self.modifier_func)
+    def __add_child(self, child: Transform):
+        if child not in self.children:
+            self.children.append(child)
+
+    def __remove_child(self, child: Transform):
+        if child in self.children:
+            self.children.remove(child)
+
+    def __iter__(self):
+        for obj in self.children:
+            yield obj
+            try:
+                yield next(iter(obj))
+            except StopIteration:
+                pass
+
+    def detach(self, to_world: bool = False):
+        if self.parent:
+            if to_world:
+                self.assign_positions(self.get_world_transform())
+
+            self.parent = None
+
+    def set_parent(self, parent: Union[Transform, Transform.GameObject, None], from_world: bool = False):
+        if self.parent:
+            self.detach(from_world)
+
+        if isinstance(parent, Transform.GameObject):
+            parent = parent.transform
+
+        self.parent = parent
+        if from_world and parent is not None:
+            self.sub_ip(parent.get_world_transform())

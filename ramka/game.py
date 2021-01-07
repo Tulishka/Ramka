@@ -1,90 +1,78 @@
-from typing import Dict, Union
+from typing import Dict, Union, List
 
 import pygame
+from .gameobject import GameObject
 
 
 class Game:
     showFPS = True
-    from .gameobject import GameObject
-
     font = pygame.font.SysFont("arial", 14)
+    gameObjects: List[GameObject] = []
+    экран: pygame.Surface
+    ширинаЭкрана, высотаЭкрана = размерЭкрана = (1024, 768)
+    цветФона: pygame.Color = (0, 0, 20)
+    clock = pygame.time.Clock()
 
-    def __init__(self, caption: str, fullscreen: bool = False, window_size=None,
-                 back_color: pygame.color.Color = (0, 0, 20)):
-        self.размерЭкрана = (800, 600) if not fullscreen else pygame.display.list_modes()[0]
+    @staticmethod
+    def init(caption: str, back_color: pygame.Color = None, fullscreen: bool = False, window_size=None):
+
+        Game.размерЭкрана = (1024, 768) if not fullscreen else pygame.display.list_modes()[0]
 
         if not window_size is None:
-            self.размерЭкрана = window_size
+            Game.размерЭкрана = window_size
 
-        self.экран = pygame.display.set_mode(size=self.размерЭкрана,
+        Game.экран = pygame.display.set_mode(size=Game.размерЭкрана,
                                              flags=pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.HWACCEL | (
                                                  0 if not fullscreen else pygame.FULLSCREEN))
         pygame.display.set_caption(caption)
 
-        self.ширинаЭкрана, self.высотаЭкрана = self.размерЭкрана
+        Game.ширинаЭкрана, Game.высотаЭкрана = Game.размерЭкрана
 
-        self.цвет_фона = back_color
-        self.clock = pygame.time.Clock()
+        if back_color is not None:
+            Game.цветФона = back_color
 
-        self.gameObjects: Dict[str, Game.GameObject] = {}
+    @staticmethod
+    def add_object(game_object: GameObject):
+        if game_object not in Game.gameObjects:
+            Game.gameObjects.append(game_object)
 
-    def add_object(self, name: str, game_object: GameObject, parent: GameObject = None):
-        game_object.game = self
-        if parent is None:
-            if name in self.gameObjects:
-                self.remove_object(name)
-            self.gameObjects[name] = game_object
-        else:
-            parent.add_child(name, game_object)
+    @staticmethod
+    def remove_object(game_object: GameObject):
+        if game_object in Game.gameObjects:
+            Game.gameObjects.remove(game_object)
 
-    def remove_object(self, game_object: Union[str, GameObject]):
-        if type(game_object) == str:
-            if game_object in self.gameObjects:
-                ob = self.gameObjects[game_object]
-                del self.gameObjects[game_object]
-                ob.game = None
-                ob.remove()
-        else:
-            idx = [n for n, x in self.gameObjects.items() if x == game_object]
-            if len(idx):
-                del self.gameObjects[idx[0]]
-                game_object.game = None
-                game_object.remove()
+    @staticmethod
+    def deltaTime():
+        return Game.clock.get_time() * 0.001
 
-    def deltaTime(self):
-        return self.clock.get_time() * 0.001
+    @staticmethod
+    def новый_кадр():
+        Game.экран.fill(Game.цветФона)
 
-    def новый_кадр(self):
-        self.экран.fill(self.цвет_фона)
-
-    def закончить_кадр(self):
+    @staticmethod
+    def закончить_кадр():
         pygame.display.flip()
-        self.clock.tick(60)
+        Game.clock.tick(60)
 
-    def __iter__(self):
-        for name, obj in self.gameObjects.items():
-            yield (name, obj)
-            for name_c, obj_c in obj:
-                yield (name_c, obj_c)
-
-    def run(self):
+    @staticmethod
+    def run():
         while 1:
 
-            deltaTime = self.deltaTime()
+            deltaTime = Game.deltaTime()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                     exit()
 
-            self.новый_кадр()
+            Game.новый_кадр()
 
-            for name, obj in self:
+            for obj in Game.gameObjects:
                 if obj.enabled:
                     obj.update(deltaTime)
                     if obj.visible:
-                        obj.draw(self.экран, {"show_offset": 0})
+                        obj.draw(Game.экран, {"show_offset": 0})
 
             if Game.showFPS:
-                a = Game.font.render(str(round(self.clock.get_fps())), 1, (255, 255, 100))
-                self.экран.blit(a, (5, 5))
+                a = Game.font.render(str(round(Game.clock.get_fps())), 1, (255, 255, 100))
+                Game.экран.blit(a, (5, 5))
 
-            self.закончить_кадр()
+            Game.закончить_кадр()

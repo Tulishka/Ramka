@@ -9,6 +9,7 @@ class GameObject:
     def __init__(self):
         from .game import Game
         from .transform import Transform
+        from .layers import Layer
 
         self.transform: Transform = Transform(self)
         self.components: Dict[str, GameObject.Component] = {}
@@ -20,6 +21,8 @@ class GameObject:
         self.enabled: bool = True
         self.visible: bool = True
 
+        self.layer: Union[Layer, None] = None
+
     def update(self, deltaTime: float):
         self.time += deltaTime
 
@@ -28,3 +31,10 @@ class GameObject:
 
     def draw(self, dest: pygame.Surface, options: Dict):
         pass
+
+    def set_layer(self, layer):
+        if self.layer is not None:
+            self.layer.remove_object(self)
+        if layer:
+            self.layer = layer
+            layer.add_object(self)

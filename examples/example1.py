@@ -38,7 +38,6 @@ class Animal(Sprite):
             self.vx *= -1
 
 
-
 Game.init('Рамка')
 
 # === BOX
@@ -56,12 +55,11 @@ hyena_walk = pygame.image.load("./sprites/Hyena_walk.png")
 h_idle = Animation(generate_flip(slice_image(hyena_idle), (True, False)), 6, True)
 h_walk = Animation(generate_flip(slice_image(hyena_walk), (True, False)), 12, True)
 
-
 for i in range(10):
     hyena = Animal({"idle": h_idle, "default": h_walk})
     Game.add_object(hyena)
     hyena.transform.xy = 100 * random() - 50 // 2, test_img.get_height() / 2
-    hyena.transform.scale = Vector(1)
+    hyena.transform.scale = Vector(1 + (i == 0))
     hyena.image_offset.xy = 0, hyena_walk.get_height() / 2
     hyena.transform.set_parent(test)
 
@@ -69,12 +67,9 @@ for i in range(10):
 # === RUN GAME
 Game.run()
 
-
-# todo: скорость анимации множитель
-# todo: offset-направление
-# todo: сортировка объектов
-# todo: группы / слои, сортировка слоев
-# todo: упрощеное создание анимаций
 # todo: состояния
-
-
+# todo: скорость анимации множитель
+# todo: упрощеное создание анимаций
+# todo: примитивы: круг, прямоугольник, точка, многоугольник
+# todo: документация в коде
+# todo: документация файл

@@ -4,6 +4,7 @@ from typing import Dict
 
 from ramka import pygame, Vector, FlipStyle, generate_flip, slice_image, Game, Sprite, Animation
 
+
 class Test(Sprite):
     def __init__(self, animations: Dict[str, Animation]):
         super().__init__(animations)
@@ -53,7 +54,7 @@ hyena_walk = pygame.image.load("./sprites/Hyena_walk.png")
 h_idle = Animation(generate_flip(slice_image(hyena_idle), (True, False)), 6, True)
 h_walk = Animation(generate_flip(slice_image(hyena_walk), (True, False)), 12, True)
 
-
+test.transform.offset.xy = test_img.get_width(), test_img.get_height()
 for i in range(3):
     hyena = Animal({"idle": h_idle, "default": h_walk})
     Game.add_object(hyena)
@@ -62,12 +63,10 @@ for i in range(3):
     hyena.transform.offset.xy = 0, hyena_walk.get_height() / 2
     hyena.transform.set_parent(test)
 
-
 # === RUN GAME
 Game.run()
 
 
-# todo: стиль вращения: нет, отражение (ХХ / YY / XY), свободное вращение (дискрет), готовые направления (угол), цель (трансформ), свое
 # todo: скорость анимации множитель
 # todo: offset-направление
 # todo: сортировка объектов

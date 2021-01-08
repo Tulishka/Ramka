@@ -9,22 +9,24 @@ class TransformBase(Component):
 class TransformBase(Component):
 
     def __init__(self, game_oject: Component.GameObject, pos: Vector = None, rotate: float = 0.0, scale: Vector = None,
-                 offset: Vector = None):
+                 offset: Vector = None, rotate_offset: float = 0.0):
         super().__init__(game_oject)
 
         self.pos: Vector = pos if pos is not None else Vector()
-        self.rotate = rotate
         self.scale: Vector = scale if scale is not None else Vector(1.0)
         self.offset: Vector = offset if offset is not None else Vector()
+        self.rotate = rotate
+        self.rotate_offset = rotate_offset
 
     def copy(self) -> TransformBase:
-        return TransformBase(self.gameObject, Vector(self.pos), self.rotate, Vector(self.scale), Vector(self.offset))
+        return TransformBase(self.gameObject, Vector(self.pos), self.rotate, Vector(self.scale), Vector(self.offset), self.rotate_offset)
 
     def assign_positions(self, other: TransformBase):
         self.pos = Vector(other.pos)
         self.rotate = other.rotate
         self.scale = Vector(other.scale)
         self.offset = Vector(other.offset)
+        self.rotate_offset=other.rotate_offset
         return self
 
     def add_ip(self, transform: TransformBase) -> TransformBase:
@@ -35,10 +37,11 @@ class TransformBase(Component):
             self.offset = self.offset.elementwise() * self.scale
 
         if transform.rotate != 0:
-            self.pos = self.pos - transform.offset
+            self.pos -= transform.offset
             self.pos.rotate_ip(-transform.rotate)
+            self.pos += transform.offset
 
-        self.pos += transform.pos + transform.offset
+        self.pos += transform.pos
         self.rotate += transform.rotate
 
         return self

@@ -50,6 +50,12 @@ class RotationFlip(TransformModifier):
         transform.rotate = 0
         return transform
 
+class RotationFlipLocal(RotationFlip):
+    def __init__(self, flip_style: FlipStyle):
+        super().__init__(FlipStyle)
+        self.flip_style = flip_style
+        self.final_apply = False
+
 
 class RotationTarget(TransformModifier):
     def __init__(self, pos: Vector, shift=0.0):

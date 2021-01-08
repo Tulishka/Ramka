@@ -31,7 +31,7 @@ class Animal(Sprite):
 
         # self.transform.look_at_ip(Vector(pygame.mouse.get_pos()),False)
         # self.vx = 1 if Vector(1, 0).rotate(self.transform.parent.angle if self.transform.parent else 0).y < 0 else -1
-        self.transform.x += self.vx * deltaTime * 80
+        # self.transform.x += self.vx * deltaTime * 80
         # self.transform.scale = (1 + 2 * abs(math.cos(self.time*0.2))) * Vector(1.0)
         if self.transform.parent and abs(self.transform.x) > 50:
             self.transform.x = math.copysign(50, self.transform.x)

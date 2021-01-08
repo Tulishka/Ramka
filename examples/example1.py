@@ -14,7 +14,7 @@ class Test(Sprite):
 
         xx, yy = pygame.mouse.get_pos()
         angle = -Vector(10, 0).angle_to(Vector(xx, yy) - self.transform.pos)
-        self.transform.rotate = angle
+        self.transform.angle = angle
 
 
 class Animal(Sprite):
@@ -29,12 +29,14 @@ class Animal(Sprite):
     def update(self, deltaTime: float):
         super().update(deltaTime)
 
-        # self.vx = 1 if Vector(1, 0).rotate(self.transform.parent.rotate if self.transform.parent else 0).y < 0 else -1
-        self.transform.pos.x += self.vx * deltaTime * 80
+        # self.transform.look_at_ip(Vector(pygame.mouse.get_pos()),False)
+        # self.vx = 1 if Vector(1, 0).rotate(self.transform.parent.angle if self.transform.parent else 0).y < 0 else -1
+        self.transform.x += self.vx * deltaTime * 80
         # self.transform.scale = (1 + 2 * abs(math.cos(self.time*0.2))) * Vector(1.0)
-        if self.transform.parent and abs(self.transform.pos.x) > 50:
-            self.transform.pos.x = math.copysign(50, self.transform.pos.x)
+        if self.transform.parent and abs(self.transform.x) > 50:
+            self.transform.x = math.copysign(50, self.transform.x)
             self.vx *= -1
+
 
 
 Game.init('Рамка')
@@ -43,10 +45,10 @@ Game.init('Рамка')
 test_img = pygame.image.load("./sprites/test.png").convert_alpha()
 test = Test({"default": Animation(generate_flip([test_img], (False, False)), 1, True)})
 Game.add_object(test)
-test.transform.pos.xy = Game.ширинаЭкрана // 2, Game.высотаЭкрана // 2
-test.transform.scale.xy = 2,2
+test.transform.xy = Game.ширинаЭкрана // 2, Game.высотаЭкрана // 2
+test.transform.scale_xy = 2, 2
 
-
+# test.transform.rotate = 45
 # === HYENAS
 hyena_idle = pygame.image.load("./sprites/Hyena_idle.png")
 hyena_walk = pygame.image.load("./sprites/Hyena_walk.png")
@@ -54,15 +56,16 @@ hyena_walk = pygame.image.load("./sprites/Hyena_walk.png")
 h_idle = Animation(generate_flip(slice_image(hyena_idle), (True, False)), 6, True)
 h_walk = Animation(generate_flip(slice_image(hyena_walk), (True, False)), 12, True)
 
-test.transform.offset.xy = test_img.get_width(), test_img.get_height()
-for i in range(3):
+
+for i in range(10):
     hyena = Animal({"idle": h_idle, "default": h_walk})
     Game.add_object(hyena)
-    hyena.transform.pos.xy = test_img.get_width() * random() - test_img.get_width() // 2, test_img.get_height() / 2
-    hyena.transform.scale = Vector(1 + 0.5*i)
-    hyena.transform.offset.xy = 0, hyena_walk.get_height() / 2
+    hyena.transform.xy = 100 * random() - 50 // 2, test_img.get_height() / 2
+    hyena.transform.scale = Vector(1)
+    hyena.image_offset.xy = 0, hyena_walk.get_height() / 2
     hyena.transform.set_parent(test)
 
+# Game.drawOptions['show_offset']=True
 # === RUN GAME
 Game.run()
 

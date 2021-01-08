@@ -12,6 +12,8 @@ class Game:
     ширинаЭкрана, высотаЭкрана = размерЭкрана = (1024, 768)
     цветФона: pygame.Color = (0, 0, 20)
     clock = pygame.time.Clock()
+    counter=0
+    drawOptions = {}
 
     @staticmethod
     def init(caption: str, back_color: pygame.Color = None, fullscreen: bool = False, window_size=None):
@@ -69,10 +71,10 @@ class Game:
                 if obj.enabled:
                     obj.update(deltaTime)
                     if obj.visible:
-                        obj.draw(Game.экран, {"show_offset": 0})
+                        obj.draw(Game.экран, Game.drawOptions)
 
             if Game.showFPS:
-                a = Game.font.render(str(round(Game.clock.get_fps())), 1, (255, 255, 100))
+                a = Game.font.render(str(round(Game.clock.get_fps()))+" ,"+str(Game.counter), 1, (255, 255, 100))
                 Game.экран.blit(a, (5, 5))
 
             Game.закончить_кадр()

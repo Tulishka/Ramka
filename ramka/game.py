@@ -2,10 +2,13 @@ from typing import Dict, Union, List
 
 import pygame
 from .gameobject import GameObject
+from .input import Input
 from .layers import Layer
 
 
+
 class Game:
+    pygame.init()
     defaultLayer = Layer("default", 0)
     showFPS = True
     font = pygame.font.SysFont("arial", 14)
@@ -14,7 +17,7 @@ class Game:
     ширинаЭкрана, высотаЭкрана = размерЭкрана = (1024, 768)
     цветФона: pygame.Color = (0, 0, 20)
     clock = pygame.time.Clock()
-    counter = 0
+    debug_str = ''
     drawOptions = {}
 
     layers: List[Layer] = [defaultLayer]
@@ -41,6 +44,7 @@ class Game:
 
     @staticmethod
     def init(caption: str, back_color: pygame.Color = None, fullscreen: bool = False, window_size=None):
+
 
         Game.размерЭкрана = (1024, 768) if not fullscreen else pygame.display.list_modes()[0]
 
@@ -84,6 +88,7 @@ class Game:
     def новый_кадр():
         Game.экран.fill(Game.цветФона)
 
+
     @staticmethod
     def закончить_кадр():
         pygame.display.flip()
@@ -98,6 +103,7 @@ class Game:
                 if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                     exit()
 
+            Input.update(deltaTime)
             Game.новый_кадр()
 
             for l in Game.layers:
@@ -114,7 +120,8 @@ class Game:
             #             obj.draw(Game.экран, Game.drawOptions)
 
             if Game.showFPS:
-                a = Game.font.render(str(round(Game.clock.get_fps())) + " ," + str(Game.counter), 1, (255, 255, 100))
+                ss=str(round(Game.clock.get_fps())) +", "+Game.debug_str+", " + Input.info()
+                a =Game.font.render( ss , 1, (255, 255, 100))
                 Game.экран.blit(a, (5, 5))
 
             Game.закончить_кадр()

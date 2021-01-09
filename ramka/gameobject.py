@@ -3,17 +3,23 @@ from typing import Dict, Union
 import pygame
 
 
+
+
 class GameObject:
     from .component import Component
+
 
     def __init__(self):
         from .game import Game
         from .transform import Transform
         from .layers import Layer
+        from .state import State
+
 
         self.transform: Transform = Transform(self)
         self.components: Dict[str, GameObject.Component] = {}
 
+        self.state = State(self)
         self.time = 0
 
         self.game: Game = None

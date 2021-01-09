@@ -24,13 +24,13 @@ class TransformBase(Component):
         return TransformBase(self.gameObject, Vector(self._pos), self._angle, Vector(self._scale))
 
     def assign_positions(self, other: TransformBase):
-        pos=self._pos.xy
+        pos = self._pos.xy
         scale = self._scale.xy
-        angle= self._angle
+        angle = self._angle
         self._pos = Vector(other._pos)
         self._angle = other._angle
         self._scale = Vector(other._scale)
-        if angle!=self.angle or pos!=self._pos or scale!=self._scale:
+        if angle != self.angle or pos != self._pos or scale != self._scale:
             self.on_change()
         return self
 
@@ -40,9 +40,9 @@ class TransformBase(Component):
 
     @pos.setter
     def pos(self, value):
-        xy=self._pos.xy
+        xy = self._pos.xy
         self._pos = value
-        if xy!=self._pos:
+        if xy != self._pos:
             self.on_change()
 
     @property
@@ -51,9 +51,9 @@ class TransformBase(Component):
 
     @scale.setter
     def scale(self, value):
-        xy=self._scale.xy
+        xy = self._scale.xy
         self._scale = value
-        if xy!=self._scale:
+        if xy != self._scale:
             self.on_change()
 
     @property
@@ -62,9 +62,9 @@ class TransformBase(Component):
 
     @x.setter
     def x(self, value):
-        v=self._pos.x
+        v = self._pos.x
         self._pos.x = value
-        if value!=v:
+        if value != v:
             self.on_change()
 
     @property
@@ -73,9 +73,9 @@ class TransformBase(Component):
 
     @y.setter
     def y(self, value):
-        v=self._pos.y
+        v = self._pos.y
         self._pos.y = value
-        if v!=value:
+        if v != value:
             self.on_change()
 
     @property
@@ -84,9 +84,9 @@ class TransformBase(Component):
 
     @xy.setter
     def xy(self, value):
-        xy=self._pos.xy
+        xy = self._pos.xy
         self._pos.xy = value
-        if xy!=value:
+        if xy != value:
             self.on_change()
 
     @property
@@ -95,9 +95,9 @@ class TransformBase(Component):
 
     @angle.setter
     def angle(self, value):
-        v=self._angle
+        v = self._angle
         self._angle = value
-        if v!=value:
+        if v != value:
             self.on_change()
 
     @property
@@ -106,9 +106,9 @@ class TransformBase(Component):
 
     @scale_x.setter
     def scale_x(self, value):
-        v=self._scale.x
+        v = self._scale.x
         self._scale.x = value
-        if v!=value:
+        if v != value:
             self.on_change()
 
     @property
@@ -117,7 +117,7 @@ class TransformBase(Component):
 
     @scale_y.setter
     def scale_y(self, value):
-        v=self._scale.y
+        v = self._scale.y
         self._scale.y = value
         if v != value:
             self.on_change()
@@ -128,9 +128,9 @@ class TransformBase(Component):
 
     @scale_xy.setter
     def scale_xy(self, value):
-        xy=self._scale.xy
+        xy = self._scale.xy
         self._scale.xy = value
-        if xy!=value:
+        if xy != value:
             self.on_change()
 
     def look_at_ip(self, target: Union[Vector, TransformBase, Component.GameObject],
@@ -200,3 +200,63 @@ class TransformBase(Component):
 
     def sub(self, transform: TransformBase) -> TransformBase:
         return self.copy().sub_ip(transform)
+
+    def move_forward_ip(self, distance: float):
+        if distance:
+            v = distance * Vector(1.0, 0)
+            v.rotate_ip(-self._angle)
+            self._pos += v
+            self.on_change()
+
+    def move_forward(self, distance: float):
+        v = distance * Vector(1.0, 0)
+        v.rotate_ip(-self._angle)
+        v += self._pos
+        return v
+
+    def move_toward_ip(self, target: Union[Vector, TransformBase, Component.GameObject], distance: float,
+                       look_to_target: bool = False,
+                       use_local: bool = True) -> TransformBase:
+        if isinstance(target, Component.GameObject):
+            target = target.transform
+
+        if isinstance(target, TransformBase):
+            if target.gameObject.transform.parent == self.gameObject.transform.parent:
+                use_local = True
+                target = target._pos
+            else:
+                target = target.gameObject.transform.get_world_transform()._pos
+
+        if not use_local and self.gameObject.transform.parent is None:
+            use_local = True
+
+        if use_local:
+            diff = self._pos - target
+            angle = -Vector(1.0, 0.0).angle_to(diff)
+        else:
+            pr = self.gameObject.transform.parent.get_world_transform()
+            diff = self.add(pr)._pos - target
+            angle = -Vector(1.0, 0.0).angle_to(diff) - pr._angle
+
+
+        if distance:
+            ds=diff.length_squared()
+            if ds:
+                if ds <= distance * distance:
+                    v = diff
+                else:
+                    v = distance * Vector(1.0, 0)
+                    v.rotate_ip(-angle)
+                self._pos -= v
+
+                if round(v.x) or round(v.y):
+                    if look_to_target:
+                        self._angle = angle
+                    self.on_change()
+
+        return self
+
+    def move_toward(self, target: Union[Vector, TransformBase, Component.GameObject], distance: float,
+                    look_to_target: bool = False,
+                    use_local: bool = True) -> TransformBase:
+        return self.copy().move_toward_ip(target, distance, use_local)

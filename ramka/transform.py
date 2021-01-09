@@ -21,9 +21,10 @@ class Transform(TransformBase):
         self.__world_transform_cache: Union[None, TransformBase] = None
 
     def on_change(self):
-        self.__world_transform_cache = None
-        for ch in self.children:
-            ch.on_change()
+        if self.__world_transform_cache is not None:
+            for ch in self.children:
+                ch.on_change()
+            self.__world_transform_cache = None
 
     def get_world_transform(self) -> TransformBase:
         dirty = self.__world_transform_cache is None
@@ -32,7 +33,6 @@ class Transform(TransformBase):
                 self.__world_transform_cache = self.modifier.apply(self)
         else:
             if dirty:
-                Game.counter += 1
                 if self.modifier.final_apply:
                     self.__world_transform_cache = self.modifier.apply_ip(self.add(self.parent.get_world_transform()))
                 else:
@@ -44,7 +44,6 @@ class Transform(TransformBase):
         if self.parent is None:
             return self.modifier.apply(self)
         else:
-            Game.counter += 1
             if self.modifier.final_apply:
                 return self.modifier.apply_ip(self.add(self.parent.get_world_transform()))
             else:

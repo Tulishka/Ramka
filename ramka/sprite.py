@@ -5,16 +5,14 @@ from .gameobject import GameObject
 
 from .animation import Animation, FlipStyle
 from .shared import *
-from .state import State, state_default
+
 
 
 class Sprite(GameObject):
 
-    def __init__(self, animations: Dict[str, Animation],
-                 state: State = state_default):
+    def __init__(self, animations: Dict[str, Animation]):
         super().__init__()
         self.animations = animations
-        self.state = state
         self.last_animation = None
         self.image_offset = Vector(0.0)
         self.image_rotate_offset = 0

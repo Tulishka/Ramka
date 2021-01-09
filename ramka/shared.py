@@ -17,4 +17,4 @@ varianti_upravleniya = [
     }
 ]
 
-pygame.init()
+

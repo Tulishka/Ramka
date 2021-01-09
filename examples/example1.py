@@ -87,6 +87,12 @@ Game.run()
 # todo: примитивы: круг, прямоугольник, точка, многоугольник, пустой
 # todo: документация в коде
 # todo: документация файл
-# todo: сообщения
+# todo: сообщения всем, паренту, чилдам. Сообщения pygame?
+# todo: input.events
+# todo: свойства кадрам анимации: обработчики, отправка событий
+# todo: тригеры
+# todo: game_object: before_update, after_update
+# todo: компаненты
+
 
 # todo: move forvard, move toward

@@ -3,12 +3,16 @@ from random import random
 from typing import Dict
 
 
-from ramka import pygame, Vector, FlipStyle, generate_flip, slice_image, Game, Sprite, Animation, Input
+from ramka import pygame, Vector, FlipStyle, generate_flip, slice_image, Game, Sprite, Animation, Input, BoxCollider, \
+    CircleCollider
 
 
 class Test(Sprite):
     def __init__(self, animations: Dict[str, Animation]):
         super().__init__(animations)
+
+        self.add_component("box", BoxCollider(self,self.get_size()))
+        self.add_component("circle", CircleCollider(self, max(0.5*self.get_size())))
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
@@ -32,7 +36,10 @@ class Animal(Sprite):
 
     def __init__(self, animations: Dict[str, Animation]):
         super().__init__(animations)
+
         self.vx = 1.0
+        self.add_component("circle", CircleCollider(self, max(0.5 * self.get_size()),self.image_offset,self.image_rotate_offset))
+        self.add_component("box", BoxCollider(self, self.get_size(),self.image_offset,self.image_rotate_offset))
 
     def get_flip(self) -> FlipStyle:
         return (self.vx > 0, False)
@@ -67,7 +74,7 @@ hyena_walk = pygame.image.load("./sprites/Hyena_walk.png")
 h_idle = Animation(generate_flip(slice_image(hyena_idle), (True, False)), 6, True)
 h_walk = Animation(generate_flip(slice_image(hyena_walk), (True, False)), 12, True)
 
-for i in range(10):
+for i in range(2):
     hyena = Animal({"idle": h_idle, "default": h_walk})
     Game.add_object(hyena)
     hyena.transform.xy = 80 * random() - 40 , test_img.get_height() / 2
@@ -82,6 +89,8 @@ Game.run()
 # todo: состояния
 # todo: скорость анимации множитель
 # todo: упрощеное создание анимаций
+# todo: компоненты
+# todo: коллайдер
 # todo: физика
 # todo: звуки
 # todo: примитивы: круг, прямоугольник, точка, многоугольник, пустой
@@ -92,7 +101,7 @@ Game.run()
 # todo: свойства кадрам анимации: обработчики, отправка событий
 # todo: тригеры
 # todo: game_object: before_update, after_update
-# todo: компаненты
+
 
 
 # todo: move forvard, move toward

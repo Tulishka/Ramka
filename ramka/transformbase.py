@@ -164,6 +164,25 @@ class TransformBase(Component):
         p = self.copy()
         return p.look_at_ip(target, use_local)
 
+    def add_to_vector(self, vector: Vector):
+        vector *= self._scale.elementwise()
+        vector.rotate_ip(-self._angle)
+        vector += self._pos
+        return vector
+
+    def sub_from_vector(self, vector: Vector):
+        vector -= self._pos
+        vector.rotate_ip(self._angle)
+        if self._scale.x != 0 and self._scale.y != 0:
+            vector /= self._scale.elementwise()
+        return vector
+
+    # def add_to_vector(self, vector: Vector):
+    #     return self.add_to_vector_ip(Vector(vector))
+    #
+    # def sub_from_vector(self, vector: Vector):
+    #     return self.sub_from_vector_ip(Vector(vector))
+
     def add_ip(self, transform: TransformBase) -> TransformBase:
 
         if transform._scale.x != 1 or transform._scale.y != 1 or self._scale.x != 1 or self._scale.y != 1:
@@ -238,9 +257,8 @@ class TransformBase(Component):
             diff = self.add(pr)._pos - target
             angle = -Vector(1.0, 0.0).angle_to(diff) - pr._angle
 
-
         if distance:
-            ds=diff.length_squared()
+            ds = diff.length_squared()
             if ds:
                 if ds <= distance * distance:
                     v = diff

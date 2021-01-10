@@ -1,3 +1,5 @@
+from typing import List
+
 import pygame
 
 Vector = pygame.Vector2
@@ -18,3 +20,4 @@ varianti_upravleniya = [
 ]
 
 
+Poly = List[Vector]

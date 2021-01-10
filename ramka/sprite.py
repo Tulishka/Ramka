@@ -5,7 +5,7 @@ from .gameobject import GameObject
 
 from .animation import Animation, FlipStyle
 from .shared import *
-
+from .transformbase import TransformBase
 
 
 class Sprite(GameObject):
@@ -31,7 +31,11 @@ class Sprite(GameObject):
     def get_flip(self) -> FlipStyle:
         return (False, False)
 
-    def draw(self, dest: pygame.Surface, options: Dict[str, any] = {}):
+    def get_size(self) ->Vector:
+        img = self.curr_animation().get_frame(self.time, (False,False))
+        return Vector(img.get_size())
+
+    def draw(self, dest: pygame.Surface):
 
         wtr = self.transform.get_world_transform()
         flp = self.get_flip()
@@ -47,16 +51,21 @@ class Sprite(GameObject):
         if rotate_image != 0:
             img = pygame.transform.rotate(img, rotate_image)
 
+        rotated_offset=self.get_rotated_offset(wtr)
+        rect = img.get_rect(center=wtr._pos + rotated_offset)
+
+        dest.blit(img, rect)  # , special_flags=pygame.BLEND_ALPHA_SDL2
+
+    def draw_overlay(self, dest: pygame.Surface):
+        super().draw_overlay(dest)
+
+        wtr = self.transform.get_world_transform()
+        pygame.draw.circle(dest, (255, 100, 100), wtr._pos, 2)
+
+    def get_rotated_offset(self,wtr: TransformBase):
+
         rotated_offset = self.image_offset if wtr._angle == 0 else self.image_offset.rotate(-wtr._angle)
         if self.image_offset and (wtr._scale.x != 1 or wtr._scale.y != 1) :
             rotated_offset = rotated_offset * wtr._scale.elementwise()
 
-        rect = img.get_rect(center=wtr._pos - rotated_offset)
-
-        dest.blit(img, rect)  # , special_flags=pygame.BLEND_ALPHA_SDL2
-
-        if options.get("show_box") == True:
-            pygame.draw.rect(dest, (255, 100, 100), rect, 2)
-
-        if options.get("show_offset") == True:
-            pygame.draw.circle(dest, (255, 100, 100), wtr._pos, 2)
+        return -rotated_offset

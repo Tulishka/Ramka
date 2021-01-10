@@ -111,7 +111,8 @@ class Game:
                     if obj.enabled:
                         obj.update(deltaTime)
                         if obj.visible:
-                            obj.draw(Game.экран, Game.drawOptions)
+                            obj.draw(Game.экран)
+                            obj.draw_components(Game.экран)
 
             # for obj in Game.gameObjects:
             #     if obj.enabled:

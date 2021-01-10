@@ -83,3 +83,31 @@ class Transform(TransformBase):
         parent.__add_child(self)
         if from_world and parent is not None:
             self.sub_ip(parent.get_world_transform())
+
+    @staticmethod
+    def to_local_coord(parent: Transform, target: Union[Vector, TransformBase, Transform.GameObject] ,
+                       local_target: bool = True, in_place=False) ->Vector:
+        if isinstance(target, Transform.GameObject):
+            target = target.transform
+
+        if isinstance(target, TransformBase):
+            if target.gameObject.transform.parent == parent:
+                local_target = True
+                target = target._pos
+            else:
+                target = target.gameObject.transform.get_world_transform()._pos
+
+        if not in_place:
+            target = Vector(target)
+        if not local_target and parent:
+            transform = parent.get_world_transform()
+            target -= transform._pos
+
+            if transform._scale.x != 1 or transform._scale.y != 1:
+                target /= transform._scale.elementwise()
+
+        return target
+
+    def to_parent_local_coord(self, target: Union[Vector, TransformBase, Transform.GameObject],
+                              local_target: bool = True) ->Vector:
+        return self.to_local_coord(self.parent, target, local_target)

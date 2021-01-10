@@ -3,10 +3,12 @@ from .component import Component
 from .shared import Vector
 
 
-
-
 class Rigidbody(Component):
     def __init__(self, gameObject: GameObject, mass=1.0, velocity: Vector = None):
         super(Rigidbody, self).__init__(gameObject)
         self.mass = mass
-        self.velocity = velocity if not velocity is None else Vector(0,0)
+        self.velocity = velocity if not velocity is None else Vector(0, 0)
+        self.g_force = Vector (0,1)
+
+    def update(self,deltaTime:float):
+        pass

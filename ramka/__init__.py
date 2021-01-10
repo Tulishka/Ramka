@@ -15,6 +15,11 @@ from .layers import Layer
 from .transformbase import *
 from .transform import *
 
+from .collider import *
+from .circlecollider import *
+from .boxcollider import *
+from .transform_modifiers import *
+
 from .rigidbody import *
 from .game import *
 from .transform_modifiers import *

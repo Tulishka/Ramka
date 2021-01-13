@@ -75,4 +75,5 @@ class BoxCollider(Collider):
 
     def draw(self, disp: pygame.Surface):
         poly = self.get_poly()
-        pygame.draw.polygon(disp, (0, 255, 0), poly, 1)
+        pygame.draw.polygon(disp, self.color, poly, 1)
+

@@ -48,6 +48,6 @@ class GameObject:
             layer.add_object(self)
 
     def get_components(self, component_class=None):
-        for c in self.components.items():
-            if component_class is None or isinstance(c[1], component_class):
+        for c in self.components.values():
+            if component_class is None or isinstance(c, component_class):
                 yield c

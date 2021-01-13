@@ -1,6 +1,8 @@
 from typing import Dict, Union, List
 
 import pygame
+
+from .collider import Collider
 from .gameobject import GameObject
 from .input import Input
 from .layers import Layer
@@ -110,6 +112,8 @@ class Game:
                 for obj in l.gameObjects:
                     if obj.enabled:
                         obj.update(deltaTime)
+                        for c in obj.get_components(Collider):
+                            c.color=(255,0,0) if c.get_collided(Game.get_components(Collider)) is not None else (0,255,0)
                         if obj.visible:
                             obj.draw(Game.экран)
                             obj.draw_components(Game.экран)
@@ -126,3 +130,9 @@ class Game:
                 Game.экран.blit(a, (5, 5))
 
             Game.закончить_кадр()
+
+    @staticmethod
+    def get_components(component_class=None):
+        for c in Game.gameObjects:
+            for cc in c.get_components(component_class):
+                yield cc

@@ -2,7 +2,6 @@ import math
 from random import random
 from typing import Dict
 
-
 from ramka import pygame, Vector, FlipStyle, generate_flip, slice_image, Game, Sprite, Animation, Input, BoxCollider, \
     CircleCollider
 
@@ -11,23 +10,22 @@ class Test(Sprite):
     def __init__(self, animations: Dict[str, Animation]):
         super().__init__(animations)
 
-        self.add_component("box", BoxCollider(self,self.get_size()))
-        self.add_component("circle", CircleCollider(self, max(0.5*self.get_size())))
+        self.add_component("box", BoxCollider(self, self.get_size()))
+        self.add_component("circle", CircleCollider(self, max(0.5 * self.get_size())))
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
 
-        xx, yy = pygame.mouse.get_pos()
+        # xx, yy = pygame.mouse.get_pos()
         # angle = -Vector(10, 0).angle_to(Vector(xx, yy) - self.transform.pos)
         # self.transform.angle = angle
 
-        if Input.get("Jump"):
-            self.transform.move_toward_ip(Vector(xx,yy),80*deltaTime,True)
+        # if Input.get("Jump"):
+        #     self.transform.move_toward_ip(Vector(xx, yy), 80 * deltaTime, True)
             # self.transform.move_forward_ip(80*deltaTime)
 
-        deltaTime*=500
-        v=deltaTime * Vector(Input.get("Horizontal"),Input.get("Vertical"))
-        v.rotate_ip(-self.transform.angle)
+        v = 500 * deltaTime * Vector(Input.get("Horizontal"), Input.get("Vertical"))
+        # v.rotate_ip(-self.transform.angle)
 
         self.transform.pos = self.transform.pos + v
 
@@ -38,8 +36,9 @@ class Animal(Sprite):
         super().__init__(animations)
 
         self.vx = 1.0
-        self.add_component("circle", CircleCollider(self, max(0.5 * self.get_size()),self.image_offset,self.image_rotate_offset))
-        self.add_component("box", BoxCollider(self, self.get_size(),self.image_offset,self.image_rotate_offset))
+        self.add_component("circle", CircleCollider(self, max(0.5 * self.get_size()), self.image_offset,
+                                                    self.image_rotate_offset))
+        self.add_component("box", BoxCollider(self, self.get_size(), self.image_offset, self.image_rotate_offset))
 
     def get_flip(self) -> FlipStyle:
         return (self.vx > 0, False)
@@ -77,7 +76,7 @@ h_walk = Animation(generate_flip(slice_image(hyena_walk), (True, False)), 12, Tr
 for i in range(2):
     hyena = Animal({"idle": h_idle, "default": h_walk})
     Game.add_object(hyena)
-    hyena.transform.xy = 80 * random() - 40 , test_img.get_height() / 2
+    hyena.transform.xy = 80 * random() - 40, test_img.get_height() / 2
     hyena.transform.scale = Vector(1 + (i == -1))
     hyena.image_offset.xy = 0, hyena_walk.get_height() / 2
     hyena.transform.set_parent(test)
@@ -101,7 +100,6 @@ Game.run()
 # todo: свойства кадрам анимации: обработчики, отправка событий
 # todo: тригеры
 # todo: game_object: before_update, after_update
-
 
 
 # todo: move forvard, move toward

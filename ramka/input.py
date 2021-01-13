@@ -37,7 +37,7 @@ class Axis(InputControl):
     def after_update(self):
         if self.value != self.target_value:
             delta = self.target_value - self.value
-            if round(abs(delta) * 1000) == 0 or self.axis_speed<0:
+            if round(abs(delta) * 1000) == 0 or self.axis_speed < 0:
                 self.value = self.target_value
             else:
                 self.value += math.copysign(min(self.axis_speed * self.deltaTime, abs(delta)), delta)
@@ -45,6 +45,8 @@ class Axis(InputControl):
     def update(self, value, deltaTime: float, type='key') -> bool:
         self.deltaTime = deltaTime
         self.target_value += value * self.scale_value
+        if abs(self.target_value) > abs(self.scale_value):
+            self.target_value = math.copysign(abs(self.scale_value), self.target_value)
         # if value == 0 and self.axis_speed < 0:
         #     self.value = self.target_value = 0
 
@@ -191,16 +193,15 @@ a = Input.add_key("Jump")
 Input.bind_key(a, pygame.K_SPACE)
 Input.bind_joy_btn(a, 0, 0)
 
-a = Input.add_axis("Vertical",0.1)
+a = Input.add_axis("Vertical", 0.1)
 Input.bind_key(a, pygame.K_w, -1)
 Input.bind_key(a, pygame.K_UP, -1)
 Input.bind_key(a, pygame.K_s)
 Input.bind_key(a, pygame.K_DOWN)
-Input.bind_joy_btn(a, 0, 0)
 
 Input.bind_joy_axis(a, 0, 1)
 
-a = Input.add_axis("Horizontal",0.1)
+a = Input.add_axis("Horizontal", 0.1)
 Input.bind_key(a, pygame.K_d)
 Input.bind_key(a, pygame.K_RIGHT)
 Input.bind_key(a, pygame.K_a, -1)

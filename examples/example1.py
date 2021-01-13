@@ -14,7 +14,6 @@ class Area(Sprite):
         super().update(deltaTime)
 
 
-
 class Box(Sprite):
     def __init__(self, animations: Dict[str, Animation]):
         super().__init__(animations)
@@ -30,9 +29,9 @@ class Box(Sprite):
 
         # if Input.get("Jump"):
         #     self.transform.move_toward_ip(Vector(xx, yy), 80 * deltaTime, True)
-            # self.transform.move_forward_ip(80*deltaTime)
+        # self.transform.move_forward_ip(80*deltaTime)
 
-        v = 500 * deltaTime * Vector(Input.get("Horizontal"), Input.get("Vertical"))
+        v = 100 * deltaTime * Vector(Input.get("Horizontal"), Input.get("Vertical"))
         # v.rotate_ip(-self.transform.angle)
 
         self.transform.pos = self.transform.pos + v
@@ -44,12 +43,12 @@ class Animal(Sprite):
         super().__init__(animations)
 
         self.vx = 1.0
-        self.add_component("circle", CircleCollider(self, max(0.5 * self.get_size()), self.image_offset,
-                                                    self.image_rotate_offset))
+        self.add_component("circle",
+                           CircleCollider(self, max(0.4 * self.get_size()), Vector(0, -self.get_size().y / 2)))
         # self.add_component("box", BoxCollider(self, self.get_size(), self.image_offset, self.image_rotate_offset))
 
     def get_flip(self) -> FlipStyle:
-        return (self.vx > 0, False)
+        return self.vx > 0, False
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
@@ -57,7 +56,7 @@ class Animal(Sprite):
         # self.transform.look_at_ip(Vector(pygame.mouse.get_pos()),False)
         # self.vx = 1 if Vector(1, 0).rotate(self.transform.parent.angle if self.transform.parent else 0).y < 0 else -1
 
-        # self.transform.x += self.vx * deltaTime * 80
+        self.transform.x += self.vx * deltaTime * 80
         # self.transform.scale = (1 + 2 * abs(math.cos(self.time*0.2))) * Vector(1.0)
         if self.transform.parent and abs(self.transform.x) > 50:
             self.transform.x = math.copysign(50, self.transform.x)
@@ -87,7 +86,7 @@ hyena_walk = pygame.image.load("./sprites/Hyena_walk.png")
 h_idle = Animation(generate_flip(slice_image(hyena_idle), (True, False)), 6, True)
 h_walk = Animation(generate_flip(slice_image(hyena_walk), (True, False)), 12, True)
 
-for i in range(1):
+for i in range(3):
     hyena = Animal({"idle": h_idle, "default": h_walk})
     Game.add_object(hyena)
     hyena.transform.xy = 80 * random() - 40, test_img.get_height() / 2
@@ -103,7 +102,7 @@ Game.run()
 # todo: скорость анимации множитель
 # todo: упрощеное создание анимаций
 # todo: компоненты
-# todo: коллайдер
+# todo: коллайдер : can collide
 # todo: физика
 # todo: звуки
 # todo: примитивы: круг, прямоугольник, точка, многоугольник, пустой
@@ -116,4 +115,4 @@ Game.run()
 # todo: game_object: before_update, after_update
 
 
-# todo: move forvard, move toward
+# todo: move forward, move toward

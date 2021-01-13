@@ -15,10 +15,15 @@ class Transform(TransformBase):
                  scale: Vector = None, parent: Transform = None):
 
         super().__init__(game_oject, pos, rotate, scale)
-        self.parent: Union[Transform, None] = parent
+
         self.children: List[Transform] = []
         self.modifier = defaultTransformModifier
         self.__world_transform_cache: Union[None, TransformBase] = None
+
+        self.parent: Union[None,Transform] = None
+        if parent is not None:
+            self.set_parent(parent)
+
 
     def on_change(self):
         if self.__world_transform_cache is not None:

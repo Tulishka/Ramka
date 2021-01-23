@@ -16,6 +16,15 @@ def line_intersection_point(line1: Tuple[Vector, Vector], line2: Tuple[Vector, V
         C = (p1[0] * p2[1] - p2[0] * p1[1])
         return A, B, -C
 
+    if line1[0].x == line1[1].x:
+        line1[1].x += 0.001
+    if line1[0].y == line1[1].y:
+        line1[1].y += 0.001
+    if line2[0].x == line2[1].x:
+        line2[1].x += 0.001
+    if line2[0].y == line2[1].y:
+        line2[1].y += 0.001
+
     l1 = def_line(*line1)
     l2 = def_line(*line2)
 
@@ -25,8 +34,10 @@ def line_intersection_point(line1: Tuple[Vector, Vector], line2: Tuple[Vector, V
     if d != 0:
         x = dx / d
         y = dy / d
-        if (line1[0].x <= x <= line1[1].x or line1[0].x >= x >= line1[1].x) and (
-                line2[0].x <= x <= line2[1].x or line2[0].x >= x >= line2[1].x):
+        if min(line1[0].x, line1[1].x) <= x <= max(line1[0].x, line1[1].x) \
+                and min(line1[0].y, line1[1].y) <= y <= max(line1[0].y, line1[1].y) \
+                and min(line2[0].x, line2[1].x) <= x <= max(line2[0].x, line2[1].x) \
+                and min(line2[0].y, line2[1].y) <= y <= max(line2[0].y, line2[1].y):
             return Vector(x, y)
         else:
             return None
@@ -48,7 +59,3 @@ def distance_point_to_line(point: Vector, line: Tuple[Vector, Vector], line_leng
         h = h / line_length
 
     return h
-
-
-print(line_intersection_point((Vector(0, 1), Vector(3, 1)), (Vector(2, 0), Vector(2, 3))))
-print(line_intersection_point((Vector(0, 1), Vector(3, 1)), (Vector(2, 3), Vector(1, 0))))

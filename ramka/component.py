@@ -19,3 +19,8 @@ class Component:
     def draw(self, disp: pygame.Surface):
         pass
 
+    def on_enter_game(self):
+        pass
+
+    def on_leave_game(self):
+        pass

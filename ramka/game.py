@@ -1,12 +1,12 @@
 from typing import Dict, Union, List
-
 import pygame
+import pymunk
+import pymunk.pygame_util
 
 from .collider import Collider
 from .gameobject import GameObject
 from .input import Input
 from .layers import Layer
-
 
 
 class Game:
@@ -23,6 +23,10 @@ class Game:
     drawOptions = {}
 
     layers: List[Layer] = [defaultLayer]
+
+    ph_space = pymunk.Space()
+    ph_gravity = (0.0, 900.0)
+    ph_draw_options: pymunk.pygame_util.DrawOptions
 
     @staticmethod
     def get_layer(name: str) -> Layer:
@@ -47,7 +51,6 @@ class Game:
     @staticmethod
     def init(caption: str, back_color: pygame.Color = None, fullscreen: bool = False, window_size=None):
 
-
         Game.размерЭкрана = (1024, 768) if not fullscreen else pygame.display.list_modes()[0]
 
         if not window_size is None:
@@ -60,25 +63,27 @@ class Game:
 
         Game.ширинаЭкрана, Game.высотаЭкрана = Game.размерЭкрана
 
+        Game.ph_draw_options = pymunk.pygame_util.DrawOptions(Game.экран)
+
         if back_color is not None:
             Game.цветФона = back_color
 
     @staticmethod
     def add_object(game_object: GameObject, layer: Union[str, Layer, None] = None):
-        if game_object not in Game.gameObjects:
-            Game.gameObjects.append(game_object)
-
         if layer is None:
             layer = Game.defaultLayer
-
         if type(layer) == str:
             layer = Game.get_layer(layer)
-
         game_object.set_layer(layer)
+
+        if game_object not in Game.gameObjects:
+            Game.gameObjects.append(game_object)
+            game_object.on_enter_game()
 
     @staticmethod
     def remove_object(game_object: GameObject):
         if game_object in Game.gameObjects:
+            game_object.on_leave_game()
             game_object.set_layer(None)
             Game.gameObjects.remove(game_object)
 
@@ -87,12 +92,11 @@ class Game:
         return Game.clock.get_time() * 0.001
 
     @staticmethod
-    def новый_кадр():
+    def frame_begin():
         Game.экран.fill(Game.цветФона)
 
-
     @staticmethod
-    def закончить_кадр():
+    def frame_end():
         pygame.display.flip()
         Game.clock.tick(60)
 
@@ -106,33 +110,41 @@ class Game:
                     exit()
 
             Input.update(deltaTime)
-            Game.новый_кадр()
+            Game.frame_begin()
 
             for l in Game.layers:
                 for obj in l.gameObjects:
                     if obj.enabled:
+                        obj.update_components(deltaTime)
                         obj.update(deltaTime)
                         for c in obj.get_components(Collider):
-                            c.color=(255,0,0) if c.get_collided(Game.get_components(Collider)) is not None else (0,255,0)
+                            c.color = (255, 0, 0) if c.get_collided(Game.get_components(Collider)) is not None else (
+                                0, 255, 0)
                         if obj.visible:
                             obj.draw(Game.экран)
                             obj.draw_components(Game.экран)
 
-            # for obj in Game.gameObjects:
-            #     if obj.enabled:
-            #         obj.update(deltaTime)
-            #         if obj.visible:
-            #             obj.draw(Game.экран, Game.drawOptions)
+            Game.ph_space.step(deltaTime)
 
             if Game.showFPS:
-                ss=str(round(Game.clock.get_fps())) +", "+Game.debug_str+", " + Input.info()
-                a =Game.font.render( ss , 1, (255, 255, 100))
+                ss = str(round(Game.clock.get_fps())) + ", " + Game.debug_str + ", " + Input.info()
+                a = Game.font.render(ss, True, (255, 255, 100))
                 Game.экран.blit(a, (5, 5))
 
-            Game.закончить_кадр()
+            Game.frame_end()
 
     @staticmethod
     def get_components(component_class=None):
         for c in Game.gameObjects:
             for cc in c.get_components(component_class):
                 yield cc
+
+    @staticmethod
+    def get_objects(clas=None, layer=None, filter=None):
+        if filter is None:
+            filter = lambda x: True
+
+        for c in Game.gameObjects:
+            if (clas is None or isinstance(c, clas))and(layer is None or c.layer == layer) and filter(c):
+                yield c
+

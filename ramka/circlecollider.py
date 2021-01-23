@@ -51,19 +51,3 @@ class CircleCollider(Collider):
     def point_inside(self, local_point: Vector) -> bool:
         return local_point.length_squared()<self.radius*self.radius
 
-    def is_collided(self, other: Collider) -> Union[Vector, None]:
-
-        tt = self.transform.get_world_transform()
-        pos=tt.pos
-        ott=other.transform.get_world_transform()
-        my = self.get_nearest_point(ott.pos)
-        ll=(my - pos).length_squared()
-        ot = other.get_nearest_point(pos) - pos
-
-        if ll > ot.length_squared():
-            return my
-        else:
-            if other.point_inside(ott.sub_from_vector(pos)):
-                return my
-
-        return None

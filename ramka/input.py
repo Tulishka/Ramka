@@ -207,3 +207,8 @@ Input.bind_key(a, pygame.K_RIGHT)
 Input.bind_key(a, pygame.K_a, -1)
 Input.bind_key(a, pygame.K_LEFT, -1)
 Input.bind_joy_axis(a, 0, 0)
+
+a = Input.add_axis("Rotate", 0.2)
+Input.bind_key(a, pygame.K_q)
+Input.bind_key(a, pygame.K_e, -1)
+Input.bind_joy_axis(a, 0, 3)

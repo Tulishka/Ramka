@@ -2,8 +2,8 @@ from typing import Dict, List, Tuple
 
 from .shared import *
 
+FlipStyle = Tuple[bool, bool]
 
-FlipStyle=Tuple[bool,bool]
 
 class Animation:
     def __init__(self, images: Dict[FlipStyle, List], fps: int, looped: bool):
@@ -11,11 +11,22 @@ class Animation:
         self.fps = fps
         self.looped = looped
 
-    def get_frame(self, time: float, flip: FlipStyle) -> pygame.Surface:
-        return self.images[flip][int(self.fps * time) % len(self.images[flip])]
+    def get_image(self, time: float, flip: FlipStyle) -> pygame.Surface:
+        return self.images[flip][self.get_frame_index(time)]
+
+    def get_image_flip_set(self, time: float) -> Dict[FlipStyle, pygame.Surface]:
+        idx = self.get_frame_index(time)
+        a = {}
+        for flip, item in self.images.items():
+            a[flip] = item[idx]
+        return a
+
+    def get_frame_index(self, time: float) -> int:
+        return int(self.fps * time) % len(self.images[(False, False)])
 
 
-def slice_image(image: pygame.Surface, size: (int, int) = None, cols: int = None, rows: int = None, row: int = 0) -> [pygame.Surface]:
+def slice_image(image: pygame.Surface, size: (int, int) = None, cols: int = None, rows: int = None, row: int = 0) -> [
+    pygame.Surface]:
     if size is None:
         rows = 1 if rows is None else rows
         cols = (image.get_width() // (image.get_height() // rows)) if cols is None else cols

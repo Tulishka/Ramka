@@ -4,6 +4,9 @@ import pygame
 
 Vector = pygame.Vector2
 
+Rect = pygame.Rect
+
+
 varianti_upravleniya = [
     {
         'up': pygame.K_UP,

@@ -2,8 +2,7 @@ import math
 from random import random
 from typing import Dict
 
-from ramka import pygame, Vector, FlipStyle, generate_flip, slice_image, Game, Sprite, Animation, Input, BoxCollider, \
-    CircleCollider
+from ramka import pygame, Vector, FlipStyle, slice_image, Game, Sprite, Animation, Input
 
 
 class Area(Sprite):
@@ -21,23 +20,11 @@ class Area(Sprite):
 class Box(Sprite):
     def __init__(self, animations: Dict[str, Animation]):
         super().__init__(animations)
-        self.add_component(BoxCollider(self, Vector(96, 96)))
-        self.transform.angle = 15
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
 
-        # xx, yy = pygame.mouse.get_pos()
-        # angle = -Vector(10, 0).angle_to(Vector(xx, yy) - self.transform.pos)
-        # self.transform.angle = angle
-
-        # if Input.get("Jump"):
-        #     self.transform.move_toward_ip(Vector(xx, yy), 80 * deltaTime, True)
-        # self.transform.move_forward_ip(80*deltaTime)
-
-        v = 100 * deltaTime * Vector(Input.get("Horizontal"), Input.get("Vertical"))
-        # v.rotate_ip(-self.transform.angle)
-
+        v = 800 * deltaTime * Vector(Input.get("Horizontal"), Input.get("Vertical"))
         self.transform.pos = self.transform.pos + v
 
 
@@ -49,60 +36,83 @@ class Animal(Sprite):
         # self.add_component( BoxCollider(self,Vector(48,48), Vector(0,-24)))
 
         self.vx = 1.0
+        self.lc = (0, 0)
 
     def get_flip(self) -> FlipStyle:
         return self.vx > 0, False
 
     def update(self, deltaTime: float):
-        super().update(deltaTime)
+        # super().update(deltaTime)
 
         # self.transform.look_at_ip(Vector(pygame.mouse.get_pos()),False)
         # self.vx = 1 if Vector(1, 0).rotate(self.transform.parent.angle if self.transform.parent else 0).y < 0 else -1
 
-        c = self.get_collided(Game.get_objects(clas=Box))
+        # self.transform.x += self.vx * deltaTime * 80
 
+        lst = list(Game.get_objects(clas=Box))
+        c = self.get_collided(lst)
+
+        vy = 0
         if len(c):
-            self.transform.y += 40 * deltaTime * (
-                1 if c[0].transform.get_world_transform().y < self.transform.get_world_transform().y else -1)
+            vy = -50
 
-        self.transform.x += self.vx * deltaTime * 80
+        while vy < 50:
+            z = self.get_collided(lst, test_offset=Vector(0, 1 + vy))
+            if len(z):
+                self.lc = z[0][1]
+                break
+            vy = vy + 1
+
+        # vy=vy * 200 * deltaTime
+        wtr = self.transform.get_world_transform()
+        wtr.y = wtr.y + vy
+
+        v = self.transform.to_parent_local_coord(Vector(wtr.x, wtr.y), False)
+        self.transform.xy = v
+
         # self.transform.scale = (1 + 2 * abs(math.cos(self.time*0.2))) * Vector(1.0)
-        if self.transform.parent and abs(self.transform.x) > 50:
-            self.transform.x = math.copysign(50, self.transform.x)
-            self.vx *= -1
+        # if self.transform.parent and abs(self.transform.x) > 50:
+        #     self.transform.x = math.copysign(50, self.transform.x)
+        #     self.vx *= -1
+
+    def draw(self, dest: pygame.Surface):
+        super().draw(dest)
+        p0=Vector(self.lc[0], self.lc[1])
+        p1=self.image_pos_to_global(p0)
+        p2=self.global_to_image_pos(p1)
+        Game.debug_str = f'({round(p1.x-p2.x)},{round(p1.y-p2.y)})'
+        pygame.draw.circle(dest, (255, 0, 0), p1, 2)
 
 
 Game.init('Рамка')
 test_img = pygame.image.load("./sprites/test.png").convert_alpha()
 
 # === area
-area = Area({"default": Animation(generate_flip([test_img], (False, False)), 1, True)})
+area = Area({"default": Animation([test_img], 1, True)})
 Game.add_object(area)
 area.transform.xy = Game.ширинаЭкрана // 2, Game.высотаЭкрана // 2
 area.transform.scale_xy = 2, 2
+# area.transform.angle=90
 
 # === BOX
-box = Box({"default": Animation(generate_flip([test_img], (False, False)), 1, True)})
+box = Box({"default": Animation([test_img], 1, True)})
 Game.add_object(box)
 box.transform.xy = Game.ширинаЭкрана // 2, Game.высотаЭкрана // 2
-box.transform.scale_xy = 0.5, 0.5
-box["tag"] = 1
+box.transform.scale_xy = 5, 0.5
 
 # test.transform.rotate = 45
 # === HYENAS
 hyena_idle = pygame.image.load("./sprites/Hyena_idle.png")
 hyena_walk = pygame.image.load("./sprites/Hyena_walk.png")
 
-h_idle = Animation(generate_flip(slice_image(hyena_idle), (True, False)), 6, True)
-h_walk = Animation(generate_flip(slice_image(hyena_walk), (True, False)), 12, True)
+h_idle = Animation(slice_image(hyena_idle), 6, True)
+h_walk = Animation(slice_image(hyena_walk), 12, True)
 
-for i in range(20):
-    hyena = Animal({"idle": h_idle, "default": h_walk})
-    Game.add_object(hyena)
-    hyena.transform.xy = 80 * random() - 40, test_img.get_height() / 2
-    hyena.transform.scale = Vector(1 + (i == -1))
-    hyena.image_offset.xy = 0, hyena_walk.get_height() / 2
-    hyena.transform.set_parent(area)
+hyena = Animal({"idle": h_idle, "default": h_walk})
+Game.add_object(hyena)
+hyena.transform.xy = (0, 0)
+hyena.image_offset.xy = 0, hyena_walk.get_height() / 2
+hyena.transform.set_parent(area)
 
 # Game.drawOptions['show_offset']=True
 # === RUN GAME

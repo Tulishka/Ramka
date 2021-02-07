@@ -18,6 +18,9 @@ class InputControl:
     def after_update(self):
         pass
 
+    def __bool__(self):
+        return self.value != 0
+
 
 class Axis(InputControl):
     def __init__(self, name: str, scale_value: float = 1.0, full_time=0.2):

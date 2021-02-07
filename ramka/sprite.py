@@ -1,5 +1,5 @@
 import math
-from typing import Dict, Callable
+from typing import Dict, Callable, Union, Tuple
 
 from .gameobject import GameObject
 
@@ -10,8 +10,15 @@ from .transformbase import TransformBase
 
 class Sprite(GameObject):
 
-    def __init__(self, animations: Dict[str, Animation]):
+    def __init__(self, animations: Union[Animation, pygame.Surface, Dict[str, Animation]]):
         super().__init__()
+
+        if type(animations) == pygame.Surface:
+            animations = Animation([animations], 0, True)
+
+        if type(animations) == Animation:
+            animations = {"default": animations}
+
         self.animations = animations
         self.last_animation = None
         self.image_offset = Vector(0.0)
@@ -22,7 +29,7 @@ class Sprite(GameObject):
         self.sprite.mask = None
         self.cache = {}
         self.deep_cache = False
-
+        self.collision_image = None
 
     def curr_animation(self):
         ani = self.animations.get(self.state.animation)
@@ -35,11 +42,8 @@ class Sprite(GameObject):
         self.last_animation = ani
         return ani
 
-    def get_flip(self) -> FlipStyle:
-        return (False, False)
-
     def get_size(self) -> Vector:
-        idx, img = self.curr_animation().get_image(self.time, (False, False))
+        idx, img = self.curr_animation().get_image(self.time)
         return Vector(img.get_size())
 
     def get_rect(self):
@@ -47,11 +51,10 @@ class Sprite(GameObject):
             self.prepare_image()
         return self.sprite.rect
 
-    def get_image_transformed(self, time: float, flip: FlipStyle, scale: (float, float) = (1.0, 1.0),
+    def get_image_transformed(self, img: pygame.Surface, flip: FlipStyle, scale: (float, float) = (1.0, 1.0),
                               rotate: float = 0.0) -> pygame.Surface:
 
         flip = (flip[0] ^ (scale[0] < 0), flip[1] ^ (scale[1] < 0))
-        img = self.curr_animation().get_image(time, flip)
 
         sx = abs(scale[0])
         sy = abs(scale[1])
@@ -69,6 +72,10 @@ class Sprite(GameObject):
         ci = self.cache.get(hsh)
         if ci is None:
             ci = img
+
+            if flip[0] or flip[1]:
+                ci = pygame.transform.flip(ci, flip[0], flip[1])
+
             if scale[0] != 1 or scale[1] != 1:
                 ci = pygame.transform.scale(ci, (w, h))
 
@@ -78,12 +85,14 @@ class Sprite(GameObject):
             if self.deep_cache:
                 self.cache[hsh] = ci
             else:
-                self.cache = {hash:ci}
+                self.cache = {hash: ci}
 
         return ci
 
-
     def prepare_mask(self):
+        """ Required actual self.sprite.image at autogen mode! \n
+            Требуется актуальное значение self.sprite.image если режим автосоздание маски включен!
+         """
         self.sprite.mask = pygame.mask.from_surface(self.sprite.image)
 
     def prepare_image(self):
@@ -92,16 +101,15 @@ class Sprite(GameObject):
 
         rotate_image = wtr._angle + self.image_rotate_offset
 
-        img = self.get_image_transformed(self.time, flp, (wtr._scale.x, wtr._scale.y), rotate_image)
+        img = self.curr_animation().get_image(self.time)
+        img = self.get_image_transformed(img, flp, (wtr._scale.x, wtr._scale.y), rotate_image)
 
-        if img!=self.sprite.image:
+        if img != self.sprite.image:
             self.sprite.image = img
             self.prepare_mask()
 
         rotated_offset = self.get_rotated_offset(wtr)
         self.sprite.rect = self.sprite.image.get_rect(center=wtr._pos + rotated_offset)
-
-
 
     def draw(self, dest: pygame.Surface):
 
@@ -122,11 +130,31 @@ class Sprite(GameObject):
 
         return -rotated_offset
 
-    def is_collided(self, other: GameObject,func: Callable = None) -> bool:
+    def is_collided(self, other: GameObject, func: Callable = None) -> Union[bool, Tuple[int, int]]:
         if func is None:
-            func=pygame.sprite.collide_mask
-        if isinstance(other, Sprite) and self.sprite.image is not None and other.sprite.image is not None:
-            return other.visible and func(self.sprite, other.sprite)
+            func = pygame.sprite.collide_mask
+        if other.visible and isinstance(other,
+                                        Sprite) and self.sprite.image is not None and other.sprite.image is not None:
+            return func(self.sprite, other.sprite)
         else:
             return super().is_collided(other)
 
+    def move_rect(self, offset: Vector):
+        self.sprite.rect.move_ip(offset)
+
+    def image_pos_to_local(self, pos: Vector) -> Vector:
+        r = self.get_rect()
+        return Vector(pos.x - r.width // 2, pos.y - r.height // 2)
+
+    def local_to_image_pos(self, pos: Vector) -> Vector:
+        r = self.get_rect()
+        return Vector(pos.x + r.width // 2, pos.y + r.height // 2)
+
+    def image_pos_to_global(self, pos: Vector) -> Vector:
+        p = self.transform.get_world_transform()
+        return p._pos + self.get_rotated_offset(p) + self.image_pos_to_local(pos)
+
+    def global_to_image_pos(self, pos: Vector) -> Vector:
+        p = self.transform.get_world_transform()
+        po = p.sub_from_vector(pos - self.get_rotated_offset(p))
+        return self.local_to_image_pos(po)

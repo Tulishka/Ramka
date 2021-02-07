@@ -91,7 +91,7 @@ class Transform(TransformBase):
 
     @staticmethod
     def to_local_coord(parent: Transform, target: Union[Vector, TransformBase, Transform.GameObject] ,
-                       local_target: bool = True, in_place=False) ->Vector:
+                       local_target: bool = True ) ->Vector:
         if isinstance(target, Transform.GameObject):
             target = target.transform
 
@@ -102,14 +102,11 @@ class Transform(TransformBase):
             else:
                 target = target.gameObject.transform.get_world_transform()._pos
 
-        if not in_place:
-            target = Vector(target)
         if not local_target and parent:
             transform = parent.get_world_transform()
-            target -= transform._pos
-
-            if transform._scale.x != 1 or transform._scale.y != 1:
-                target /= transform._scale.elementwise()
+            target=transform.sub_from_vector(target)
+        else:
+            target = Vector(target)
 
         return target
 

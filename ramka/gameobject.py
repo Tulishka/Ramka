@@ -1,7 +1,8 @@
-from typing import Dict, Union, List, Iterable, Callable
+from typing import Dict, Union, List, Iterable, Callable, Tuple
 
 import pygame
 from .shared import Vector, Rect
+from .animation import FlipStyle
 
 
 class GameObject: ...
@@ -68,16 +69,37 @@ class GameObject:
     def get_rect(self):
         return Rect(0, 0, 0, 0)
 
-    def is_collided(self, other: GameObject, func: Callable = None) -> bool:
+    def move_rect(self, offset: Vector):
+        pass
+
+    def is_collided(self, other: GameObject, func: Callable = None) -> Union[bool, Tuple[int, int]]:
         return other.visible and self.get_rect().colliderect(other.get_rect())
 
-    def get_collided(self, other: Union[GameObject, Iterable[GameObject]], func: Callable = None) -> List[GameObject]:
+    def get_flip(self) -> FlipStyle:
+        return (False, False)
+
+    def get_collided(self, other: Union[GameObject, Iterable[GameObject]], func: Callable = None,
+                     test_offset: Union[Vector, None] = None) -> List[Tuple[GameObject, Tuple[int, int]]]:
+
+        if test_offset is not None:
+            self.move_rect(test_offset)
+
         if isinstance(other, GameObject):
-            return [self.is_collided(other), func]
+            z = self.is_collided(other, func)
+            if z:
+                return [(other, z)]
+            else:
+                return []
+
         a = []
         for i in other:
-            if self.is_collided(i, func):
-                a.append(i)
+            z = self.is_collided(i, func)
+            if z:
+                a.append((i, z))
+
+        if test_offset is not None:
+            self.move_rect(-test_offset)
+
         return a
 
     def __getitem__(self, item):

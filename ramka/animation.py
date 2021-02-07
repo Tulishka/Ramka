@@ -6,23 +6,16 @@ FlipStyle = Tuple[bool, bool]
 
 
 class Animation:
-    def __init__(self, images: Dict[FlipStyle, List], fps: int, looped: bool):
+    def __init__(self, images: List[pygame.Surface], fps: int, looped: bool):
         self.images = images
         self.fps = fps
         self.looped = looped
 
-    def get_image(self, time: float, flip: FlipStyle) -> pygame.Surface:
-        return self.images[flip][self.get_frame_index(time)]
-
-    def get_image_flip_set(self, time: float) -> Dict[FlipStyle, pygame.Surface]:
-        idx = self.get_frame_index(time)
-        a = {}
-        for flip, item in self.images.items():
-            a[flip] = item[idx]
-        return a
+    def get_image(self, time: float) -> pygame.Surface:
+        return self.images[self.get_frame_index(time)]
 
     def get_frame_index(self, time: float) -> int:
-        return int(self.fps * time) % len(self.images[(False, False)])
+        return int(self.fps * time) % len(self.images)
 
 
 def slice_image(image: pygame.Surface, size: (int, int) = None, cols: int = None, rows: int = None, row: int = 0) -> [

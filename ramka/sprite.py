@@ -30,6 +30,7 @@ class Sprite(GameObject):
         self.cache = {}
         self.deep_cache = False
         self.collision_image = None
+        self.collision_image_transformable = True
 
     def curr_animation(self):
         ani = self.animations.get(self.state.animation)
@@ -43,7 +44,7 @@ class Sprite(GameObject):
         return ani
 
     def get_size(self) -> Vector:
-        idx, img = self.curr_animation().get_image(self.time)
+        img = self.curr_animation().get_image(self.time)
         return Vector(img.get_size())
 
     def get_rect(self):
@@ -61,6 +62,13 @@ class Sprite(GameObject):
 
         w = int(img.get_width() * sx)
         h = int(img.get_height() * sy)
+
+        if w<1:
+            w=1
+
+        if h<1:
+            h=1
+
 
         rotate = round(rotate * 10) * 0.1
 
@@ -93,7 +101,18 @@ class Sprite(GameObject):
         """ Required actual self.sprite.image at autogen mode! \n
             Требуется актуальное значение self.sprite.image если режим автосоздание маски включен!
          """
-        self.sprite.mask = pygame.mask.from_surface(self.sprite.image)
+        if self.collision_image:
+            wtr = self.transform.get_world_transform()
+            flp = self.get_flip()
+            rotate_image = wtr._angle + self.image_rotate_offset
+            if self.collision_image_transformable:
+                img = self.get_image_transformed(self.collision_image, flp, (wtr._scale.x, wtr._scale.y), rotate_image)
+            else:
+                img=self.collision_image
+        else:
+            img=self.sprite.image
+
+        self.sprite.mask = pygame.mask.from_surface(img)
 
     def prepare_image(self):
         wtr = self.transform.get_world_transform()

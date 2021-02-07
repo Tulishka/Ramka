@@ -73,8 +73,11 @@ class Transform(TransformBase):
     def detach(self, to_world: bool = False):
         if self.parent:
             if to_world:
-                self.assign_positions(self.get_world_transform())
+                t=self.get_world_transform()
+                self.assign_positions(t)
+
             self.parent.__remove_child(self)
+
             self.parent = None
 
     def set_parent(self, parent: Union[Transform, Transform.GameObject, None], from_world: bool = False):

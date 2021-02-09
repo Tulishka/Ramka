@@ -193,16 +193,30 @@ class Input:
 
 
 a = Input.add_key("Jump")
-Input.bind_key(a, pygame.K_SPACE)
 Input.bind_joy_btn(a, 0, 0)
+Input.bind_key(a, pygame.K_SPACE)
+
+a = Input.add_key("Jump1")
+Input.bind_joy_btn(a, 0, 0)
+
+a = Input.add_key("Jump2")
+Input.bind_key(a, pygame.K_SPACE)
+
 
 a = Input.add_axis("Vertical", 0.1)
 Input.bind_key(a, pygame.K_w, -1)
 Input.bind_key(a, pygame.K_UP, -1)
 Input.bind_key(a, pygame.K_s)
 Input.bind_key(a, pygame.K_DOWN)
-
 Input.bind_joy_axis(a, 0, 1)
+
+a = Input.add_axis("Vertical1", 0.1)
+Input.bind_joy_axis(a, 0, 1)
+
+a = Input.add_axis("Vertical2", 0.1)
+Input.bind_key(a, pygame.K_w, -1)
+Input.bind_key(a, pygame.K_s, 1)
+
 
 a = Input.add_axis("Horizontal", 0.1)
 Input.bind_key(a, pygame.K_d)
@@ -210,6 +224,14 @@ Input.bind_key(a, pygame.K_RIGHT)
 Input.bind_key(a, pygame.K_a, -1)
 Input.bind_key(a, pygame.K_LEFT, -1)
 Input.bind_joy_axis(a, 0, 0)
+
+a = Input.add_axis("Horizontal1", 0.1)
+Input.bind_joy_axis(a, 0, 0)
+
+a = Input.add_axis("Horizontal2", 0.1)
+Input.bind_key(a, pygame.K_d)
+Input.bind_key(a, pygame.K_a, -1)
+
 
 a = Input.add_axis("Rotate", 0.2)
 Input.bind_key(a, pygame.K_q)

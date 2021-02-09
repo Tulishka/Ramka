@@ -36,23 +36,23 @@ class TransformBase(Component):
 
     @property
     def pos(self):
-        return self._pos
+        return Vector(self._pos)
 
     @pos.setter
     def pos(self, value):
         xy = self._pos.xy
-        self._pos = value
+        self._pos.xy = value
         if xy != self._pos:
             self.on_change()
 
     @property
     def scale(self):
-        return self._scale
+        return Vector(self._scale)
 
     @scale.setter
     def scale(self, value):
         xy = self._scale.xy
-        self._scale = value
+        self._scale.xy = value
         if xy != self._scale:
             self.on_change()
 
@@ -80,7 +80,7 @@ class TransformBase(Component):
 
     @property
     def xy(self):
-        return self._pos.xy
+        return Vector(self._pos.xy)
 
     @xy.setter
     def xy(self, value):
@@ -124,7 +124,7 @@ class TransformBase(Component):
 
     @property
     def scale_xy(self):
-        return self._scale.xy
+        return Vector(self._scale.xy)
 
     @scale_xy.setter
     def scale_xy(self, value):

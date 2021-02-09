@@ -80,7 +80,7 @@ class Animal(Sprite):
         p0=Vector(self.lc[0], self.lc[1])
         p1=self.image_pos_to_global(p0)
         p2=self.global_to_image_pos(p1)
-        Game.debug_str = f'({round(p1.x-p2.x)},{round(p1.y-p2.y)})'
+        Game.debug_str = f'({round(p0.x-p2.x)},{round(p0.y-p2.y)})'
         pygame.draw.circle(dest, (255, 0, 0), p1, 2)
 
 

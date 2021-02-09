@@ -22,6 +22,9 @@ class Game:
     debug_str = ''
     drawOptions = {}
 
+    update_listeners=[]
+    draw_listeners=[]
+
     layers: List[Layer] = [defaultLayer]
 
     ph_space = pymunk.Space()
@@ -124,10 +127,15 @@ class Game:
                             obj.draw(Game.экран)
                             obj.draw_components(Game.экран)
 
-            Game.ph_space.step(deltaTime)
+            for ul in Game.update_listeners:
+                ul(deltaTime)
+            for dl in Game.draw_listeners:
+                dl(Game.экран)
+
+            # Game.ph_space.step(deltaTime)
 
             if Game.showFPS:
-                ss = str(round(Game.clock.get_fps())) + ", " + Game.debug_str + ", " + Input.info()
+                ss = str(round(Game.clock.get_fps())) + ", " + Game.debug_str #+ ", " + Input.info()
                 a = Game.font.render(ss, True, (255, 255, 100))
                 Game.экран.blit(a, (5, 5))
 
@@ -148,3 +156,12 @@ class Game:
             if (clas is None or isinstance(c, clas))and(layer is None or c.layer == layer) and filter(c):
                 yield c
 
+    @staticmethod
+    def on_update(update_func):
+        Game.update_listeners.append(update_func)
+        return update_func
+
+    @staticmethod
+    def on_draw(draw_func):
+        Game.draw_listeners.append(draw_func)
+        return draw_func

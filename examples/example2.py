@@ -16,6 +16,68 @@ class Swarm(Sprite):
         super().draw(dest)
 
 
+def default_particle_check(particle):
+    if particle.pos.x > Game.ширинаЭкрана or particle.pos.x < 0:
+        particle.velocity.x *= -1
+
+    if particle.pos.y > Game.высотаЭкрана or particle.pos.y < -Game.высотаЭкрана * 0.1:
+        particle.life_time = 0
+
+
+class Particle: ...
+
+
+class Particle:
+    particles = []
+
+    def __init__(self, pos: Vector, velocity: Vector, life_time: float, size: int, color: pygame.Color, mass: float = 1,
+                 live_check=default_particle_check):
+        self.pos = Vector(pos)
+        self.size = size
+        self.color = color
+        self.velocity = Vector(velocity)
+        self.life_time = life_time
+        self.kill_borders = (0, 0, 0, 0)
+        self.bounce_borders = (1, 1, 1, 1)
+        self.auto_kill = True
+        self.mass = mass
+        self.bounce = 1.0
+        self.live_check = default_particle_check
+
+    def update(self, deltaTime: float, g_force: Vector):
+        self.life_time -= deltaTime
+        if self.life_time <= 0:
+            self.life_time = 0
+        else:
+            self.velocity += g_force / self.mass
+            self.pos += self.velocity * deltaTime
+
+        self.live_check(self)
+
+    def draw(self, dest: pygame.Surface):
+        pygame.draw.circle(dest, self.color, self.pos, self.size)
+
+    @staticmethod
+    def add_particle(particle: Particle):
+        Particle.particles.append(particle)
+
+    @staticmethod
+    def update_all(deltaTime: float, g_force: Vector = Vector(0, 9)):
+        delet = []
+        for p in Particle.particles:
+            p.update(deltaTime, g_force)
+            if p.life_time <= 0:
+                delet.append(p)
+
+        for p in delet:
+            Particle.particles.remove(p)
+
+    @staticmethod
+    def draw_all(dest: pygame.Surface):
+        for p in Particle.particles:
+            p.draw(dest)
+
+
 class Flower(Sprite):
 
     def __init__(self, animations: Union[Animation, pygame.Surface, Dict[str, Animation]]):
@@ -24,6 +86,8 @@ class Flower(Sprite):
         self.start_pos = None
         self.impulse = Vector(0)
         self.touched = False
+        self.particle_per_impulse_k = 2
+        self.particle_spawn_timeout=0
 
     def update(self, deltaTime: float):
 
@@ -39,19 +103,27 @@ class Flower(Sprite):
             if self.impulse.length_squared() < 0.1 and f.length_squared() < 0.01:
                 self.impulse = Vector(0)
                 self.transform.pos = self.start_pos
+            else:
+                self.particle_spawn_timeout-=deltaTime
+                if self.particle_spawn_timeout<=0:
+                    self.particle_spawn_timeout=0.2
+                    self.spawn_particle(self.impulse)
 
-        c = self.get_collided(Game.get_objects(clas=Bee))
+
+        c = self.get_collided(Game.get_objects(filter=lambda x: isinstance(x,Bee) or isinstance(x,Pollen)))
         if len(c):
             if not self.touched:
                 o = c[0][0]
-                self.impulse = Vector(o.Скорость.x, o.Скорость.y) * 0.5
+                self.apply_impulse(Vector(o.скорость.x, o.скорость.y) * 0.5)
                 self.touched = True
-                if o.transform.y > self.transform.y and o.Скорость.y < -o.МаксСкорость * 0.5:
-                    o.Скорость *= -0.5
+                if o.transform.y > self.transform.y and o.скорость.y < -o.максСкорость * 0.5:
+                    o.скорость *= -0.5
                 else:
-                    o.Скорость *= 0.8
+                    o.скорость *= 0.8
         else:
             self.touched = False
+
+
 
         super().update(deltaTime)
 
@@ -66,14 +138,26 @@ class Flower(Sprite):
 
         super().draw(dest)
 
+    def apply_impulse(self, impulse: Vector):
+        self.impulse += impulse
+        self.spawn_particle(impulse)
 
-class Part(Sprite):
+    def spawn_particle(self,impulse):
+        sz = self.get_size()
+        sz = int(sz[0] // 4), int(sz[1] // 6)
+        t=self.transform.get_world_transform()
+        for i in range(int(self.particle_per_impulse_k * impulse.magnitude() * 0.1)):
+            p = Vector(randint(-sz[0], sz[0]), randint(-sz[1], sz[1]))
+            Particle.add_particle(Particle(t.add_to_vector(p),-impulse,10,randint(1,3),pygame.Color(180+randint(-10,10),190+randint(-10,10),0)))
+
+class Pollen(Sprite):
     def __init__(self, animations: Union[Animation, pygame.Surface, Dict[str, Animation]]):
         super().__init__(animations)
 
         self.collision_image = self.curr_animation().get_image(0)
         self.collision_image_transformable = False
         self.скорость = Vector(0)
+        self.максСкорость=400
         self._количество = 0
         self.transform.scale_xy = 0, 0
         self.max_size = 1.3
@@ -88,6 +172,7 @@ class Part(Sprite):
         if value != self._количество:
             self._количество = value
             self.transform.scale_xy = self._количество, self._количество
+            self.transform.angle = int(self._количество * 720) // 45 * 45
 
     def update(self, deltaTime):
         super().update(deltaTime)
@@ -100,7 +185,7 @@ class Part(Sprite):
                     if self.количество < self.max_size:
                         self.image_offset.x = math.cos(self.time * 20)
                         self.image_offset.y = math.sin(self.time * 20)
-                        o.impulse += 8 * Vector(self.image_offset)
+                        o.apply_impulse(8 * Vector(self.image_offset))
                         self.количество += self.max_size / 5 * deltaTime
                     else:
                         self.количество = self.max_size
@@ -116,6 +201,9 @@ class Part(Sprite):
 
         else:
             self.скорость.y += 200 * deltaTime
+            if self.скорость.length_squared() > self.максСкорость * self.максСкорость:
+                self.скорость.scale_to_length(self.максСкорость)
+
             self.transform.pos = self.transform.pos + self.скорость * deltaTime
             if self.transform.y > Game.высотаЭкрана:
                 Game.remove_object(self)
@@ -133,79 +221,80 @@ class Bee(Sprite):
         "fly": bee_fly_ani
     }
 
-    part_pic = pygame.image.load("./sprites/part.png").convert_alpha()
+    pollen_pic = pygame.image.load("./sprites/pollen.png").convert_alpha()
 
-    def __init__(self):
+    def __init__(self, control_suff=""):
         super().__init__(Bee.bee_ani)
 
         self.Направление = False
-        self.МаксСкорость = 200 + randint(0, 50)
+        self.максСкорость = 200 + randint(0, 50)
         self.Ускорение = 100 + randint(0, 50)
-        self.Скорость = Vector(0)
+        self.скорость = Vector(0)
+        self.control_suff = control_suff
 
         self.ТочкаДрейфа = Vector(0)
         self.СкоростьДрейфа = 20
         self.ВременнойСдвигДрейфа = randint(0, 50) / 25
 
-        self.part = self.create_part()
+        self.pollen = self.create_pollen()
 
-    def create_part(self):
+    def create_pollen(self):
+        pollen = Pollen(Bee.pollen_pic)
+        Game.add_object(pollen)
+        pollen.transform.xy = -7, 14
+        pollen.transform.set_parent(self)
+        pollen.количество = 0
 
-        part = Part(Bee.part_pic)
-        Game.add_object(part)
-        part.transform.xy = -7, 14
-        part.transform.set_parent(self)
-        part.количество = 0
+        return pollen
 
-        return part
-
-    def drop_part(self):
-        p = self.create_part()
-        p.количество = self.part.количество
-        p.transform.detach(True)
-        p.скорость = Vector(self.Скорость)
-        self.part.количество = 0
-        return p
+    def drop_pollen(self):
+        if self.pollen.количество > 0:
+            p = self.create_pollen()
+            p.количество = self.pollen.количество
+            p.transform.detach(True)
+            p.скорость = Vector(self.скорость)
+            self.pollen.количество = 0
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
 
-        if Input.get("Jump"):
-            self.drop_part()
+        if Input.get("Jump" + self.control_suff):
+            self.drop_pollen()
 
-        dp = Vector(self.Ускорение * Input.get("Horizontal"), self.Ускорение * Input.get("Vertical"))
+        dp = Vector(self.Ускорение * Input.get("Horizontal" + self.control_suff),
+                    self.Ускорение * Input.get("Vertical" + self.control_suff))
 
-        self.Скорость += dp * deltaTime
+        self.скорость += dp * deltaTime
 
-        if self.Скорость.length_squared() > self.МаксСкорость * self.МаксСкорость:
-            self.Скорость.scale_to_length(self.МаксСкорость)
-
-        self.transform.pos = self.transform.pos + self.Скорость * deltaTime
+        if self.скорость.length_squared() > self.максСкорость * self.максСкорость:
+            self.скорость.scale_to_length(self.максСкорость)
 
         if dp.x:
             self.Направление = dp.x >= 0
-
-        if dp.length_squared() < 1:
-            self.Скорость *= 0.97
 
         if self.ВременнойСдвигДрейфа - self.time < 0:
             self.ВременнойСдвигДрейфа = self.time + 0.5
             self.ТочкаДрейфа = Vector(randint(0, Game.ширинаЭкрана), randint(0, Game.высотаЭкрана))
 
-        dv = self.ТочкаДрейфа - self.transform.pos
-        dv.scale_to_length(self.СкоростьДрейфа)
+        if dp.length_squared() < 1:
+            self.скорость *= 0.97
 
-        self.transform.pos += dv * deltaTime
+            dv = self.ТочкаДрейфа - self.transform.pos
+            dv.scale_to_length(self.СкоростьДрейфа)
+        else:
+            dv = Vector(0)
+
+        self.transform.pos += (dv + self.скорость) * deltaTime
 
         if self.transform.x > Game.ширинаЭкрана or self.transform.x < 0:
-            self.Скорость.x *= -1
-            self.transform.x = self.transform.x + self.Скорость.x * deltaTime
-            self.drop_part()
+            self.скорость.x *= -1
+            self.transform.x += self.скорость.x * deltaTime
+            self.drop_pollen()
 
         if self.transform.y > Game.высотаЭкрана or self.transform.y < 0:
-            self.Скорость.y *= -1
-            self.transform.y = self.transform.y + self.Скорость.y * deltaTime
-            self.drop_part()
+            self.скорость.y *= -1
+            self.transform.y += self.скорость.y * deltaTime
+            self.drop_pollen()
 
         self.transform.scale_x = math.copysign(self.transform.scale_x, -1 if self.Направление else 1)
 
@@ -226,7 +315,7 @@ swarm.transform.scale_xy = 5, 5
 flower_pic = pygame.image.load("./sprites/flower.png").convert_alpha()
 flower_collider = pygame.image.load("./sprites/flower_collider.png").convert_alpha()
 
-flower_count = 6
+flower_count = 10
 for i in range(flower_count):
     flower = Flower(flower_pic)
     Game.add_object(flower)
@@ -239,14 +328,14 @@ for i in range(flower_count):
 
 # СОЗДАНИЕ ПЧЕЛОК ==============
 for i in range(1):
-    bee = Bee()
+    bee = Bee("2")
     Game.add_object(bee)
     bee.transform.xy = 50 + randint(0, 100), 50 + randint(0, 100)
+    bee.transform.scale_xy = 2, 2
 
 # СОЗДАНИЕ КОРОЛЕВЫ ==============
-qwin_bee = Bee()
+qwin_bee = Bee("1")
 Game.add_object(qwin_bee)
-qwin_bee.Ускорение *= 1
 qwin_bee.transform.xy = 100, 100
 qwin_bee.transform.scale_xy = 2, 2
 
@@ -256,5 +345,14 @@ crown = Sprite(crown_pic)
 Game.add_object(crown)
 crown.transform.xy = -10, -10
 crown.transform.set_parent(qwin_bee)
+
+
+@Game.on_update
+def game_update(deltaTime):
+    Particle.update_all(deltaTime)
+
+@Game.on_draw
+def game_update(disp):
+    Particle.draw_all(disp)
 
 Game.run()

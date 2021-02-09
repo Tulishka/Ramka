@@ -133,7 +133,9 @@ class Sprite(GameObject):
     def draw(self, dest: pygame.Surface):
 
         self.prepare_image()
-        dest.blit(self.sprite.image, self.sprite.rect)  # , special_flags=pygame.BLEND_ALPHA_SDL2
+        if self.opacity:
+            # self.sprite.image.set_alpha(int(min(max(self.opacity, 0), 1.0) * 255))
+            dest.blit(self.sprite.image, self.sprite.rect)  # , special_flags=pygame.BLEND_ALPHA_SDL2
 
     def draw_overlay(self, dest: pygame.Surface):
         super().draw_overlay(dest)
@@ -175,5 +177,6 @@ class Sprite(GameObject):
 
     def global_to_image_pos(self, pos: Vector) -> Vector:
         p = self.transform.get_world_transform()
-        po = p.sub_from_vector(pos - self.get_rotated_offset(p))
+        po = pos - self.get_rotated_offset(p) - p._pos
         return self.local_to_image_pos(po)
+

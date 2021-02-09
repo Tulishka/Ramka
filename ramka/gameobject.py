@@ -28,6 +28,7 @@ class GameObject:
         self.layer: Union[Layer, None] = None
 
         self.props = {}
+        self.opacity=1.0
 
     def update(self, deltaTime: float):
         self.time += deltaTime
@@ -107,3 +108,4 @@ class GameObject:
 
     def __setitem__(self, key, value):
         self.props[key] = value
+

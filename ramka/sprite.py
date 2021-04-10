@@ -3,14 +3,14 @@ from typing import Dict, Callable, Union, Tuple
 
 from .gameobject import GameObject
 
-from .animation import Animation, FlipStyle
+from .animation import Animation, FlipStyle, slice_image
 from .shared import *
 from .transformbase import TransformBase
 
 
 class Sprite(GameObject):
 
-    def __init__(self, animations: Union[Animation, pygame.Surface, str, Dict[str, Animation]],duration=None):
+    def __init__(self, animations: Union[Animation, pygame.Surface, str, Dict[str, Animation]],duration=None,slice_images_count=None):
         super().__init__()
 
         if type(animations) == str:
@@ -24,6 +24,9 @@ class Sprite(GameObject):
 
         if type(animations) == pygame.Surface:
             animations = Animation([animations], 0, True)
+
+        if type(animations)==pygame.Surface and slice_images_count:
+            animations = Animation(slice_image(animations), slice_images_count, True)
 
         if type(animations) == Animation:
             animations = {"default": animations}

@@ -88,6 +88,8 @@ class JoyKeyBinding(Binding):
         self.btn_num = btn_num
 
     def update_control(self, deltaTime: float) -> bool:
+        if len(Input.raw_joy)<self.joy_num+1:
+            return False
         return bool(self.control.update(self.value * Input.raw_joy[self.joy_num].get_button(self.btn_num), deltaTime,
                                         self.type))
 
@@ -99,6 +101,9 @@ class JoyAxesBinding(Binding):
         self.axis_num = axis_num
 
     def update_control(self, deltaTime: float) -> bool:
+        if len(Input.raw_joy)<self.joy_num+1:
+            return False
+
         return bool(self.control.update(round(Input.raw_joy[self.joy_num].get_axis(self.axis_num), 6), deltaTime,
                                         self.type))
 
@@ -190,6 +195,10 @@ class Input:
     def get(cls, name: str):
         if name in Input.control:
             return Input.control[name].value
+
+    @classmethod
+    def joystiks_count(cls):
+        return pygame.joystick.get_count()
 
 
 a = Input.add_key("Jump")

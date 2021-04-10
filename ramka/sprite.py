@@ -10,8 +10,17 @@ from .transformbase import TransformBase
 
 class Sprite(GameObject):
 
-    def __init__(self, animations: Union[Animation, pygame.Surface, Dict[str, Animation]]):
+    def __init__(self, animations: Union[Animation, pygame.Surface, str, Dict[str, Animation]],duration=None):
         super().__init__()
+
+        if type(animations) == str:
+            if "*" in animations or "?" in animations:
+                import glob
+                files=list(glob.glob(animations))
+                files.sort()
+                animations = Animation([pygame.image.load(f).convert_alpha() for f in files], round(len(files) / (duration if duration else 0.5)), True)
+            else:
+                animations=pygame.image.load(animations).convert_alpha()
 
         if type(animations) == pygame.Surface:
             animations = Animation([animations], 0, True)
@@ -53,7 +62,7 @@ class Sprite(GameObject):
         return self.sprite.rect
 
     def get_image_transformed(self, img: pygame.Surface, flip: FlipStyle, scale: (float, float) = (1.0, 1.0),
-                              rotate: float = 0.0) -> pygame.Surface:
+                              rotate:  float= 0.0) -> pygame.Surface:
 
         flip = (flip[0] ^ (scale[0] < 0), flip[1] ^ (scale[1] < 0))
 

@@ -22,8 +22,10 @@ class Game:
     debug_str = ''
     drawOptions = {}
 
-    update_listeners=[]
-    draw_listeners=[]
+    before_update_listeners=[]
+    after_update_listeners = []
+    before_draw_listeners=[]
+    after_draw_listeners=[]
 
     layers: List[Layer] = [defaultLayer]
 
@@ -115,6 +117,9 @@ class Game:
             Input.update(deltaTime)
             Game.frame_begin()
 
+            for ul in Game.before_update_listeners:
+                ul(deltaTime)
+
             for l in Game.layers:
                 for obj in l.gameObjects:
                     if obj.enabled:
@@ -123,13 +128,20 @@ class Game:
                         for c in obj.get_components(Collider):
                             c.color = (255, 0, 0) if c.get_collided(Game.get_components(Collider)) is not None else (
                                 0, 255, 0)
-                        if obj.visible:
-                            obj.draw(Game.экран)
-                            obj.draw_components(Game.экран)
 
-            for ul in Game.update_listeners:
+            for ul in Game.after_update_listeners:
                 ul(deltaTime)
-            for dl in Game.draw_listeners:
+
+            for dl in Game.before_draw_listeners:
+                dl(Game.экран)
+
+            for l in Game.layers:
+                for obj in l.gameObjects:
+                    if obj.visible:
+                        obj.draw(Game.экран)
+                        obj.draw_components(Game.экран)
+
+            for dl in Game.after_draw_listeners:
                 dl(Game.экран)
 
             # Game.ph_space.step(deltaTime)
@@ -157,11 +169,21 @@ class Game:
                 yield c
 
     @staticmethod
-    def on_update(update_func):
-        Game.update_listeners.append(update_func)
+    def before_update(update_func):
+        Game.before_update_listeners.append(update_func)
         return update_func
 
     @staticmethod
-    def on_draw(draw_func):
-        Game.draw_listeners.append(draw_func)
+    def after_update(update_func):
+        Game.after_update_listeners.append(update_func)
+        return update_func
+
+    @staticmethod
+    def after_draw(draw_func):
+        Game.after_draw_listeners.append(draw_func)
+        return draw_func
+
+    @staticmethod
+    def before_draw(draw_func):
+        Game.before_draw_listeners.append(draw_func)
         return draw_func

@@ -119,17 +119,19 @@ hyena.transform.set_parent(area)
 Game.run()
 
 # todo: состояния
-# todo: скорость анимации множитель
-# todo: упрощеное создание анимаций
+# todo: эффекты : индивидуальные, групповые, глобальные
+# todo: таймер? последовательности
+# todo: анимация:  скорость анимации множитель, события анимации, свойства кадрам анимации: обработчики, отправка событий
 # todo: коллайдер : can collide
-# todo: pymunk
 # todo: звуки
-# todo: примитивы: круг, прямоугольник, точка, многоугольник, пустой
-# todo: документация в коде
-# todo: документация файл
 # todo: сообщения всем, паренту, чилдам. Сообщения pygame?
 # todo: input.events
-# todo: свойства кадрам анимации: обработчики, отправка событий
 # todo: тригеры
 # todo: game_object: before_update, after_update
-# todo: pygame.Sprite, кэш в Animation (get image by time & transform)
+# todo: pymunk
+# todo: particles
+
+# todo: автоматизированные перемещения, повороты, маштабирование: moveTo (target, time=, spd=, easing=, complete%=), stop(),
+
+# todo: документация в коде
+# todo: документация файл

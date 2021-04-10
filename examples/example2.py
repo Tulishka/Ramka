@@ -87,9 +87,17 @@ class Flower(Sprite):
         self.impulse = Vector(0)
         self.touched = False
         self.particle_per_impulse_k = 2
-        self.particle_spawn_timeout=0
+        self.particle_spawn_timeout = 0
+        self.old_impulse = Vector(0)
+        self.grow_timeout = randint(1, 50)
 
     def update(self, deltaTime: float):
+
+        self.grow_timeout -= deltaTime
+        if self.grow_timeout <= 0:
+            self.grow_timeout = randint(10, 50)
+            self.start_pos.y = randint(int(Game.высотаЭкрана * 0.3), int(Game.высотаЭкрана * 0.9))
+            self.impulse += Vector(0, 1)
 
         if self.start_pos and self.impulse.length_squared() > 0:
             self.transform.pos = self.transform.pos + self.impulse * deltaTime
@@ -100,17 +108,21 @@ class Flower(Sprite):
             f = self.start_pos - self.transform.pos
             self.impulse += f * 100 * deltaTime
 
+            if self.impulse.length_squared() > 10000:
+                self.impulse.scale_to_length(100)
+
             if self.impulse.length_squared() < 0.1 and f.length_squared() < 0.01:
                 self.impulse = Vector(0)
                 self.transform.pos = self.start_pos
             else:
-                self.particle_spawn_timeout-=deltaTime
-                if self.particle_spawn_timeout<=0:
-                    self.particle_spawn_timeout=0.2
-                    self.spawn_particle(self.impulse)
+                self.particle_spawn_timeout -= deltaTime
+                if self.particle_spawn_timeout <= 0:
+                    self.particle_spawn_timeout = 0.2
+                    imp = self.impulse - self.old_impulse
+                    self.spawn_particle(imp)
+                    self.old_impulse=Vector(self.impulse)
 
-
-        c = self.get_collided(Game.get_objects(filter=lambda x: isinstance(x,Bee) or isinstance(x,Pollen)))
+        c = self.get_collided(Game.get_objects(filter=lambda x: isinstance(x, Bee) or isinstance(x, Pollen)))
         if len(c):
             if not self.touched:
                 o = c[0][0]
@@ -122,8 +134,6 @@ class Flower(Sprite):
                     o.скорость *= 0.8
         else:
             self.touched = False
-
-
 
         super().update(deltaTime)
 
@@ -142,13 +152,15 @@ class Flower(Sprite):
         self.impulse += impulse
         self.spawn_particle(impulse)
 
-    def spawn_particle(self,impulse):
+    def spawn_particle(self, impulse: Vector):
         sz = self.get_size()
         sz = int(sz[0] // 4), int(sz[1] // 6)
-        t=self.transform.get_world_transform()
-        for i in range(int(self.particle_per_impulse_k * impulse.magnitude() * 0.1)):
+        t = self.transform.get_world_transform()
+        for i in range(int(self.particle_per_impulse_k * impulse.magnitude() * 0.05)):
             p = Vector(randint(-sz[0], sz[0]), randint(-sz[1], sz[1]))
-            Particle.add_particle(Particle(t.add_to_vector(p),-impulse,10,randint(1,3),pygame.Color(180+randint(-10,10),190+randint(-10,10),0)))
+            Particle.add_particle(Particle(t.add_to_vector(p), -1 * impulse, 10, randint(1, 3),
+                                           pygame.Color(180 + randint(-10, 10), 190 + randint(-10, 10), 0)))
+
 
 class Pollen(Sprite):
     def __init__(self, animations: Union[Animation, pygame.Surface, Dict[str, Animation]]):
@@ -157,7 +169,7 @@ class Pollen(Sprite):
         self.collision_image = self.curr_animation().get_image(0)
         self.collision_image_transformable = False
         self.скорость = Vector(0)
-        self.максСкорость=400
+        self.максСкорость = 400
         self._количество = 0
         self.transform.scale_xy = 0, 0
         self.max_size = 1.3
@@ -302,6 +314,46 @@ class Bee(Sprite):
     #     super().draw(dest)
     #     pygame.draw.circle(dest,(255,0,0),self.ТочкаДрейфа,2)
 
+class Spider(Sprite):
+    pics_walk = [
+        pygame.image.load("./sprites/spider_walk1.png").convert_alpha(),
+        pygame.image.load("./sprites/spider_walk2.png").convert_alpha(),
+        pygame.image.load("./sprites/spider_walk3.png").convert_alpha()
+    ]
+
+    walk_ani = Animation(pics_walk, 10, True)
+
+    ani = {
+        "walk": walk_ani
+    }
+
+    def __init__(self):
+        super().__init__(Spider.ani)
+
+        self.Направление = False
+        self.максСкорость = 100 + randint(0, 50)
+        self.Ускорение = 100 + randint(0, 50)
+        self.скорость = Vector(self.максСкорость,0)
+
+        self.точкаНазначения = Vector(0)
+        self.времяОжидания = randint(3, 15)
+
+    def update(self, deltaTime: float):
+
+        if self.transform.x>Game.ширинаЭкрана or self.transform.x<0:
+            self.скорость.x=-self.скорость.x
+
+        if self.transform.y>Game.высотаЭкрана or self.transform.y<0:
+            self.скорость.y=-self.скорость.y
+
+        self.transform.pos+=self.скорость * deltaTime
+
+        self.Направление = self.скорость.x>0
+
+        self.transform.scale_x = math.copysign(self.transform.scale_x, -1 if self.Направление else 1)
+
+        super().update(deltaTime)
+
 
 # СОЗДАНИЕ УЛЕЯ ==============
 swarm_pic = pygame.image.load("./sprites/swarm.png").convert_alpha()
@@ -315,7 +367,7 @@ swarm.transform.scale_xy = 5, 5
 flower_pic = pygame.image.load("./sprites/flower.png").convert_alpha()
 flower_collider = pygame.image.load("./sprites/flower_collider.png").convert_alpha()
 
-flower_count = 10
+flower_count = 7
 for i in range(flower_count):
     flower = Flower(flower_pic)
     Game.add_object(flower)
@@ -324,7 +376,7 @@ for i in range(flower_count):
                                   Game.высотаЭкрана * 0.7 + randint(-int(Game.высотаЭкрана * 0.2),
                                                                     int(Game.высотаЭкрана * 0.2)))
     flower.start_pos = Vector(flower.transform.pos)
-    flower.transform.scale_xy = 4, 4
+    flower.transform.scale_xy = 3, 3
 
 # СОЗДАНИЕ ПЧЕЛОК ==============
 for i in range(1):
@@ -346,13 +398,27 @@ Game.add_object(crown)
 crown.transform.xy = -10, -10
 crown.transform.set_parent(qwin_bee)
 
+# СОЗДАНИЕ ПАУКА ================
+spider = Spider()
+Game.add_object(spider)
+spider.transform.xy = 100, Game.высотаЭкрана-48
+spider.transform.scale_xy = 3, 3
 
-@Game.on_update
+hat=Sprite(flower_pic)
+Game.add_object(hat)
+hat.transform.set_parent(spider)
+hat.transform.scale_xy=0.5,0.5
+hat.transform.y=-13
+hat.transform.angle=15
+
+@Game.after_update
 def game_update(deltaTime):
     Particle.update_all(deltaTime)
 
-@Game.on_draw
+
+@Game.after_draw
 def game_update(disp):
     Particle.draw_all(disp)
+
 
 Game.run()

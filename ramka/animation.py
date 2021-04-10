@@ -10,12 +10,16 @@ class Animation:
         self.images = images
         self.fps = fps
         self.looped = looped
+        self.events = []
 
     def get_image(self, time: float) -> pygame.Surface:
         return self.images[self.get_frame_index(time)]
 
     def get_frame_index(self, time: float) -> int:
-        return int(self.fps * time) % len(self.images)
+        if self.looped:
+            return int(self.fps * time) % len(self.images)
+        else:
+            return min(int(self.fps * time) , len(self.images)-1)
 
 
 def slice_image(image: pygame.Surface, size: (int, int) = None, cols: int = None, rows: int = None, row: int = 0) -> [

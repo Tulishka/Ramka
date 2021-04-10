@@ -22,11 +22,11 @@ class Sprite(GameObject):
             else:
                 animations=pygame.image.load(animations).convert_alpha()
 
-        if type(animations) == pygame.Surface:
-            animations = Animation([animations], 0, True)
-
         if type(animations)==pygame.Surface and slice_images_count:
             animations = Animation(slice_image(animations,cols=slice_images_count), round(len(slice_images_count) / (duration if duration else 0.5)), True)
+
+        if type(animations) == pygame.Surface:
+            animations = Animation([animations], 0, True)
 
         if type(animations) == Animation:
             animations = {"default": animations}

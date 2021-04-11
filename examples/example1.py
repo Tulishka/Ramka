@@ -130,7 +130,7 @@ Game.run()
 # todo: game_object: before_update, after_update
 # todo: pymunk
 # todo: particles
-
+# todo: мышка
 # todo: автоматизированные перемещения, повороты, маштабирование: moveTo (target, time=, spd=, easing=, complete%=), stop(),
 
 # todo: документация в коде

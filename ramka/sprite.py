@@ -10,7 +10,7 @@ from .transformbase import TransformBase
 
 class Sprite(GameObject):
 
-    def __init__(self, animations: Union[Animation, pygame.Surface, str, Dict[str, Animation]],duration=None,slice_images_count=None):
+    def __init__(self, animations: Union[Animation, pygame.Surface, str, Dict[str, Animation]], duration=None, slice_images_rows=1, slice_images_cols=1):
         super().__init__()
 
         if type(animations) == str:
@@ -22,8 +22,9 @@ class Sprite(GameObject):
             else:
                 animations=pygame.image.load(animations).convert_alpha()
 
-        if type(animations)==pygame.Surface and slice_images_count:
-            animations = Animation(slice_image(animations,cols=slice_images_count), round(slice_images_count / (duration if duration else 0.5)), True)
+        if type(animations)==pygame.Surface and (slice_images_rows>1 or slice_images_cols>1):
+            cnt=slice_images_rows * slice_images_cols
+            animations = Animation(slice_image(animations, cols=slice_images_cols,rows=slice_images_rows), round(cnt / (duration if duration else 0.5)), True)
 
         if type(animations) == pygame.Surface:
             animations = Animation([animations], 0, True)

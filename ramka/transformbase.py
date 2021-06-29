@@ -189,6 +189,10 @@ class TransformBase(Component):
             self._pos.rotate_ip(-transform._angle)
 
         self._pos += transform._pos
+
+        if transform._scale.y * transform._scale.x < 0:
+            self._angle = -self._angle
+
         self._angle += transform._angle
         self.on_change()
 
@@ -204,6 +208,9 @@ class TransformBase(Component):
 
         if transform._angle != 0:
             self._pos.rotate_ip(transform._angle)
+
+        if transform._scale.y * transform._scale.x < 0:
+            self._angle = -self._angle
 
         self._angle -= transform._angle
         self.on_change()

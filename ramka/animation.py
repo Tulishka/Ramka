@@ -22,14 +22,14 @@ class Animation:
             return min(int(self.fps * time) , len(self.images)-1)
 
 
-def slice_image(image: pygame.Surface, size: (int, int) = None, cols: int = None, rows: int = None, row: int = 0) -> [
+def slice_image(image: pygame.Surface, size: (int, int) = None, cols: int = None, rows: int = None, row: List[int] = [0]) -> [
     pygame.Surface]:
     if size is None:
         rows = 1 if rows is None else rows
         cols = (image.get_width() // (image.get_height() // rows)) if cols is None else cols
         size = (image.get_width() // cols, image.get_height() // rows)
 
-    return [image.subsurface(pygame.Rect((x * size[0], row * size[1]), size)) for x in range(cols)]
+    return [image.subsurface(pygame.Rect((x * size[0], rw * size[1]), size)) for x in range(cols) for rw in row]
 
 
 def generate_flip(images: List[pygame.Surface], flip_style: FlipStyle) -> Dict[FlipStyle, List]:

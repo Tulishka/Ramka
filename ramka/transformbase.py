@@ -149,10 +149,10 @@ class TransformBase(Component):
             use_local = True
 
         if use_local:
-            angle = -Vector(1.0, 0.0).angle_to(self._pos - target)
+            angle = -Vector(1.0, 0.0).angle_to(target-self._pos)
         else:
             pr = self.gameObject.transform.parent.get_world_transform()
-            angle = -Vector(1.0, 0.0).angle_to(self.add(pr)._pos - target) - pr._angle
+            angle = -Vector(1.0, 0.0).angle_to(target-self.add(pr)._pos) - pr._angle
 
         self._angle = angle
         self.on_change()

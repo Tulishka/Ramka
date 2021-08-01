@@ -409,7 +409,7 @@ Game.add_object(hat)
 hat.transform.set_parent(spider)
 hat.transform.scale_xy=0.5,0.5
 hat.transform.y=-13
-hat.transform.angle=15
+hat.transform.angle=-15
 
 @Game.after_update
 def game_update(deltaTime):

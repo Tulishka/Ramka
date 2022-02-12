@@ -88,6 +88,7 @@ class Animal(Sprite):
 class Looker(Sprite):
     def __init__(self):
         super(Looker, self).__init__("sprites/arrow.png")
+        self.transform.angle=-600
 
     def update(self, deltaTime: float):
         super(Looker, self).update(deltaTime)

@@ -84,8 +84,35 @@ class Animal(Sprite):
         pygame.draw.circle(dest, (255, 0, 0), p1, 2)
 
 
+
+class Looker(Sprite):
+    def __init__(self):
+        super(Looker, self).__init__("sprites/arrow.png")
+
+    def update(self, deltaTime: float):
+        super(Looker, self).update(deltaTime)
+
+        obj=Game.get_objects(filter=lambda x: isinstance(x,Animal))
+        mind=0
+        mino=None
+        for o in obj:
+            d=self.transform.pos.distance_squared_to(o.transform.pos)
+            if d<mind or mino is None:
+                mind=d
+                mino=o
+
+        if not mino is None:
+            self.transform.look_at_ip(mino)
+
+
+
+
 Game.init('Рамка')
 test_img = pygame.image.load("./sprites/test.png").convert_alpha()
+
+l=Looker()
+l.transform.xy= 100,400
+Game.add_object(l)
 
 # === area
 area = Area({"default": Animation([test_img], 1, True)})

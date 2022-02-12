@@ -8,8 +8,7 @@ Game.цветФона = 200, 200, 255
 
 snake_body_spacing = 28
 
-snake_body_length = 20
-
+snake_body_length = 15
 
 class Head(Sprite):
     def __init__(self):

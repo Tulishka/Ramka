@@ -1,3 +1,4 @@
+from math import copysign
 from typing import Union
 
 from .component import Component
@@ -134,7 +135,7 @@ class TransformBase(Component):
             self.on_change()
 
     def look_at_ip(self, target: Union[Vector, TransformBase, Component.GameObject],
-                   use_local: bool = True) -> TransformBase:
+                   use_local: bool = True,max_delta=None) -> TransformBase:
         if isinstance(target, Component.GameObject):
             target = target.transform
 
@@ -154,15 +155,26 @@ class TransformBase(Component):
             pr = self.gameObject.transform.parent.get_world_transform()
             angle = -Vector(1.0, 0.0).angle_to(target-self.add(pr)._pos) - pr._angle
 
+        if max_delta:
+            an=self._angle % 360
+            if an>180:
+                an=an-360
+
+            angle=angle-an
+            if abs(angle)>max_delta:
+                angle=copysign(max_delta,angle)
+
+            angle=self._angle + angle
+
         self._angle = angle
         self.on_change()
 
         return self
 
     def look_at(self, target: Union[Vector, TransformBase, Component.GameObject],
-                use_local: bool = True) -> TransformBase:
+                use_local: bool = True,max_delta=None) -> TransformBase:
         p = self.copy()
-        return p.look_at_ip(target, use_local)
+        return p.look_at_ip(target, use_local,max_delta)
 
     def add_to_vector(self, vector: Vector):
         vector = Vector(vector)

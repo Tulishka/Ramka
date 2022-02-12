@@ -102,7 +102,7 @@ class Looker(Sprite):
                 mino=o
 
         if not mino is None:
-            self.transform.look_at_ip(mino)
+            self.transform.look_at_ip(mino,max_delta=1)
 
 
 

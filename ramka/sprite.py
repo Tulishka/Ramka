@@ -44,6 +44,7 @@ class Sprite(GameObject):
         self.deep_cache = False
         self.collision_image = None
         self.collision_image_transformable = True
+        self.collider_cache_image = None
 
     def curr_animation(self):
         ani = self.animations.get(self.state.animation)
@@ -115,10 +116,11 @@ class Sprite(GameObject):
             Требуется актуальное значение self.sprite.image если режим автосоздание маски включен!
          """
         if self.collision_image:
-            wtr = self.transform.get_world_transform()
-            flp = self.get_flip()
-            rotate_image = wtr._angle + self.image_rotate_offset
             if self.collision_image_transformable:
+                wtr = self.transform.get_world_transform()
+                flp = self.get_flip()
+                rotate_image = wtr._angle + self.image_rotate_offset
+
                 img = self.get_image_transformed(self.collision_image, flp, (wtr._scale.x, wtr._scale.y), rotate_image)
             else:
                 img=self.collision_image
@@ -126,6 +128,7 @@ class Sprite(GameObject):
             img=self.sprite.image
 
         self.sprite.mask = pygame.mask.from_surface(img)
+        self.collider_cache_image = img
 
     def prepare_image(self):
         wtr = self.transform.get_world_transform()
@@ -149,6 +152,8 @@ class Sprite(GameObject):
         if self.opacity:
             # self.sprite.image.set_alpha(int(min(max(self.opacity, 0), 1.0) * 255))
             dest.blit(self.sprite.image, self.sprite.rect)  # , special_flags=pygame.BLEND_ALPHA_SDL2
+            if self.collider_cache_image:
+                dest.blit(self.collider_cache_image, self.sprite.rect)  # , special_flags=pygame.BLEND_ALPHA_SDL2
 
     def draw_overlay(self, dest: pygame.Surface):
         super().draw_overlay(dest)

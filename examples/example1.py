@@ -103,8 +103,16 @@ class Looker(Sprite):
                 mino=o
 
         if not mino is None:
-            self.transform.look_at_ip(mino,max_delta=1)
+            self.transform.look_at_ip(mino,max_delta=0.3)
 
+
+class Piston(Sprite):
+    def __init__(self):
+        super(Piston, self).__init__("sprites/piston1.png")
+        self.section=[Sprite("sprites/piston2.png"),Sprite("sprites/piston3.png")]
+        self.expand=1
+        self.section[0].transform.set_parent(self)
+        self.section[1].transform.set_parent(self.section[0])
 
 
 

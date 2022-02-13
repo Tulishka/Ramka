@@ -152,8 +152,8 @@ class Sprite(GameObject):
         if self.opacity:
             # self.sprite.image.set_alpha(int(min(max(self.opacity, 0), 1.0) * 255))
             dest.blit(self.sprite.image, self.sprite.rect)  # , special_flags=pygame.BLEND_ALPHA_SDL2
-            if self.collider_cache_image:
-                dest.blit(self.collider_cache_image, self.sprite.rect)  # , special_flags=pygame.BLEND_ALPHA_SDL2
+            # if self.collider_cache_image:
+            #     dest.blit(self.collider_cache_image, self.sprite.rect)  # , special_flags=pygame.BLEND_ALPHA_SDL2
 
     def draw_overlay(self, dest: pygame.Surface):
         super().draw_overlay(dest)

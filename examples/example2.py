@@ -1,4 +1,5 @@
 import math
+import random
 from random import randint
 
 from ramka import *
@@ -250,6 +251,15 @@ class Bee(Sprite):
 
         self.pollen = self.create_pollen()
 
+        self.auto_harvest = False
+        self.auto_dest = None
+        self.auto_dest_offset=Vector(0.0)
+        self.swarm=list(Game.get_objects(clas=Swarm))
+        if len(self.swarm)>0:
+            self.swarm=self.swarm[0]
+        else:
+            self.swarm=self
+
     def create_pollen(self):
         pollen = Pollen(Bee.pollen_pic)
         Game.add_object(pollen)
@@ -270,19 +280,56 @@ class Bee(Sprite):
     def update(self, deltaTime: float):
         super().update(deltaTime)
 
+        if self.auto_harvest:
+            if self.auto_dest is None and self.pollen.количество > self.pollen.min_size:
+                if self.transform.pos.distance_squared_to(self.swarm.transform.pos)<400:
+                    self.auto_dest=self.swarm
+            if self.auto_dest is None and self.pollen.количество < self.pollen.max_size:
+                self.auto_dest = random.choice(list(Game.get_objects(clas=Flower)))
+            if self.pollen.количество>=self.pollen.max_size:
+                self.auto_dest=self.swarm
+
         if Input.get("Jump" + self.control_suff):
             self.drop_pollen()
 
-        dp = Vector(self.Ускорение * Input.get("Horizontal" + self.control_suff),
-                    self.Ускорение * Input.get("Vertical" + self.control_suff))
+        if self.auto_dest is None:
+            dp=Vector(Input.get("Horizontal" + self.control_suff),Input.get("Vertical" + self.control_suff)) * self.Ускорение
+            spd=self.скорость.length_squared()
+            if dp.x:
+                self.Направление = dp.x >= 0
+        else:
+            if isinstance(self.auto_dest,GameObject):
+                dest=self.auto_dest.transform.pos
+            else:
+                dest=self.auto_dest
+
+            dif=dest-self.transform.pos + self.auto_dest_offset*self.transform.scale.elementwise()
+            spd=self.скорость.length()
+            stop_time=spd / self.Ускорение
+            stop_dist = spd * stop_time + self.Ускорение * (stop_time**2) / 2
+            dst=dif.length_squared()
+            if dst>stop_dist*stop_dist:
+                dif.scale_to_length(self.Ускорение)
+                dp=dif
+            else:
+                dp=Vector(0)
+
+            if dst<100 and spd<20:
+                self.auto_dest=None
+
+            if dp.x and spd>10:
+                self.Направление = self.скорость.x >= 0
+
+
+        if dp.length_squared()<0.1 and spd>0:
+            dp=-self.скорость
+            dp.scale_to_length(min(spd,self.Ускорение))
 
         self.скорость += dp * deltaTime
 
         if self.скорость.length_squared() > self.максСкорость * self.максСкорость:
             self.скорость.scale_to_length(self.максСкорость)
 
-        if dp.x:
-            self.Направление = dp.x >= 0
 
         if self.ВременнойСдвигДрейфа - self.time < 0:
             self.ВременнойСдвигДрейфа = self.time + 0.5
@@ -297,9 +344,8 @@ class Bee(Sprite):
             else:
                 self.ТочкаДрейфа = Vector(randint(0, Game.ширинаЭкрана), randint(0, Game.высотаЭкрана))
 
-        if dp.length_squared() < 1:
-            self.скорость *= 0.97
-
+        if self.скорость.length_squared() < 70:
+            # self.скорость *= 0.97
             dv = self.ТочкаДрейфа - self.transform.pos
             dv.scale_to_length(self.СкоростьДрейфа)
         else:
@@ -393,18 +439,25 @@ Game.add_object(qwin_bee)
 qwin_bee.transform.xy = 100, 100
 qwin_bee.transform.scale_xy = 2, 2
 
-bee = Bee("1")
-Game.add_object(bee)
-bee.transform.xy = qwin_bee.transform.x + randint(-50, 50), qwin_bee.transform.y + randint(-50, 50)
-bee.transform.scale_xy = 0.4, 0.4
+qwin_bee.auto_harvest= True
+qwin_bee.auto_dest_offset=Vector(4, -16)
+
+
+
+# bee = Bee("1")
+# Game.add_object(bee)
+# bee.transform.xy = qwin_bee.transform.x + randint(-50, 50), qwin_bee.transform.y + randint(-50, 50)
+# bee.transform.scale_xy = 0.4, 0.4
 
 # СОЗДАНИЕ ПЧЕЛОК ==============
-for i in range(8):
+for i in range(50):
     a = randint(1, 7) / 10
     bee = Bee("2")
     Game.add_object(bee)
     bee.transform.xy = 50 + randint(0, 100), 50 + randint(0, 100)
     bee.transform.scale_xy = 0.4+a, 0.4+a
+    bee.auto_harvest= True
+    bee.auto_dest_offset=Vector(4, -16)
 
 
 # СОЗДАНИЕ КОРОНЫ ==============

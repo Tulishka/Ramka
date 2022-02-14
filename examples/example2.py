@@ -442,6 +442,12 @@ qwin_bee.transform.scale_xy = 2, 2
 qwin_bee.auto_harvest= True
 qwin_bee.auto_dest_offset=Vector(4, -16)
 
+# СОЗДАНИЕ КОРОНЫ ==============
+crown_pic = pygame.image.load("./sprites/crown.png").convert_alpha()
+crown = Sprite(crown_pic)
+Game.add_object(crown)
+crown.transform.xy = -10, -10
+crown.transform.set_parent(qwin_bee)
 
 
 # bee = Bee("1")
@@ -460,12 +466,6 @@ for i in range(50):
     bee.auto_dest_offset=Vector(4, -16)
 
 
-# СОЗДАНИЕ КОРОНЫ ==============
-crown_pic = pygame.image.load("./sprites/crown.png").convert_alpha()
-crown = Sprite(crown_pic)
-Game.add_object(crown)
-crown.transform.xy = -10, -10
-crown.transform.set_parent(qwin_bee)
 
 # СОЗДАНИЕ ПАУКА ================
 spider = Spider()

@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 
 from .shared import *
 
@@ -6,7 +6,17 @@ FlipStyle = Tuple[bool, bool]
 
 
 class Animation:
-    def __init__(self, images: List[pygame.Surface], fps: int, looped: bool):
+    def __init__(self, images: Union[List[pygame.Surface],str], fps: int, looped: bool):
+
+        if type(images) == str:
+            if "*" in images or "?" in images:
+                import glob
+                files = list(glob.glob(images))
+                files.sort()
+                images = [pygame.image.load(f).convert_alpha() for f in files]
+            else:
+                images = [pygame.image.load(images).convert_alpha()]
+
         self.images = images
         self.fps = fps
         self.looped = looped

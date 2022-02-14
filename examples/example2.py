@@ -286,7 +286,16 @@ class Bee(Sprite):
 
         if self.ВременнойСдвигДрейфа - self.time < 0:
             self.ВременнойСдвигДрейфа = self.time + 0.5
-            self.ТочкаДрейфа = Vector(randint(0, Game.ширинаЭкрана), randint(0, Game.высотаЭкрана))
+            # self.ТочкаДрейфа = Vector(randint(0, Game.ширинаЭкрана), randint(0, Game.высотаЭкрана))
+            obj=list(Game.get_objects(clas=Bee, filter=lambda p: p.control_suff==self.control_suff))
+            if len(obj):
+                sr=Vector(0.0)
+                for o in obj:
+                    sr +=o.transform.pos
+                sr *= 1/len(obj)
+                self.ТочкаДрейфа = sr+Vector(randint(-60, 60), randint(-60, 60))
+            else:
+                self.ТочкаДрейфа = Vector(randint(0, Game.ширинаЭкрана), randint(0, Game.высотаЭкрана))
 
         if dp.length_squared() < 1:
             self.скорость *= 0.97
@@ -378,18 +387,25 @@ for i in range(flower_count):
     flower.start_pos = Vector(flower.transform.pos)
     flower.transform.scale_xy = 3, 3
 
-# СОЗДАНИЕ ПЧЕЛОК ==============
-for i in range(1):
-    bee = Bee("2")
-    Game.add_object(bee)
-    bee.transform.xy = 50 + randint(0, 100), 50 + randint(0, 100)
-    bee.transform.scale_xy = 2, 2
-
 # СОЗДАНИЕ КОРОЛЕВЫ ==============
 qwin_bee = Bee("1")
 Game.add_object(qwin_bee)
 qwin_bee.transform.xy = 100, 100
 qwin_bee.transform.scale_xy = 2, 2
+
+bee = Bee("1")
+Game.add_object(bee)
+bee.transform.xy = qwin_bee.transform.x + randint(-50, 50), qwin_bee.transform.y + randint(-50, 50)
+bee.transform.scale_xy = 0.4, 0.4
+
+# СОЗДАНИЕ ПЧЕЛОК ==============
+for i in range(8):
+    a = randint(1, 7) / 10
+    bee = Bee("2")
+    Game.add_object(bee)
+    bee.transform.xy = 50 + randint(0, 100), 50 + randint(0, 100)
+    bee.transform.scale_xy = 0.4+a, 0.4+a
+
 
 # СОЗДАНИЕ КОРОНЫ ==============
 crown_pic = pygame.image.load("./sprites/crown.png").convert_alpha()

@@ -119,6 +119,8 @@ class Piston(Sprite):
 Game.init('Рамка')
 test_img = pygame.image.load("./sprites/test.png").convert_alpha()
 
+v=Vector(0)
+
 l=Looker()
 l.transform.xy= 100,400
 Game.add_object(l)

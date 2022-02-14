@@ -456,7 +456,7 @@ crown.transform.set_parent(qwin_bee)
 # bee.transform.scale_xy = 0.4, 0.4
 
 # СОЗДАНИЕ ПЧЕЛОК ==============
-for i in range(50):
+for i in range(10):
     a = randint(1, 7) / 10
     bee = Bee("2")
     Game.add_object(bee)
@@ -473,12 +473,12 @@ Game.add_object(spider)
 spider.transform.xy = 100, Game.высотаЭкрана-48
 spider.transform.scale_xy = 3, 3
 
-hat=Sprite(flower_pic)
-Game.add_object(hat)
-hat.transform.set_parent(spider)
-hat.transform.scale_xy=0.5,0.5
-hat.transform.y=-13
-hat.transform.angle=-15
+# hat=Sprite(flower_pic)
+# Game.add_object(hat)
+# hat.transform.set_parent(spider)
+# hat.transform.scale_xy=0.5,0.5
+# hat.transform.y=-13
+# hat.transform.angle=-15
 
 @Game.after_update
 def game_update(deltaTime):

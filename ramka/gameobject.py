@@ -47,6 +47,9 @@ class GameObject:
         for c in self.components:
             c.update(deltaTime)
 
+    def change_order(self, delta):
+        self.layer.change_order(self,delta)
+
     def set_layer(self, layer):
         if self.layer is not None:
             self.layer.remove_object(self)

@@ -21,3 +21,14 @@ class Layer:
             self.gameObjects.remove(game_object)
 
 
+    def change_order(self, object: GameObject, delta):
+        idx=self.gameObjects.index(object)
+        nidx=idx+delta
+        if nidx<0 or nidx>=len(self.gameObjects):
+            return
+
+        self.gameObjects.remove(object)
+        if nidx>idx and nidx>0:
+            nidx-=1
+
+        self.gameObjects.insert(nidx,object)

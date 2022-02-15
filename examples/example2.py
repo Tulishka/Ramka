@@ -457,11 +457,11 @@ crown.transform.set_parent(qwin_bee)
 
 # СОЗДАНИЕ ПЧЕЛОК ==============
 for i in range(10):
-    a = randint(1, 7) / 10
+    a = randint(1, 5) / 10
     bee = Bee("2")
     Game.add_object(bee)
     bee.transform.xy = 50 + randint(0, 100), 50 + randint(0, 100)
-    bee.transform.scale_xy = 0.4+a, 0.4+a
+    bee.transform.scale_xy = 0.5+a, 0.5+a
     bee.auto_harvest= True
     bee.auto_dest_offset=Vector(4, -16)
 

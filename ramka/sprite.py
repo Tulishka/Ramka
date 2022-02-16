@@ -107,7 +107,7 @@ class Sprite(GameObject):
             if self.deep_cache:
                 self.cache[hsh] = ci
             else:
-                self.cache = {hash: ci}
+                self.cache = {hsh: ci}
 
         return ci
 

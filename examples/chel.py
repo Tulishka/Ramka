@@ -19,9 +19,9 @@ class Plat(Sprite):
 
         v = self.get_size() * self.transform.scale.elementwise()
         if self.transform.x > self.x_lim[1] - v.x / 2 or self.transform.x < self.x_lim[0] + v.x / 2:
-            self.spd.x = -self.spd.x
+            self.spd.x = -abs(self.spd.x) if self.transform.x > self.x_lim[1] - v.x / 2 else abs(self.spd.x)
         if self.transform.y > self.y_lim[1] - v.y / 2 or self.transform.y < self.y_lim[0] + v.y / 2:
-            self.spd.y = -self.spd.y
+            self.spd.y = -abs(self.spd.y) if self.transform.y > self.y_lim[1] - v.y / 2 else abs(self.spd.y)
 
 
 class Base(Sprite):
@@ -81,6 +81,9 @@ class Base(Sprite):
 
         inair = 0 if self.is_grounded() else 1
 
+        if self.igr=="2":
+            Game.debug_str=str(inair)
+
         dx = Input.get("Horizontal" + self.igr)
 
         if Input.get("Jump" + self.igr) and not inair:
@@ -128,11 +131,12 @@ class Base(Sprite):
 
         clue = False
         if not r:
-            elev = 1
+
+            elev = 2
 
             if self.spd.y >= 0:
                 pl = list(Game.get_objects(clas=Plat))
-                cc = self.get_collided(pl, test_offset=Vector(0, elev))
+                cc = self.get_collided(pl, test_offset=Vector(0, elev + 3 ))
 
                 if len(cc) > 0:
                     r = True
@@ -141,8 +145,8 @@ class Base(Sprite):
 
                     pl = [cc[0][0]]
 
-                    vy = 0
-                    while len(self.get_collided(pl, test_offset=Vector(0, vy + elev - 1))) > 0:
+                    vy = 5
+                    while len(self.get_collided(pl, test_offset=Vector(0, vy + elev))) > 0:
                         vy -= 1
 
                     self.transform.y = self.transform.y + vy
@@ -189,7 +193,7 @@ Game.add_object(girl)
 
 girl = Base('2')
 Game.add_object(girl)
-girl.transform.scale_xy = 0.5, 0.5
+girl.transform.scale_xy = 1, 1
 
 hays = Sprite("ira_sprites/hays.png")
 Game.add_object(hays)

@@ -1,7 +1,6 @@
-import math
 from random import randint
 
-from ramka import Vector, Game, Sprite, Input, Animation, pygame, copysign, GameObject
+from ramka import Vector, Game, Sprite, Input, Animation, pygame, copysign
 
 Game.init('Рамка')
 Game.цветФона = 200, 240, 200
@@ -58,11 +57,10 @@ class Base(Sprite):
         self.zg.transform.set_parent(self)
         self.zg.transform.xy = 0, 0
         self.zg.visible = False
-        self.vm = self.time + randint(1, 4)
+        self.vm = self.time + randint(1,4)
 
         self.transform.xy = Game.ширинаЭкрана // 2, Game.высотаЭкрана * 2 // 3
         # self.transform.scale_xy = 2, 2
-        self.def_parent = None
 
     def on_enter_game(self):
         Game.add_object(self.para)
@@ -76,12 +74,15 @@ class Base(Sprite):
     def update(self, deltaTime: float):
         super().update(deltaTime)
 
-        self.zg.visible = self.time > self.vm and self.time < self.vm + 0.2
+        self.zg.visible = self.time>self.vm and self.time<self.vm+0.2
 
-        if not self.zg.visible and self.time > self.vm:
+        if not self.zg.visible and self.time>self.vm:
             self.vm = self.time + randint(1, 4)
 
         inair = 0 if self.is_grounded() else 1
+
+        if self.igr=="2":
+            Game.debug_str=str(inair)
 
         dx = Input.get("Horizontal" + self.igr)
 
@@ -135,7 +136,7 @@ class Base(Sprite):
 
             if self.spd.y >= 0:
                 pl = list(Game.get_objects(clas=Plat))
-                cc = self.get_collided(pl, test_offset=Vector(0, elev + 3))
+                cc = self.get_collided(pl, test_offset=Vector(0, elev + 3 ))
 
                 if len(cc) > 0:
                     r = True
@@ -155,24 +156,9 @@ class Base(Sprite):
 
         if self.transform.parent and not clue:
             self.transform.detach(True)
-            if self.def_parent:
-                self.transform.set_parent(self.def_parent, True)
 
         return r
 
-
-class Camera(GameObject):
-    def update(self, deltaTime: float):
-        super().update(deltaTime)
-
-        Game.debug_str = str(pygame.mouse.get_pos())
-        # if self.focus:
-        #     wt=self.focus.transform.to_local_coord(self.transform,Vector(0),False)
-        #     self.transform.xy = -wt.x + Game.ширинаЭкрана//2,-wt.y+Game.высотаЭкрана//2
-
-
-root = Camera()
-Game.add_object(root)
 
 plat = [
     (Game.ширинаЭкрана // 2 + 250, Game.высотаЭкрана - 400),
@@ -193,7 +179,6 @@ for i, p in enumerate(plat):
         plat1.y_lim = [70, plat1.transform.y + 16]
 
     Game.add_object(plat1)
-    plat1.transform.set_parent(root)
 
 ob = Plat("ira_sprites/oback.png")
 ob.collision_image = pygame.image.load("ira_sprites/ocollider.png").convert_alpha()
@@ -202,26 +187,19 @@ ob.spd = Vector(70, 0)
 ob.transform.scale_xy = 7, 6
 ob.x_lim = [0, Game.ширинаЭкрана - 250]
 Game.add_object(ob)
-ob.transform.set_parent(root)
 
 girl = Base('1')
 Game.add_object(girl)
-girl.transform.set_parent(root)
-girl.def_parent = root
+girl.transform.scale_xy = 1, 1
 
 girl = Base('2')
 Game.add_object(girl)
-girl.transform.scale_xy = 1, 1
-girl.transform.set_parent(root)
-girl.def_parent = root
-
-root.focus=girl
+girl.transform.scale_xy = 0.5, 0.5
 
 hays = Sprite("ira_sprites/hays.png")
 Game.add_object(hays)
 hays.transform.xy = Game.ширинаЭкрана - hays.get_size().x, Game.высотаЭкрана - hays.get_size().y
 hays.transform.scale_xy = 2, 2
-hays.transform.set_parent(root)
 
 obf = Sprite("ira_sprites/ofront.png")
 obf.transform.set_parent(ob)

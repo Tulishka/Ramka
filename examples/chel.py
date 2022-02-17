@@ -1,9 +1,84 @@
-from random import randint
+from random import randint, choice, random
 
-from ramka import Vector, Game, Sprite, Input, Animation, pygame, copysign
+from ramka import Vector, Game, Sprite, Input, Animation, pygame, copysign, GameObject, math
 
 Game.init('Рамка')
 Game.цветФона = 200, 240, 200
+
+
+class Balloon(Sprite):
+    def __init__(self):
+        super().__init__("ira_sprites/harik.png")
+        self.owner = None
+        self.spd = 250
+        self.faza=random()
+        self.max_scale=3
+        self.transform.scale_xy=0.1,0.1
+
+
+    def update(self, deltaTime: float):
+
+        super().update(deltaTime)
+
+        if self.owner is None:
+
+            if self.transform.scale_x<self.max_scale:
+                self.transform.scale_xy=self.transform.scale_x+deltaTime*3,self.transform.scale_y+deltaTime*3
+                if self.transform.scale_x > self.max_scale:
+                    self.transform.scale_xy = self.max_scale,self.max_scale
+
+            f = list(Game.get_objects(clas=Base))
+            if len(f) > 0:
+                cc = self.get_collided(f)
+                if len(cc) > 0:
+                    self.owner = cc[0][0]
+                    self.transform.scale_xy = 3 * self.owner.transform.scale_x, 3 * self.owner.transform.scale_y
+
+        else:
+            p=self.owner.transform.get_world_transform().pos
+
+            hp=self.owner.get_size().y * self.owner.transform.scale_y / 2
+            hb = self.get_size().y * self.transform.scale_y / 2
+            h = hp + hb
+
+            nnt = p - self.transform.pos + Vector(0,-h)
+            dst = nnt.length()
+            if dst > 0:
+                nnt.normalize_ip()
+                cc = self.spd * deltaTime
+                if dst < cc:
+                    cc = dst
+                self.transform.pos = self.transform.pos + cc * nnt
+
+        amp = 2 if self.owner else 1
+        self.image_offset.x = amp * 2 * math.sin(self.time*2*amp+self.faza)
+        self.image_offset.y = amp * math.cos(self.time*1.6*amp+1.1*self.faza)
+
+
+class BalloonManager():
+    poloj = [(35, 70), (970, 550), (55, 560), (418, 284)]
+    bolls = [0 for i in poloj]
+    time = 0
+    spawn_time = 2
+
+    @staticmethod
+    def add_ball(dt):
+        BalloonManager.time += dt
+
+        for n, i in enumerate(BalloonManager.bolls):
+            if i != 0:
+                if i.owner:
+                    BalloonManager.bolls[n] = 0
+
+
+        if BalloonManager.time > BalloonManager.spawn_time:
+            lst = [i for i, z in enumerate(BalloonManager.bolls) if z == 0]
+            if len(lst) > 0:
+                i = choice(lst)
+                BalloonManager.bolls[i] = Balloon()
+                BalloonManager.bolls[i].transform.xy = BalloonManager.poloj[i]
+                Game.add_object(BalloonManager.bolls[i])
+            BalloonManager.spawn_time = BalloonManager.time + 10
 
 
 class Plat(Sprite):
@@ -57,10 +132,11 @@ class Base(Sprite):
         self.zg.transform.set_parent(self)
         self.zg.transform.xy = 0, 0
         self.zg.visible = False
-        self.vm = self.time + randint(1,4)
+        self.vm = self.time + randint(1, 4)
 
         self.transform.xy = Game.ширинаЭкрана // 2, Game.высотаЭкрана * 2 // 3
         # self.transform.scale_xy = 2, 2
+        self.def_parent = None
 
     def on_enter_game(self):
         Game.add_object(self.para)
@@ -74,15 +150,12 @@ class Base(Sprite):
     def update(self, deltaTime: float):
         super().update(deltaTime)
 
-        self.zg.visible = self.time>self.vm and self.time<self.vm+0.2
+        self.zg.visible = self.time > self.vm and self.time < self.vm + 0.2
 
-        if not self.zg.visible and self.time>self.vm:
+        if not self.zg.visible and self.time > self.vm:
             self.vm = self.time + randint(1, 4)
 
         inair = 0 if self.is_grounded() else 1
-
-        if self.igr=="2":
-            Game.debug_str=str(inair)
 
         dx = Input.get("Horizontal" + self.igr)
 
@@ -136,7 +209,7 @@ class Base(Sprite):
 
             if self.spd.y >= 0:
                 pl = list(Game.get_objects(clas=Plat))
-                cc = self.get_collided(pl, test_offset=Vector(0, elev + 3 ))
+                cc = self.get_collided(pl, test_offset=Vector(0, elev + 3))
 
                 if len(cc) > 0:
                     r = True
@@ -156,9 +229,26 @@ class Base(Sprite):
 
         if self.transform.parent and not clue:
             self.transform.detach(True)
+            if self.def_parent:
+                self.transform.set_parent(self.def_parent, True)
 
         return r
 
+
+class Camera(GameObject):
+    def update(self, deltaTime: float):
+        super().update(deltaTime)
+
+        Game.debug_str = str(pygame.mouse.get_pos())
+        # if self.focus:
+        #     wt=self.focus.transform.to_local_coord(self.transform,Vector(0),False)
+        #     self.transform.xy = -wt.x + Game.ширинаЭкрана//2,-wt.y+Game.высотаЭкрана//2
+
+
+Game.before_update(BalloonManager.add_ball)
+
+root = Camera()
+Game.add_object(root)
 
 plat = [
     (Game.ширинаЭкрана // 2 + 250, Game.высотаЭкрана - 400),
@@ -179,6 +269,7 @@ for i, p in enumerate(plat):
         plat1.y_lim = [70, plat1.transform.y + 16]
 
     Game.add_object(plat1)
+    plat1.transform.set_parent(root)
 
 ob = Plat("ira_sprites/oback.png")
 ob.collision_image = pygame.image.load("ira_sprites/ocollider.png").convert_alpha()
@@ -187,19 +278,28 @@ ob.spd = Vector(70, 0)
 ob.transform.scale_xy = 7, 6
 ob.x_lim = [0, Game.ширинаЭкрана - 250]
 Game.add_object(ob)
+ob.transform.set_parent(root)
 
 girl = Base('1')
 Game.add_object(girl)
 girl.transform.scale_xy = 1, 1
+girl.transform.set_parent(root)
+girl.def_parent = root
 
 girl = Base('2')
 Game.add_object(girl)
-girl.transform.scale_xy = 0.5, 0.5
+girl.transform.scale_xy = 0.4, 0.4
+
+girl.transform.set_parent(root)
+girl.def_parent = root
+
+root.focus = girl
 
 hays = Sprite("ira_sprites/hays.png")
 Game.add_object(hays)
 hays.transform.xy = Game.ширинаЭкрана - hays.get_size().x, Game.высотаЭкрана - hays.get_size().y
 hays.transform.scale_xy = 2, 2
+hays.transform.set_parent(root)
 
 obf = Sprite("ira_sprites/ofront.png")
 obf.transform.set_parent(ob)

@@ -6,15 +6,125 @@ Game.init('Рамка')
 Game.цветФона = 200, 240, 200
 
 
+class Unicorn(Sprite):
+    def __init__(self):
+        super().__init__("ira_sprites/pet*.png")
+
+        self.owner = None
+        self.owner_offset = Vector(-8, -16)  # смещение
+
+        self.transform.scale_xy = 0.7, 0.7
+
+        self.animations["default"].fps = 12
+
+        self.vz = 1
+
+        self.faza = random()
+
+        # физика
+        self.massa = 1
+        self.max_spd = 230
+        self.spd = Vector(0, 0)
+        self.accel = 500
+        self.fric = 0.87
+
+    def update(self, deltaTime: float):
+        super().update(deltaTime)
+
+        if self.owner is None:
+            return
+
+        tr = self.owner.transform.get_world_transform()
+        dest = tr.pos
+        dest.y += 5 * math.sin(4 * self.time + dest.x / 10 + self.faza)
+
+        # dif = dest - self.transform.pos - 0.5 * Vector(copysign(self.get_size().x,tr.scale_x) ,self.get_size().y) + self.owner_offset * tr.scale.elementwise()
+        dif = dest - self.transform.pos - 0.5 * self.get_size() + self.owner_offset * tr.scale.elementwise()
+
+        spd = self.spd.length()
+
+        stop_time = spd / self.accel
+        stop_dist = spd * stop_time + self.accel * (stop_time ** 2) / 2
+
+        dst = dif.length_squared()
+        if dst > stop_dist * stop_dist:
+            dif.scale_to_length(self.accel)
+            dp = dif
+        else:
+            dp = Vector(0)
+
+        if dst < 400:
+            self.spd *= self.fric
+
+        if dp.x and spd > 40:
+            self.vz = -1 if self.spd.x >= 0 else 1
+        else:
+            if spd < 10:
+                self.vz = 1 if self.transform.x > self.owner.transform.x else -1
+
+        if dp.length_squared() < 0.1 and spd > 0:
+            dp = -self.spd
+            af = min(spd, self.accel)
+            if af != 0:
+                dp.scale_to_length(af)
+            else:
+                dp = Vector(0)
+
+        a = dp / self.massa
+
+        self.spd = self.spd + a * deltaTime
+
+        if self.spd.length_squared() > self.max_spd * self.max_spd:
+            self.spd.scale_to_length(self.max_spd)
+
+        self.transform.pos = self.transform.pos + self.spd * deltaTime
+
+        # if a.x:
+        #     self.vz = 1 if a.x > 0 else -1
+        # else:
+        #     self.spd *= self.fric
+
+        self.transform.scale_x = abs(self.transform.scale_x) * self.vz
+
+
+class Totem(Sprite):
+    def __init__(self):
+        super().__init__("ira_sprites/statyia.png")
+
+    def update(self, deltaTime: float):
+        super().update(deltaTime)
+
+        f = list(Game.get_objects(clas=Base))
+        if len(f) > 0:
+            cc = self.get_collided(f)
+            if len(cc) > 0:
+                ig = cc[0][0]
+                c = list(Game.get_objects(clas=Unicorn, filter=lambda x: x.owner == ig))
+                if len(c) < 1:
+
+                    d = list(Game.get_objects(clas=Balloon, filter=lambda x: x.owner == ig))
+                    if len(d) >= 4:
+                        uni = Unicorn()
+                        uni.transform.xy = Game.ширинаЭкрана, -1000
+                        uni.owner = ig
+                        Game.add_object(uni)
+
+                        tl = (uni.transform.pos - ig.transform.pos).length() / uni.max_spd
+                        tl *= 1.1
+                        for s in d:
+                            s.owner = uni
+                            s.kill_time = s.time + tl
+
+
 class Balloon(Sprite):
     def __init__(self):
         super().__init__("ira_sprites/harik.png")
         self.owner = None
         self.spd = 250
-        self.faza=random()
-        self.max_scale=3
-        self.transform.scale_xy=0.1,0.1
-
+        self.faza = random()
+        self.max_scale = 3
+        self.transform.scale_xy = 0.1, 0.1
+        self.kill_time = 50
 
     def update(self, deltaTime: float):
 
@@ -22,10 +132,10 @@ class Balloon(Sprite):
 
         if self.owner is None:
 
-            if self.transform.scale_x<self.max_scale:
-                self.transform.scale_xy=self.transform.scale_x+deltaTime*3,self.transform.scale_y+deltaTime*3
+            if self.transform.scale_x < self.max_scale:
+                self.transform.scale_xy = self.transform.scale_x + deltaTime * 3, self.transform.scale_y + deltaTime * 3
                 if self.transform.scale_x > self.max_scale:
-                    self.transform.scale_xy = self.max_scale,self.max_scale
+                    self.transform.scale_xy = self.max_scale, self.max_scale
 
             f = list(Game.get_objects(clas=Base))
             if len(f) > 0:
@@ -35,13 +145,18 @@ class Balloon(Sprite):
                     self.transform.scale_xy = 3 * self.owner.transform.scale_x, 3 * self.owner.transform.scale_y
 
         else:
-            p=self.owner.transform.get_world_transform().pos
+            if self.time > self.kill_time:
+                self.owner = None
+                Game.remove_object(self)
+                return
 
-            hp=self.owner.get_size().y * self.owner.transform.scale_y / 2
+            p = self.owner.transform.get_world_transform().pos
+
+            hp = self.owner.get_size().y * self.owner.transform.scale_y / 2
             hb = self.get_size().y * self.transform.scale_y / 2
             h = hp + hb
 
-            nnt = p - self.transform.pos + Vector(0,-h)
+            nnt = p - self.transform.pos + Vector(0, -h)
             dst = nnt.length()
             if dst > 0:
                 nnt.normalize_ip()
@@ -51,11 +166,11 @@ class Balloon(Sprite):
                 self.transform.pos = self.transform.pos + cc * nnt
 
         amp = 2 if self.owner else 1
-        self.image_offset.x = amp * 2 * math.sin(self.time*2*amp+self.faza)
-        self.image_offset.y = amp * math.cos(self.time*1.6*amp+1.1*self.faza)
+        self.image_offset.x = amp * 2 * math.sin(self.time * 2 * amp + self.faza)
+        self.image_offset.y = amp * math.cos(self.time * 1.6 * amp + 1.1 * self.faza)
 
 
-class BalloonManager():
+class BalloonManager:
     poloj = [(35, 70), (970, 550), (55, 560), (418, 284)]
     bolls = [0 for i in poloj]
     time = 0
@@ -69,7 +184,9 @@ class BalloonManager():
             if i != 0:
                 if i.owner:
                     BalloonManager.bolls[n] = 0
-
+                if i.time > i.kill_time:
+                    BalloonManager.bolls[n] = 0
+                    Game.remove_object(i)
 
         if BalloonManager.time > BalloonManager.spawn_time:
             lst = [i for i, z in enumerate(BalloonManager.bolls) if z == 0]
@@ -280,15 +397,20 @@ ob.x_lim = [0, Game.ширинаЭкрана - 250]
 Game.add_object(ob)
 ob.transform.set_parent(root)
 
-girl = Base('1')
-Game.add_object(girl)
-girl.transform.scale_xy = 1, 1
-girl.transform.set_parent(root)
-girl.def_parent = root
+girl1 = Base('1')
+Game.add_object(girl1)
+girl1.transform.scale_xy = 1, 1
+girl1.transform.set_parent(root)
+girl1.def_parent = root
 
 girl = Base('2')
 Game.add_object(girl)
 girl.transform.scale_xy = 0.4, 0.4
+
+stat = Totem()
+Game.add_object(stat)
+stat.transform.scale_xy = 2, 2
+stat.transform.xy = 797, 692
 
 girl.transform.set_parent(root)
 girl.def_parent = root
@@ -304,5 +426,15 @@ hays.transform.set_parent(root)
 obf = Sprite("ira_sprites/ofront.png")
 obf.transform.set_parent(ob)
 Game.add_object(obf)
+
+# uni = Unicorn()
+# uni.transform.xy=100,100
+# uni.owner = girl
+# Game.add_object(uni)
+#
+# uni = Unicorn()
+# uni.transform.xy=200,100
+# uni.owner = girl1
+# Game.add_object(uni)
 
 Game.run()

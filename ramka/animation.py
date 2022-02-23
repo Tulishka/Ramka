@@ -19,6 +19,7 @@ class Animation:
 
         self.images = images
         self.fps = fps
+        self.first_frame_index=0
         self.looped = looped
         self.events = []
 
@@ -27,9 +28,9 @@ class Animation:
 
     def get_frame_index(self, time: float) -> int:
         if self.looped:
-            return int(self.fps * time) % len(self.images)
+            return (int(self.fps * time)+self.first_frame_index) % len(self.images)
         else:
-            return min(int(self.fps * time) , len(self.images)-1)
+            return min(int(self.fps * time)+self.first_frame_index , len(self.images)-1)
 
 
 def slice_image(image: pygame.Surface, size: (int, int) = None, cols: int = None, rows: int = None, row: List[int] = [0]) -> [

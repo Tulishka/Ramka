@@ -47,6 +47,8 @@ class Animal(Sprite):
         # self.transform.look_at_ip(Vector(pygame.mouse.get_pos()),False)
         # self.vx = 1 if Vector(1, 0).rotate(self.transform.parent.angle if self.transform.parent else 0).y < 0 else -1
 
+        Game.debug_str = str(self.test_point(Vector(pygame.mouse.get_pos())))
+
         # self.transform.x += self.vx * deltaTime * 80
 
         lst = list(Game.get_objects(clas=Box))
@@ -80,7 +82,7 @@ class Animal(Sprite):
         p0=Vector(self.lc[0], self.lc[1])
         p1=self.image_pos_to_global(p0)
         p2=self.global_to_image_pos(p1)
-        Game.debug_str = f'({round(p0.x-p2.x)},{round(p0.y-p2.y)})'
+        # Game.debug_str = f'({round(p0.x-p2.x)},{round(p0.y-p2.y)})'
         pygame.draw.circle(dest, (255, 0, 0), p1, 2)
 
 

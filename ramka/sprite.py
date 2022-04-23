@@ -10,21 +10,24 @@ from .transformbase import TransformBase
 
 class Sprite(GameObject):
 
-    def __init__(self, animations: Union[Animation, pygame.Surface, str, Dict[str, Animation]], duration=None, slice_images_rows=1, slice_images_cols=1):
+    def __init__(self, animations: Union[Animation, pygame.Surface, str, Dict[str, Animation]], duration=None,
+                 slice_images_rows=1, slice_images_cols=1):
         super().__init__()
 
         if type(animations) == str:
             if "*" in animations or "?" in animations:
                 import glob
-                files=list(glob.glob(animations))
+                files = list(glob.glob(animations))
                 files.sort()
-                animations = Animation([pygame.image.load(f).convert_alpha() for f in files], round(len(files) / (duration if duration else 0.5)), True)
+                animations = Animation([pygame.image.load(f).convert_alpha() for f in files],
+                                       round(len(files) / (duration if duration else 0.5)), True)
             else:
-                animations=pygame.image.load(animations).convert_alpha()
+                animations = pygame.image.load(animations).convert_alpha()
 
-        if type(animations)==pygame.Surface and (slice_images_rows>1 or slice_images_cols>1):
-            cnt=slice_images_rows * slice_images_cols
-            animations = Animation(slice_image(animations, cols=slice_images_cols,rows=slice_images_rows), round(cnt / (duration if duration else 0.5)), True)
+        if type(animations) == pygame.Surface and (slice_images_rows > 1 or slice_images_cols > 1):
+            cnt = slice_images_rows * slice_images_cols
+            animations = Animation(slice_image(animations, cols=slice_images_cols, rows=slice_images_rows),
+                                   round(cnt / (duration if duration else 0.5)), True)
 
         if type(animations) == pygame.Surface:
             animations = Animation([animations], 0, True)
@@ -67,7 +70,7 @@ class Sprite(GameObject):
         return self.sprite.rect
 
     def get_image_transformed(self, img: pygame.Surface, flip: FlipStyle, scale: (float, float) = (1.0, 1.0),
-                              rotate:  float= 0.0) -> pygame.Surface:
+                              rotate: float = 0.0) -> pygame.Surface:
 
         flip = (flip[0] ^ (scale[0] < 0), flip[1] ^ (scale[1] < 0))
 
@@ -77,12 +80,11 @@ class Sprite(GameObject):
         w = int(img.get_width() * sx)
         h = int(img.get_height() * sy)
 
-        if w<1:
-            w=1
+        if w < 1:
+            w = 1
 
-        if h<1:
-            h=1
-
+        if h < 1:
+            h = 1
 
         rotate = round(rotate * 10) * 0.1
 
@@ -123,9 +125,9 @@ class Sprite(GameObject):
 
                 img = self.get_image_transformed(self.collision_image, flp, (wtr._scale.x, wtr._scale.y), rotate_image)
             else:
-                img=self.collision_image
+                img = self.collision_image
         else:
-            img=self.sprite.image
+            img = self.sprite.image
 
         self.sprite.mask = pygame.mask.from_surface(img)
         self.collider_cache_image = img
@@ -198,3 +200,9 @@ class Sprite(GameObject):
         po = pos - self.get_rotated_offset(p) - p._pos
         return self.local_to_image_pos(po)
 
+    def test_point(self, other: Union[Vector, TransformBase, GameObject], local_target=False) -> bool:
+
+        # не сделана функция
+        v=self.transform.to_parent_local_coord(other, local_target=local_target)
+
+        return v

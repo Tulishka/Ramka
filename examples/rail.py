@@ -12,7 +12,7 @@ class Rail(GameObject):
 
     def __init__(self, nodes):
         super(Rail, self).__init__()
-        self.path = Path(nodes, curve=True, loop=1)
+        self.path = Path(nodes, curve=True, loop=0,step=20)
         self.pos = PathPosition()
         self.spd = 0
         self.max_spd = 1000
@@ -51,16 +51,10 @@ class Rail(GameObject):
     def draw(self, dest):
         color = (100, 155, 100)
         wd = 4
-        points = self.path.points
-        pygame.draw.lines(dest, color, self.path.loop, points, width=wd)
+        pygame.draw.lines(dest, color, self.path.loop, self.path.points, width=wd)
 
-        # p = self.path.position_xy(self.pos)
-        # pygame.draw.circle(dest, (255, 0, 0), p, 12)
-        # pp = None
-        # for p in points:
-        #     if pp:
-        #         pygame.draw.line(dest, color, p, pp, wd)
-        #     pp = p
+        for p in self.path.step_nodes:
+            pygame.draw.circle(dest, (255, 0, 0), p, 6, width=1)
 
 
 random.seed(1)
@@ -74,7 +68,7 @@ s = [(randint(150, 225) * v.rotate(i * 360 / n)) for i in range(n - 1)]
 s = [(randint(int(200 - 50), int(200 + 50)) * v.rotate(i * 360 / n)) for i in range(n - 1)]
 a = [(i + shift).xy for i in s]
 
-a = [(100, 100), (200, 100), (200, 200), (100, 200)]
+# a = [(100, 100), (200, 100), (200, 200), (100, 200)]
 
 r = Rail(a)
 Game.add_object(r)

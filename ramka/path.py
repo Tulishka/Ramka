@@ -16,7 +16,7 @@ class PathPosition:
 
 
 class Path:
-    def __init__(self, nodes=None, step=20, loop=1, curve=True, loop_navigation=None):
+    def __init__(self, nodes=None, step=0, loop=1, curve=True, loop_navigation=None):
         if nodes is None:
             self.nodes = []
         else:
@@ -147,6 +147,15 @@ class Path:
             self.angles.append(-dir.angle_to(Vector(d)))
             self.accumulated_lengths.append(self.total_length)
             self.total_length += dl
+
+        if self.step:
+            p = PathPosition()
+
+            lp = -self.step
+            while p.position-lp>=self.step:
+                lp = p.position
+                self.step_nodes.append(self.position_xy(p))
+                self.move_position_ip(p, self.step)
 
         # print(len(self.accumulated_lengths))
         # print(self.accumulated_lengths)

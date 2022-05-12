@@ -47,7 +47,8 @@ class Animal(Sprite):
         # self.transform.look_at_ip(Vector(pygame.mouse.get_pos()),False)
         # self.vx = 1 if Vector(1, 0).rotate(self.transform.parent.angle if self.transform.parent else 0).y < 0 else -1
 
-        Game.debug_str = str(self.test_point(Vector(pygame.mouse.get_pos())))
+        Game.debug_str = str(self.test_touch(Vector(pygame.mouse.get_pos())))
+
 
         # self.transform.x += self.vx * deltaTime * 80
 
@@ -151,6 +152,7 @@ h_walk = Animation(slice_image(hyena_walk), 12, True)
 hyena = Animal({"idle": h_idle, "default": h_walk})
 Game.add_object(hyena)
 hyena.transform.xy = (0, 0)
+hyena.transform.scale = 1,1
 hyena.image_offset.xy = 0, hyena_walk.get_height() / 2
 hyena.transform.set_parent(area)
 

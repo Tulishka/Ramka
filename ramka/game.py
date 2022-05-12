@@ -22,16 +22,23 @@ class Game:
     debug_str = ''
     drawOptions = {}
 
-    before_update_listeners=[]
+    before_update_listeners = []
     after_update_listeners = []
-    before_draw_listeners=[]
-    after_draw_listeners=[]
+    before_draw_listeners = []
+    after_draw_listeners = []
 
     layers: List[Layer] = [defaultLayer]
 
     ph_space = pymunk.Space()
     ph_gravity = (0.0, 900.0)
     ph_draw_options: pymunk.pygame_util.DrawOptions
+
+    point_sprite = pygame.sprite.Sprite()
+
+    point_sprite.rect = pygame.Rect(0, 0, 0, 0)
+    point_sprite.image = pygame.Surface((2, 2))
+    pygame.draw.rect(point_sprite.image, (255, 255, 255), pygame.Rect(0,0,2,2), 0)
+    point_sprite.mask = pygame.mask.from_surface(point_sprite.image)
 
     @staticmethod
     def get_layer(name: str) -> Layer:
@@ -147,7 +154,7 @@ class Game:
             # Game.ph_space.step(deltaTime)
 
             if Game.showFPS:
-                ss = str(round(Game.clock.get_fps())) + ", " + Game.debug_str #+ ", " + Input.info()
+                ss = str(round(Game.clock.get_fps())) + ", " + Game.debug_str  # + ", " + Input.info()
                 a = Game.font.render(ss, True, (255, 255, 100))
                 Game.экран.blit(a, (5, 5))
 
@@ -165,7 +172,7 @@ class Game:
             filter = lambda x: True
 
         for c in Game.gameObjects:
-            if (clas is None or isinstance(c, clas))and(layer is None or c.layer == layer) and filter(c):
+            if (clas is None or isinstance(c, clas)) and (layer is None or c.layer == layer) and filter(c):
                 yield c
 
     @staticmethod

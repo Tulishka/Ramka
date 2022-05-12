@@ -1,6 +1,7 @@
 import math
 from typing import Dict, Callable, Union, Tuple
 
+from . import Game
 from .gameobject import GameObject
 
 from .animation import Animation, FlipStyle, slice_image
@@ -171,6 +172,14 @@ class Sprite(GameObject):
 
         return -rotated_offset
 
+    def test_touch(self, point: Vector, func: Callable = None):
+        self.prepare_image()
+        if func is None:
+            func = pygame.sprite.collide_mask
+        if self.sprite.image is not None:
+            Game.point_sprite.rect = Game.point_sprite.image.get_rect(center=point)
+            return func(self.sprite, Game.point_sprite)!=None
+
     def is_collided(self, other: GameObject, func: Callable = None) -> Union[bool, Tuple[int, int]]:
         if func is None:
             func = pygame.sprite.collide_mask
@@ -203,6 +212,6 @@ class Sprite(GameObject):
     def test_point(self, other: Union[Vector, TransformBase, GameObject], local_target=False) -> bool:
 
         # не сделана функция
-        v=self.transform.to_parent_local_coord(other, local_target=local_target)
+        v = self.transform.to_parent_local_coord(other, local_target=local_target)
 
         return v

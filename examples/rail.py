@@ -54,7 +54,8 @@ class Rail(GameObject):
         pygame.draw.lines(dest, color, self.path.loop, self.path.points, width=wd)
 
         for p in self.path.step_nodes:
-            pygame.draw.circle(dest, (255, 0, 0), p, 6, width=1)
+            b=Vector(p)
+
 
 
 random.seed(1)

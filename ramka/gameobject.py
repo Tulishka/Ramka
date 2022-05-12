@@ -28,7 +28,7 @@ class GameObject:
         self.layer: Union[Layer, None] = None
 
         self.props = {}
-        self.opacity=1.0
+        self.opacity = 1.0
 
     def update(self, deltaTime: float):
         self.time += deltaTime
@@ -48,7 +48,7 @@ class GameObject:
             c.update(deltaTime)
 
     def change_order(self, delta):
-        self.layer.change_order(self,delta)
+        self.layer.change_order(self, delta)
 
     def set_layer(self, layer):
         if self.layer is not None:
@@ -71,10 +71,13 @@ class GameObject:
             c.on_leave_game()
 
     def get_rect(self):
-        return Rect(0, 0, 0, 0)
+        return Rect(self.transform.pos.x-1, self.transform.pos.y-1, 2, 2)
 
     def move_rect(self, offset: Vector):
         pass
+
+    def touch_test(self, point: Vector, func: Callable = None):
+        self.get_rect().colliderect(pygame.Rect(point.x, point.y, 1, 1))
 
     def is_collided(self, other: GameObject, func: Callable = None) -> Union[bool, Tuple[int, int]]:
         return other.visible and self.get_rect().colliderect(other.get_rect())
@@ -111,4 +114,3 @@ class GameObject:
 
     def __setitem__(self, key, value):
         self.props[key] = value
-

@@ -12,7 +12,7 @@ class Rail(GameObject):
 
     def __init__(self, nodes):
         super(Rail, self).__init__()
-        self.path = Path(nodes, curve=True, loop=0,step=20)
+        self.path = Path(nodes, curve=True, loop=0, step=20)
         self.pos = PathPosition()
         self.spd = 0
         self.max_spd = 1000
@@ -21,6 +21,8 @@ class Rail(GameObject):
 
         self.pic = Sprite("sprites/arrow.png")
         self.pic.transform.scale_xy = 0.5, 0.5
+
+        self.near_pos = 0, 0
 
     def on_enter_game(self):
         Game.add_object(self.pic)
@@ -33,16 +35,27 @@ class Rail(GameObject):
     def update(self, deltaTime: float):
         super().update(deltaTime)
 
-        dx = Input.get("Horizontal")
+        # dx = Input.get("Horizontal")
 
-        if dx != 0:
-            self.spd += dx * 200 * deltaTime
-            if abs(self.spd) > self.max_spd:
-                self.spd = math.copysign(self.max_spd, self.spd)
-        else:
-            self.spd += -math.copysign(min(400.0, abs(self.spd)), self.spd) * deltaTime
+        self.near_pos = self.path.closest_position(pygame.mouse.get_pos(), 5)
+        dl = self.near_pos.position - self.pos.position
+        dx = math.copysign(1, dl)
 
-        self.path.move_position_ip(self.pos, self.spd * self.spd_koef * deltaTime, edge_pass=self.edge_pass)
+        # if dx != 0:
+        #     self.spd += dx * 200 * deltaTime
+        #     if abs(self.spd) > self.max_spd:
+        #         self.spd = math.copysign(self.max_spd, self.spd)
+        # else:
+        #     self.spd += -math.copysign(min(400.0, abs(self.spd)), self.spd) * deltaTime
+
+        # self.path.move_position_ip(self.pos, self.spd * self.spd_koef * deltaTime, edge_pass=self.edge_pass)
+
+        self.spd = min(self.max_spd, abs(dl))
+        self.spd = math.copysign(self.spd, dl)
+
+        self.path.move_position_ip(self.pos, self.spd * deltaTime, edge_pass=self.edge_pass)
+
+        # Game.debug_str=str(self.pos.node)+": "+str(self.pos.position)
 
         self.pic.transform.pos = self.path.position_xy(self.pos)
 
@@ -54,8 +67,9 @@ class Rail(GameObject):
         pygame.draw.lines(dest, color, self.path.loop, self.path.points, width=wd)
 
         for p in self.path.step_nodes:
-            b=Vector(p)
+            b = Vector(p)
 
+        pygame.draw.line(dest, (100, 255, 0), self.path.position_xy(self.near_pos), pygame.mouse.get_pos(), 3)
 
 
 random.seed(1)

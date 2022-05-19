@@ -1,3 +1,4 @@
+import math
 from math import hypot
 import numpy as np
 import matplotlib.pyplot as plt
@@ -40,6 +41,42 @@ class Path:
         self.loop_navigation = loop_navigation if not loop_navigation is None else loop
 
         self.create_cache()
+
+    def move_position_desc(self, position, point, step):
+        ps = position.copy()
+        p = self.position_xy(ps)
+        dl = (point[0] - p[0]) ** 2 + (point[1] - p[1]) ** 2
+        for m in range(200):
+            np = self.move_position(ps, step)
+            p = self.position_xy(np)
+            nl = (point[0] - p[0]) ** 2 + (point[1] - p[1]) ** 2
+            if nl > dl or np.position==ps.position:
+                return ps, math.sqrt(dl)
+            else:
+                ps = np
+                dl = nl
+
+        print("1000 !!!!")
+        return position.copy(), 0
+
+    def closest_position(self, point, step=10):
+        mi = 0
+        ml = -1
+        for i, p in enumerate(self.points):
+            dl = (point[0] - p[0]) ** 2 + (point[1] - p[1]) ** 2
+            if ml < 0 or ml > dl:
+                ml = dl
+                mi = i
+
+        mi = mi if mi < len(self.points) - 1 else len(self.accumulated_lengths) - 1
+        pos = PathPosition(self.accumulated_lengths[mi], mi)
+
+        # return pos
+
+        p1, l1 = self.move_position_desc(pos, point, step)
+        p2, l2 = self.move_position_desc(pos, point, -step)
+
+        return p2 if l1 > l2 else p1
 
     def position_xy(self, position: PathPosition):
         pp = self.points[position.node]
@@ -95,11 +132,11 @@ class Path:
         if self.total_length == 0:
             return
 
-        position = position.copy()
+        pos = position.copy()
 
-        self.move_position_ip(position, amount, edge_pass=edge_pass)
+        self.move_position_ip(pos, amount, edge_pass=edge_pass)
 
-        return position
+        return pos
 
     def create_cache(self):
 
@@ -152,7 +189,7 @@ class Path:
             p = PathPosition()
 
             lp = -self.step
-            while p.position-lp>=self.step:
+            while p.position - lp >= self.step:
                 lp = p.position
                 self.step_nodes.append(self.position_xy(p))
                 self.move_position_ip(p, self.step)

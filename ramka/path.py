@@ -42,6 +42,25 @@ class Path:
 
         self.create_cache()
 
+    def min_delta_between(self, position: PathPosition, to_position: PathPosition):
+        d = to_position.position - position.position
+        if self.loop:
+            dr = d + self.total_length
+            d1 = d if abs(d) < abs(dr) else dr
+            dr = d1 - self.total_length
+            d = d1 if abs(d1) < abs(dr) else dr
+
+        return d
+
+    def move_position_toward_ip(self, position: PathPosition, to_position: PathPosition, amount: float, edge_pass=None):
+        d = self.min_delta_between(position, to_position)
+        self.move_position_ip(position, math.copysign(min(abs(d), abs(amount)), d), edge_pass=edge_pass)
+
+    def move_position_toward(self, position: PathPosition, to_position: PathPosition, amount: float, edge_pass=None):
+        pos = position.copy()
+        self.move_position_toward_ip(pos, to_position, amount, edge_pass=edge_pass)
+        return pos
+
     def move_position_desc(self, position, point, step):
         ps = position.copy()
         p = self.position_xy(ps)
@@ -50,7 +69,7 @@ class Path:
             np = self.move_position(ps, step)
             p = self.position_xy(np)
             nl = (point[0] - p[0]) ** 2 + (point[1] - p[1]) ** 2
-            if nl > dl or np.position==ps.position:
+            if nl > dl or np.position == ps.position:
                 return ps, math.sqrt(dl)
             else:
                 ps = np
@@ -70,8 +89,6 @@ class Path:
 
         mi = mi if mi < len(self.points) - 1 else len(self.accumulated_lengths) - 1
         pos = PathPosition(self.accumulated_lengths[mi], mi)
-
-        # return pos
 
         p1, l1 = self.move_position_desc(pos, point, step)
         p2, l2 = self.move_position_desc(pos, point, -step)

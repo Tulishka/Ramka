@@ -12,7 +12,7 @@ class Rail(GameObject):
 
     def __init__(self, nodes):
         super(Rail, self).__init__()
-        self.path = Path(nodes, curve=True, loop=0, step=20)
+        self.path = Path(nodes, curve=True, loop=1, step=20)
         self.pos = PathPosition()
         self.spd = 0
         self.max_spd = 1000
@@ -36,26 +36,16 @@ class Rail(GameObject):
         super().update(deltaTime)
 
         # dx = Input.get("Horizontal")
-
-        self.near_pos = self.path.closest_position(pygame.mouse.get_pos(), 5)
-        dl = self.near_pos.position - self.pos.position
-        dx = math.copysign(1, dl)
-
         # if dx != 0:
         #     self.spd += dx * 200 * deltaTime
         #     if abs(self.spd) > self.max_spd:
         #         self.spd = math.copysign(self.max_spd, self.spd)
         # else:
         #     self.spd += -math.copysign(min(400.0, abs(self.spd)), self.spd) * deltaTime
-
         # self.path.move_position_ip(self.pos, self.spd * self.spd_koef * deltaTime, edge_pass=self.edge_pass)
 
-        self.spd = min(self.max_spd, abs(dl))
-        self.spd = math.copysign(self.spd, dl)
-
-        self.path.move_position_ip(self.pos, self.spd * deltaTime, edge_pass=self.edge_pass)
-
-        # Game.debug_str=str(self.pos.node)+": "+str(self.pos.position)
+        self.near_pos = self.path.closest_position(pygame.mouse.get_pos(), 5)
+        dl = self.path.move_position_toward_ip(self.pos, self.near_pos, 10, edge_pass=self.edge_pass)
 
         self.pic.transform.pos = self.path.position_xy(self.pos)
 
@@ -68,8 +58,10 @@ class Rail(GameObject):
 
         for p in self.path.step_nodes:
             b = Vector(p)
-
-        pygame.draw.line(dest, (100, 255, 0), self.path.position_xy(self.near_pos), pygame.mouse.get_pos(), 3)
+        pp = self.path.position_xy(self.near_pos)
+        pygame.draw.circle(dest, (200, 0, 0), pp, 5, 2)
+        pygame.draw.line(dest, (200, 0, 0), pp, pygame.mouse.get_pos(), 2)
+        pygame.draw.line(dest, (100, 255, 0), self.path.position_xy(self.pos), pygame.mouse.get_pos(), 3)
 
 
 random.seed(1)

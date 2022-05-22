@@ -15,6 +15,7 @@ class Sprite(GameObject):
                  slice_images_rows=1, slice_images_cols=1):
         super().__init__()
 
+
         if type(animations) == str:
             if "*" in animations or "?" in animations:
                 import glob
@@ -40,6 +41,8 @@ class Sprite(GameObject):
         self.last_animation = None
         self.image_offset = Vector(0.0)
         self.image_rotate_offset = 0
+        self.image_enable_rotation = True
+        self.image_enable_scaling = True
         self.sprite = pygame.sprite.Sprite()
         self.sprite.rect = Rect(0, 0, 0, 0)
         self.sprite.image = None
@@ -49,6 +52,7 @@ class Sprite(GameObject):
         self.collision_image = None
         self.collision_image_transformable = True
         self.collider_cache_image = None
+
 
     def curr_animation(self):
         ani = self.animations.get(self.state.animation)
@@ -101,10 +105,10 @@ class Sprite(GameObject):
             if flip[0] or flip[1]:
                 ci = pygame.transform.flip(ci, flip[0], flip[1])
 
-            if scale[0] != 1 or scale[1] != 1:
+            if (scale[0] != 1 or scale[1] != 1) and self.image_enable_scaling:
                 ci = pygame.transform.scale(ci, (w, h))
 
-            if rotate != 0:
+            if rotate != 0 and self.image_enable_rotation:
                 ci = pygame.transform.rotate(ci, rotate)
 
             if self.deep_cache:

@@ -2,7 +2,8 @@ import math
 from random import random
 from typing import Dict
 
-from ramka import pygame, Vector, FlipStyle, slice_image, Game, Sprite, Animation, Input
+from ramka import pygame, Vector, FlipStyle, slice_image, Game, Sprite, Animation, Input, Cooldown
+
 
 
 class Area(Sprite):
@@ -20,6 +21,7 @@ class Area(Sprite):
 class Box(Sprite):
     def __init__(self, animations: Dict[str, Animation]):
         super().__init__(animations)
+        self.per1=Cooldown(3)
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
@@ -27,8 +29,9 @@ class Box(Sprite):
         v = 800 * deltaTime * Vector(Input.get("Horizontal"), Input.get("Vertical"))
         self.transform.pos = self.transform.pos + v
 
-        if Input.is_signaled("Jump") and Input.get("Jump"):
+        if Input.get("Jump") and self.per1():
             self.transform.scale_xy = self.transform.scale_x + 0.1,self.transform.scale_y + 0.1
+            self.per1.start()
 
 
 class Animal(Sprite):
@@ -50,7 +53,7 @@ class Animal(Sprite):
         # self.transform.look_at_ip(Vector(pygame.mouse.get_pos()),False)
         # self.vx = 1 if Vector(1, 0).rotate(self.transform.parent.angle if self.transform.parent else 0).y < 0 else -1
 
-        Game.debug_str = str(self.test_touch(Vector(pygame.mouse.get_pos())))+str(Game.keys_pressed)
+        Game.debug_str = str(self.test_touch(Vector(pygame.mouse.get_pos())))+str(Game.keys_pressed)+","+str(Game.time)
 
         # self.transform.x += self.vx * deltaTime * 80
 

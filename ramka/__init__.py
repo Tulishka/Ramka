@@ -27,5 +27,7 @@ from .component import *
 from .gameobject import *
 from .sprite import *
 
+from .cooldown import *
+
 
 

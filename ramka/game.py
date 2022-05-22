@@ -10,6 +10,8 @@ from .layers import Layer
 
 
 class Game:
+    key_press_listeners = []
+    keys_pressed=[]
     pygame.init()
     defaultLayer = Layer("default", 0)
     showFPS = True
@@ -37,8 +39,10 @@ class Game:
 
     point_sprite.rect = pygame.Rect(0, 0, 0, 0)
     point_sprite.image = pygame.Surface((2, 2))
-    pygame.draw.rect(point_sprite.image, (255, 255, 255), pygame.Rect(0,0,2,2), 0)
+    pygame.draw.rect(point_sprite.image, (255, 255, 255), pygame.Rect(0, 0, 2, 2), 0)
     point_sprite.mask = pygame.mask.from_surface(point_sprite.image)
+
+    time = 0
 
     @staticmethod
     def get_layer(name: str) -> Layer:
@@ -117,9 +121,17 @@ class Game:
         while 1:
 
             deltaTime = Game.deltaTime()
+            Game.time += deltaTime
+            Game.keys_pressed=[]
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                     exit()
+                else:
+                    if (event.type == pygame.KEYDOWN):
+                        Game.keys_pressed.append(event.key)
+                        for li in Game.key_press_listeners:
+                            li(event.key)
 
             Input.update(deltaTime)
             Game.frame_begin()

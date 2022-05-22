@@ -7,13 +7,17 @@ class InputControl:
     def __init__(self, name: str):
         self.name = name
         self.value = 0
+        self.last_value = 0
 
     def before_update(self):
-        pass
+        self.last_value = self.value
 
     def update(self, value, deltaTime: float, type='key') -> bool:
         self.value = value
         return bool(value)
+
+    def is_signaled(self):
+        return self.value!=self.last_value
 
     def after_update(self):
         pass
@@ -34,10 +38,12 @@ class Axis(InputControl):
         self.axis_speed = self.scale_value / full_time if full_time != 0 else -1
 
     def before_update(self):
+        super().before_update()
         self.target_value = 0
         self.touches = 0
 
     def after_update(self):
+        super().after_update()
         if self.value != self.target_value:
             delta = self.target_value - self.value
             if round(abs(delta) * 1000) == 0 or self.axis_speed < 0:
@@ -88,7 +94,7 @@ class JoyKeyBinding(Binding):
         self.btn_num = btn_num
 
     def update_control(self, deltaTime: float) -> bool:
-        if len(Input.raw_joy)<self.joy_num+1:
+        if len(Input.raw_joy) < self.joy_num + 1:
             return False
         return bool(self.control.update(self.value * Input.raw_joy[self.joy_num].get_button(self.btn_num), deltaTime,
                                         self.type))
@@ -101,7 +107,7 @@ class JoyAxesBinding(Binding):
         self.axis_num = axis_num
 
     def update_control(self, deltaTime: float) -> bool:
-        if len(Input.raw_joy)<self.joy_num+1:
+        if len(Input.raw_joy) < self.joy_num + 1:
             return False
 
         return bool(self.control.update(round(Input.raw_joy[self.joy_num].get_axis(self.axis_num), 6), deltaTime,
@@ -197,6 +203,11 @@ class Input:
             return Input.control[name].value
 
     @classmethod
+    def is_signaled(cls, name: str):
+        if name in Input.control:
+            return Input.control[name].is_signaled()
+
+    @classmethod
     def joystiks_count(cls):
         return pygame.joystick.get_count()
 
@@ -210,7 +221,6 @@ Input.bind_joy_btn(a, 0, 0)
 
 a = Input.add_key("Jump2")
 Input.bind_key(a, pygame.K_SPACE)
-
 
 a = Input.add_axis("Vertical", 0.1)
 Input.bind_key(a, pygame.K_w, -1)
@@ -226,7 +236,6 @@ a = Input.add_axis("Vertical2", 0.1)
 Input.bind_key(a, pygame.K_w, -1)
 Input.bind_key(a, pygame.K_s, 1)
 
-
 a = Input.add_axis("Horizontal", 0.1)
 Input.bind_key(a, pygame.K_d)
 Input.bind_key(a, pygame.K_RIGHT)
@@ -240,7 +249,6 @@ Input.bind_joy_axis(a, 0, 0)
 a = Input.add_axis("Horizontal2", 0.1)
 Input.bind_key(a, pygame.K_d)
 Input.bind_key(a, pygame.K_a, -1)
-
 
 a = Input.add_axis("Rotate", 0.2)
 Input.bind_key(a, pygame.K_q)

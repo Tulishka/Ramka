@@ -27,6 +27,9 @@ class Box(Sprite):
         v = 800 * deltaTime * Vector(Input.get("Horizontal"), Input.get("Vertical"))
         self.transform.pos = self.transform.pos + v
 
+        if Input.is_signaled("Jump") and Input.get("Jump"):
+            self.transform.scale_xy = self.transform.scale_x + 0.1,self.transform.scale_y + 0.1
+
 
 class Animal(Sprite):
 
@@ -47,8 +50,7 @@ class Animal(Sprite):
         # self.transform.look_at_ip(Vector(pygame.mouse.get_pos()),False)
         # self.vx = 1 if Vector(1, 0).rotate(self.transform.parent.angle if self.transform.parent else 0).y < 0 else -1
 
-        Game.debug_str = str(self.test_touch(Vector(pygame.mouse.get_pos())))
-
+        Game.debug_str = str(self.test_touch(Vector(pygame.mouse.get_pos())))+str(Game.keys_pressed)
 
         # self.transform.x += self.vx * deltaTime * 80
 

@@ -12,7 +12,7 @@ class Rail(GameObject):
 
     def __init__(self, nodes):
         super(Rail, self).__init__()
-        self.path = Path(nodes, curve=True, loop=1, step=20)
+        self.path = Path(nodes, curve=True, loop=0, step=20)
         self.pos = PathPosition()
         self.spd = 0
         self.max_spd = 1000
@@ -45,7 +45,7 @@ class Rail(GameObject):
         # self.path.move_position_ip(self.pos, self.spd * self.spd_koef * deltaTime, edge_pass=self.edge_pass)
 
         self.near_pos = self.path.closest_position(pygame.mouse.get_pos(), 5)
-        dl = self.path.move_position_toward_ip(self.pos, self.near_pos, 10, edge_pass=self.edge_pass)
+        dl = self.path.move_position_toward_ip(self.pos, self.near_pos, 500 * deltaTime, edge_pass=self.edge_pass)
 
         self.pic.transform.pos = self.path.position_xy(self.pos)
 

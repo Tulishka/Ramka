@@ -38,7 +38,7 @@ class Path:
         self.loop = loop
         self.curve = curve
 
-        self.loop_navigation = loop_navigation if not loop_navigation is None else loop
+        self.loop_navigation = loop_navigation if loop_navigation is not None else loop
 
         self.create_cache()
 

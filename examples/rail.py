@@ -19,14 +19,18 @@ class Rail(GameObject):
 
         self.spd_koef = 1  # self.path.total_length / 1000
 
-        self.pic = Sprite("sprites/arrow.png")
-        self.pic.transform.scale_xy = 0.5, 0.5
+        self.pics = [Sprite("sprites/train.png") for i in range(3)]
+        for i in self.pics:
+            i.transform.scale_xy = 2, 2
+
+        self.tr_dist=38*2
 
         self.near_pos = 0, 0
 
     def on_enter_game(self):
-        Game.add_object(self.pic)
-        self.pic.change_order(1)
+        for i in self.pics:
+            Game.add_object(i)
+            i.change_order(1)
 
     def edge_pass(self, edge):
         if not self.path.loop_navigation:
@@ -47,9 +51,17 @@ class Rail(GameObject):
         self.near_pos = self.path.closest_position(pygame.mouse.get_pos(), 5)
         dl = self.path.move_position_toward_ip(self.pos, self.near_pos, 500 * deltaTime, edge_pass=self.edge_pass)
 
-        self.pic.transform.pos = self.path.position_xy(self.pos)
-
-        self.pic.transform.angle = self.path.angles[self.pos.node]
+        ps=self.pos.copy()
+        pr=None
+        for i in self.pics:
+            i.transform.pos = self.path.position_xy(ps)
+            # i.transform.angle = self.path.angles[ps.node]
+            if pr is None:
+                i.transform.angle = self.path.angles[ps.node]
+            else:
+                i.transform.look_at_ip(pr)
+            pr=i
+            self.path.move_position_ip(ps,self.tr_dist)
 
     def draw(self, dest):
         color = (100, 155, 100)

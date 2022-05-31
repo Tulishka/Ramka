@@ -51,7 +51,7 @@ class Path:
             d = d1 if abs(d1) < abs(dr) else dr
 
             if middle is not None:
-                if not ((to_position.position < middle.position < position.position) or (
+                if d>0 and not ((to_position.position < middle.position < position.position) or (
                         to_position.position > middle.position > position.position)):
                     d = self.total_length - d
 

@@ -12,7 +12,7 @@ class Rail(GameObject):
 
     def __init__(self, nodes):
         super(Rail, self).__init__()
-        self.path = Path(nodes, curve=True, loop=0, step=20)
+        self.path = Path(nodes, curve=True, loop=1, step=20)
         self.pos = PathPosition()
         self.spd = 0
         self.max_spd = 1000

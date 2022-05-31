@@ -5,6 +5,17 @@ from ramka import Vector, Game, Sprite, Input, Animation, pygame, copysign, Game
 Game.init('Рамка')
 Game.цветФона = 200, 240, 200
 
+class Hat(Sprite):
+
+    def __init__(self,n, pik="ira_sprites/hat?.png"):
+        super().__init__(pik)
+        self.animations["default"].fps=0
+        self.animations["default"].first_frame_index=n
+
+
+    def update(self, deltaTime: float):
+        super().update(deltaTime)
+
 
 class Unicorn(Sprite):
     def __init__(self):
@@ -34,19 +45,38 @@ class Unicorn(Sprite):
         if self.owner is None:
             return
 
+        # если рядом с моим хозяином  на рсстоянии 70 пикселей есть кристал то я лечу к нему и собираю его иначе лечу за хозяином
+        # получить список кристалов которые рядом с игроком
+        # if список не пустой:
+        # узнать координаты кристала и задать dest
+        #
+
         tr = self.owner.transform.get_world_transform()
-        dest = tr.pos
+        dest = tr.pos - 0.5 * self.get_size() + self.owner_offset * tr.scale.elementwise()
         dest.y += 5 * math.sin(4 * self.time + dest.x / 10 + self.faza)
 
         # dif = dest - self.transform.pos - 0.5 * Vector(copysign(self.get_size().x,tr.scale_x) ,self.get_size().y) + self.owner_offset * tr.scale.elementwise()
-        dif = dest - self.transform.pos - 0.5 * self.get_size() + self.owner_offset * tr.scale.elementwise()
+
+
+
+        cu =list (Game.get_objects(clas=Crystal, filter=lambda c: c.transform.pos.distance_to(tr.pos) <= 100))
+
+        if len(cu) > 0:
+            dest=cu[0].transform.pos
+
+
+        dif = dest - self.transform.pos
+        dst = dif.length_squared()
+
+        if dst<100 and len(cu) > 0:
+            cu[0].collect()
+            self.owner.got_crystal()
 
         spd = self.spd.length()
 
         stop_time = spd / self.accel
         stop_dist = spd * stop_time + self.accel * (stop_time ** 2) / 2
 
-        dst = dif.length_squared()
         if dst > stop_dist * stop_dist:
             dif.scale_to_length(self.accel)
             dp = dif
@@ -114,6 +144,46 @@ class Totem(Sprite):
                         for s in d:
                             s.owner = uni
                             s.kill_time = s.time + tl
+
+
+class Crystal(Sprite):
+    def __init__(self):
+        super().__init__("ira_sprites/cri?.png")
+        self.time = random()
+        self.transform.scale_xy = 2, 2
+        self.collected=False
+
+    def update(self, deltaTime: float):
+        super().update(deltaTime)
+
+    def collect(self):
+        self.collected=True
+
+
+class CrystalManager:
+    poloj = [(750, 405), (858, 614), (321, 31)]
+    bolls = [0 for i in poloj]
+    time = 0
+    spawn_time = 2
+
+    @staticmethod
+    def add_crystal(dt):
+        CrystalManager.time += dt
+
+        for n, i in enumerate(CrystalManager.bolls):
+            if i != 0:
+                if i.collected:
+                    CrystalManager.bolls[n] = 0
+                    Game.remove_object(i)
+
+        if CrystalManager.time > CrystalManager.spawn_time:
+            lst = [i for i, z in enumerate(CrystalManager.bolls) if z == 0]
+            if len(lst) > 0:
+                i = choice(lst)
+                CrystalManager.bolls[i] = Crystal()
+                CrystalManager.bolls[i].transform.xy = CrystalManager.poloj[i]
+                Game.add_object(CrystalManager.bolls[i])
+            CrystalManager.spawn_time = CrystalManager.time + 10
 
 
 class Balloon(Sprite):
@@ -230,6 +300,7 @@ class Base(Sprite):
         self.vz = 1
         self.igr = igr
         self.state.animation = "walk"
+        self.crystal_count = 0
 
         self.massa = 1
         self.max_spd = 250
@@ -239,6 +310,8 @@ class Base(Sprite):
         self.fric = [0.87, 1]
         self.jump_spd = 500
         self.max_spd_para = 80
+
+        self.myhat = None
 
         self.para = Sprite("ira_sprites/krila.png")
         self.para.transform.set_parent(self)
@@ -254,6 +327,9 @@ class Base(Sprite):
         self.transform.xy = Game.ширинаЭкрана // 2, Game.высотаЭкрана * 2 // 3
         # self.transform.scale_xy = 2, 2
         self.def_parent = None
+
+    def got_crystal(self):
+        self.crystal_count += 1
 
     def on_enter_game(self):
         Game.add_object(self.para)
@@ -277,7 +353,26 @@ class Base(Sprite):
         dx = Input.get("Horizontal" + self.igr)
 
         if Input.get("Jump" + self.igr) and not inair:
-            self.spd.y -= self.jump_spd
+
+            if self.crystal_count>=1 and self.transform.x>872 and self.transform.x<1013 and self.transform.y>672:
+
+
+                    if self.myhat:
+                        if self.myhat.time < 1:
+                            return 
+                        else:
+                            Game.remove_object(self.myhat)
+
+                    h=Hat(randint(0,2))
+                    Game.add_object(h)
+                    h.transform.set_parent(self)
+                    self.crystal_count-=1
+                    self.myhat=h
+
+            else:
+                self.spd.y -= self.jump_spd
+
+
 
         self.para.visible = Input.get("Jump" + self.igr) and inair and self.spd.y > 10
 
@@ -306,7 +401,7 @@ class Base(Sprite):
         else:
             self.spd *= self.fric[inair]
 
-        self.state.animation = "fly" if inair else "walk" if dx else "idle" if self.spd.length_squared() < 25 else "ski"
+        self.state.animation = "fly" if inair else "walk" if dx else "idle" if self.spd.length_squared() < 25 else "ski",""
 
         self.transform.scale_x = abs(self.transform.scale_x) * self.vz
 
@@ -352,6 +447,16 @@ class Base(Sprite):
         return r
 
 
+    def draw(self, dest: pygame.Surface):
+        super().draw(dest)
+
+        if self.crystal_count>0:
+
+            a = Game.font.render(str(self.crystal_count), True, (0, 0, 0))
+            tr = self.transform.get_world_transform()
+            dest.blit(a, (tr.pos.x, tr.pos.y - self.get_size().y/2 * tr.scale_y -16) )
+
+
 class Camera(GameObject):
     def update(self, deltaTime: float):
         super().update(deltaTime)
@@ -363,6 +468,7 @@ class Camera(GameObject):
 
 
 Game.before_update(BalloonManager.add_ball)
+Game.before_update(CrystalManager.add_crystal)
 
 root = Camera()
 Game.add_object(root)
@@ -406,6 +512,12 @@ girl1.def_parent = root
 girl = Base('2')
 Game.add_object(girl)
 girl.transform.scale_xy = 0.4, 0.4
+
+ut = Unicorn()
+ut.owner = girl1
+Game.add_object(ut)
+
+
 
 stat = Totem()
 Game.add_object(stat)

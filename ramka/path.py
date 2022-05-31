@@ -55,7 +55,7 @@ class Path:
 
                 if not (((position.position + d) < middle.position < position.position) or (
                         (position.position + d) > middle.position > position.position)):
-                    d = math.copysign(self.total_length - abs(d),d)
+                    d = math.copysign(self.total_length - abs(d),-d)
 
         return d
 

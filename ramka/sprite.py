@@ -69,6 +69,11 @@ class Sprite(GameObject):
         img = self.curr_animation().get_image(self.time)
         return Vector(img.get_size())
 
+    def get_computed_size(self) -> Vector:
+        img = self.curr_animation().get_image(self.time)
+        return Vector(img.get_size())*self.transform.scale.elementwise()
+
+
     def get_rect(self):
         if self.sprite.rect.size[0] == 0:
             self.prepare_image()

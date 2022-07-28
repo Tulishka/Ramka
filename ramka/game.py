@@ -3,6 +3,7 @@ import pygame
 import pymunk
 import pymunk.pygame_util
 
+from .timers import Timers
 from .collider import Collider
 from .gameobject import GameObject
 from .input import Input
@@ -11,7 +12,7 @@ from .layers import Layer
 
 class Game:
     key_press_listeners = []
-    keys_pressed=[]
+    keys_pressed = []
     pygame.init()
     defaultLayer = Layer("default", 0)
     showFPS = True
@@ -43,6 +44,8 @@ class Game:
     point_sprite.mask = pygame.mask.from_surface(point_sprite.image)
 
     time = 0
+
+    timers = Timers()
 
     @staticmethod
     def get_layer(name: str) -> Layer:
@@ -122,7 +125,7 @@ class Game:
 
             deltaTime = Game.deltaTime()
             Game.time += deltaTime
-            Game.keys_pressed=[]
+            Game.keys_pressed = []
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
@@ -135,6 +138,8 @@ class Game:
 
             Input.update(deltaTime)
             Game.frame_begin()
+
+            Game.timers.update(deltaTime)
 
             for ul in Game.before_update_listeners:
                 ul(deltaTime)

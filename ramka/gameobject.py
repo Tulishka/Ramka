@@ -3,6 +3,7 @@ from typing import Dict, Union, List, Iterable, Callable, Tuple
 import pygame
 from .shared import Vector, Rect
 from .animation import FlipStyle
+from .timers import Timers
 
 
 class GameObject: ...
@@ -30,49 +31,11 @@ class GameObject:
         self.props = {}
         self.opacity = 1.0
 
-        self.__timers = {}
-        self.__timer_id = 0
-
-    def set_interval(self, time: float, callback: callable, timer_id=None) -> any:
-        if not timer_id:
-            self.__timer_id += 1
-            timer_id = self.__timer_id
-
-        self.__timers[timer_id] = {
-            "interval": time,
-            "value": time,
-            "callback": callback
-        }
-        return timer_id
-
-    def set_timeout(self, time: float, callback: callable, timer_id=None) -> any:
-        if not timer_id:
-            self.__timer_id += 1
-            timer_id = self.__timer_id
-
-        self.__timers[timer_id] = {
-            "interval": 0,
-            "value": time,
-            "callback": callback
-        }
-        return timer_id
-
-    def clear_timer(self, timer_id):
-        if timer_id in self.__timers:
-            del self.__timers[timer_id]
+        self.timers = Timers()
 
     def update(self, deltaTime: float):
         self.time += deltaTime
-
-        for tid in list(self.__timers.keys()):
-            t = self.__timers[tid]
-            t["value"] -= deltaTime
-            if t["value"] < 0:
-                t["callback"](tid)
-                if tid in self.__timers:
-                    t["value"] = t["interval"]
-                    if t["value"] == 0:
-                        del self.__timers[tid]
+        self.timers.update(deltaTime)
 
     def add_component(self, component: Component):
         self.components.append(component)

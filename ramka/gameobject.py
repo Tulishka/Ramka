@@ -3,6 +3,7 @@ from typing import Dict, Union, List, Iterable, Callable, Tuple
 import pygame
 from .shared import Vector, Rect
 from .animation import FlipStyle
+from .timers import Timers
 
 
 class GameObject: ...
@@ -30,8 +31,11 @@ class GameObject:
         self.props = {}
         self.opacity = 1.0
 
+        self.timers = Timers()
+
     def update(self, deltaTime: float):
         self.time += deltaTime
+        self.timers.update(deltaTime)
 
     def add_component(self, component: Component):
         self.components.append(component)
@@ -71,7 +75,7 @@ class GameObject:
             c.on_leave_game()
 
     def get_rect(self):
-        return Rect(self.transform.pos.x-1, self.transform.pos.y-1, 2, 2)
+        return Rect(self.transform.pos.x - 1, self.transform.pos.y - 1, 2, 2)
 
     def move_rect(self, offset: Vector):
         pass

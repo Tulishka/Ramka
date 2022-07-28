@@ -23,7 +23,7 @@ class Rail(GameObject):
         for i in self.pics:
             i.transform.scale_xy = 2, 2
 
-        self.tr_dist=38*2
+        self.tr_dist = 38 * 2
 
         self.near_pos = 0, 0
 
@@ -51,8 +51,8 @@ class Rail(GameObject):
         self.near_pos = self.path.closest_position(pygame.mouse.get_pos(), 5)
         dl = self.path.move_position_toward_ip(self.pos, self.near_pos, 500 * deltaTime, edge_pass=self.edge_pass)
 
-        ps=self.pos.copy()
-        pr=None
+        ps = self.pos.copy()
+        pr = None
         for i in self.pics:
             i.transform.pos = self.path.position_xy(ps)
             # i.transform.angle = self.path.angles[ps.node]
@@ -60,8 +60,8 @@ class Rail(GameObject):
                 i.transform.angle = self.path.angles[ps.node]
             else:
                 i.transform.look_at_ip(pr)
-            pr=i
-            self.path.move_position_ip(ps,self.tr_dist)
+            pr = i
+            self.path.move_position_ip(ps, self.tr_dist)
 
     def draw(self, dest):
         color = (100, 155, 100)

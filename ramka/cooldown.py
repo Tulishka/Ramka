@@ -5,7 +5,7 @@ class Cooldown:
 
     def __init__(self, interval=99999):
         """ interval - время "остывания" в сек """
-        self.__start_time = 0
+        self.__start_time = Game.time-99999
         self.interval = interval
 
     def reset(self):

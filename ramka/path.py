@@ -42,7 +42,8 @@ class Path:
 
         self.create_cache()
 
-    def min_delta_between(self, position: PathPosition, to_position: PathPosition, middle: PathPosition = None):
+    def min_delta_between(self, position: PathPosition, to_position: PathPosition, middle_position: PathPosition = None,
+                          direction: float = None):
 
         d = to_position.position - position.position
         if self.loop:
@@ -51,11 +52,16 @@ class Path:
             dr = d1 - self.total_length
             d = d1 if abs(d1) < abs(dr) else dr
 
-            if middle is not None:
-
-                if not (((position.position + d) < middle.position < position.position) or (
-                        (position.position + d) > middle.position > position.position)):
-                    d = math.copysign(self.total_length - abs(d),-d)
+            if direction is not None:
+                if direction > 0 and d < 0:
+                    d = d + self.total_length
+                elif direction < 0 and d > 0:
+                    d = d - self.total_length
+            else:
+                if middle_position is not None:
+                    if not (((position.position + d) < middle_position.position < position.position) or (
+                            (position.position + d) > middle_position.position > position.position)):
+                        d = math.copysign(self.total_length - abs(d), -d)
 
         return d
 

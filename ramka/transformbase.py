@@ -135,7 +135,7 @@ class TransformBase(Component):
             self.on_change()
 
     def look_at_ip(self, target: Union[Vector, TransformBase, Component.GameObject],
-                   use_local: bool = True,max_delta=None) -> TransformBase:
+                   use_local: bool = True, max_delta=None) -> TransformBase:
         if isinstance(target, Component.GameObject):
             target = target.transform
 
@@ -150,21 +150,21 @@ class TransformBase(Component):
             use_local = True
 
         if use_local:
-            angle = -Vector(1.0, 0.0).angle_to(target-self._pos)
+            angle = -Vector(1.0, 0.0).angle_to(target - self._pos)
         else:
             pr = self.gameObject.transform.parent.get_world_transform()
-            angle = -Vector(1.0, 0.0).angle_to(target-self.add(pr)._pos) - pr._angle
+            angle = -Vector(1.0, 0.0).angle_to(target - self.add(pr)._pos) - pr._angle
 
         if max_delta:
-            an=self._angle % 360
-            if an>180:
-                an=an-360
+            an = self._angle % 360
+            if an > 180:
+                an = an - 360
 
-            angle=angle-an
-            if abs(angle)>max_delta:
-                angle=copysign(max_delta,angle)
+            angle = angle - an
+            if abs(angle) > max_delta:
+                angle = copysign(max_delta, angle)
 
-            angle=self._angle + angle
+            angle = self._angle + angle
 
         self._angle = angle
         self.on_change()
@@ -172,9 +172,9 @@ class TransformBase(Component):
         return self
 
     def look_at(self, target: Union[Vector, TransformBase, Component.GameObject],
-                use_local: bool = True,max_delta=None) -> TransformBase:
+                use_local: bool = True, max_delta=None) -> TransformBase:
         p = self.copy()
-        return p.look_at_ip(target, use_local,max_delta)
+        return p.look_at_ip(target, use_local, max_delta)
 
     def add_to_vector(self, vector: Vector):
         vector = Vector(vector)
@@ -250,7 +250,7 @@ class TransformBase(Component):
 
     def move_toward_ip(self, target: Union[Vector, TransformBase, Component.GameObject], distance: float,
                        look_to_target: bool = False,
-                       use_local: bool = True) -> TransformBase:
+                       use_local: bool = True, step_info=None) -> TransformBase:
         if isinstance(target, Component.GameObject):
             target = target.transform
 
@@ -272,6 +272,7 @@ class TransformBase(Component):
             diff = self.add(pr)._pos - target
             angle = -Vector(1.0, 0.0).angle_to(diff) - pr._angle
 
+        v = Vector(0)
         if distance:
             ds = diff.length_squared()
             if ds:
@@ -280,6 +281,7 @@ class TransformBase(Component):
                 else:
                     v = distance * Vector(1.0, 0)
                     v.rotate_ip(-angle)
+
                 self._pos -= v
 
                 if round(v.x) or round(v.y):
@@ -287,9 +289,13 @@ class TransformBase(Component):
                         self._angle = angle
                     self.on_change()
 
+        if step_info:
+            step_info["start_distance"] = distance
+            step_info["delta"] = v
+
         return self
 
     def move_toward(self, target: Union[Vector, TransformBase, Component.GameObject], distance: float,
                     look_to_target: bool = False,
-                    use_local: bool = True) -> TransformBase:
-        return self.copy().move_toward_ip(target, distance, use_local)
+                    use_local: bool = True, step_info=None) -> TransformBase:
+        return self.copy().move_toward_ip(target, distance, use_local, step_info=step_info)

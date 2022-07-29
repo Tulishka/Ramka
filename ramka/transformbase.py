@@ -289,7 +289,7 @@ class TransformBase(Component):
                         self._angle = angle
                     self.on_change()
 
-        if step_info:
+        if step_info is not None:
             step_info["start_distance"] = distance
             step_info["delta"] = v
 

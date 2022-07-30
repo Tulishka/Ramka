@@ -12,7 +12,7 @@ from .layers import Layer
 
 class Game:
     key_press_listeners = []
-    keys_pressed = []
+    keys_pressed = set([])
     pygame.init()
     defaultLayer = Layer("default", 0)
     showFPS = True
@@ -125,14 +125,14 @@ class Game:
 
             deltaTime = Game.deltaTime()
             Game.time += deltaTime
-            Game.keys_pressed = []
+            Game.keys_pressed = set()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                     exit()
                 else:
                     if (event.type == pygame.KEYDOWN):
-                        Game.keys_pressed.append(event.key)
+                        Game.keys_pressed.add(event.key)
                         for li in Game.key_press_listeners:
                             li(event.key)
 

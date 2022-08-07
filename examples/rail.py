@@ -1,6 +1,8 @@
 import random
 from random import randint
 
+import pygame
+
 from ramka import *
 from ramka.path import Path, PathPosition
 
@@ -63,6 +65,10 @@ class Rail(GameObject):
             pr = i
             self.path.move_position_ip(ps, self.tr_dist)
 
+    @Game.on_key_down(key=pygame.K_1)
+    def test(self):
+        print("кнопка 1 нажата")
+
     def draw(self, dest):
         color = (100, 155, 100)
         wd = 4
@@ -88,6 +94,7 @@ s = [(randint(int(200 - 50), int(200 + 50)) * v.rotate(i * 360 / n)) for i in ra
 a = [(i + shift).xy for i in s]
 
 # a = [(100, 100), (200, 100), (200, 200), (100, 200)]
+
 
 r = Rail(a)
 Game.add_object(r)

@@ -180,13 +180,13 @@ class Sprite(GameObject):
 
         return -rotated_offset
 
-    def test_touch(self, point: Vector, func: Callable = None):
+    def touch_test(self, point: Vector, func: Callable = None):
         self.prepare_image()
         if func is None:
             func = pygame.sprite.collide_mask
         if self.sprite.image is not None:
             Game.point_sprite.rect = Game.point_sprite.image.get_rect(center=point)
-            return func(self.sprite, Game.point_sprite)!=None
+            return func(self.sprite, Game.point_sprite) is not None
 
     def is_collided(self, other: GameObject, func: Callable = None) -> Union[bool, Tuple[int, int]]:
         if func is None:

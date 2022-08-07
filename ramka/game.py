@@ -13,6 +13,7 @@ from .layers import Layer
 class Game:
     key_press_listeners = []
     keys_pressed = set([])
+    mouse_pressed = set([])
     pygame.init()
     defaultLayer = Layer("default", 0)
     showFPS = True
@@ -126,6 +127,7 @@ class Game:
             deltaTime = Game.deltaTime()
             Game.time += deltaTime
             Game.keys_pressed = set()
+            Game.mouse_pressed = set()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
@@ -135,11 +137,16 @@ class Game:
                         Game.keys_pressed.add(event.key)
                         for li in Game.key_press_listeners:
                             li(event.key)
+                    if (event.type == pygame.MOUSEBUTTONDOWN):
+                        Game.mouse_pressed.add(event.button)
 
             Input.update(deltaTime)
             Game.frame_begin()
 
             Game.timers.update(deltaTime)
+
+            keys = [i+1 for i, j in enumerate(Input.raw_keys) if j]
+            mbtn = [i+1 for i, j in enumerate(Input.raw_mouse_buttons) if j]
 
             for ul in Game.before_update_listeners:
                 ul(deltaTime)
@@ -147,11 +154,38 @@ class Game:
             for l in Game.layers:
                 for obj in l.gameObjects:
                     if obj.enabled:
+
+                        for ev in obj.event_listeners:
+                            if ev.type == "key_down":
+                                ks = keys if ev.continuos else Game.keys_pressed
+                                if len(ks)>0:
+                                    if not ev.key or ev.key in ks:
+                                        if ev.key is not None:
+                                            ev()
+                                        else:
+                                            ev(ks)
+                            elif ev.type == "mouse_down":
+                                bs = mbtn if ev.continuos else Game.mouse_pressed
+                                if len(bs)>0:
+                                    if ev.hover:
+                                        r = obj.touch_test(Input.mouse_pos)
+                                    else:
+                                        r = True
+                                    if r and (ev.button is None or ev.button in bs):
+                                        if ev.button is not None:
+                                            ev()
+                                        else:
+                                            ev(bs)
+                            elif ev.type == "mouse_move":
+                                if ev.hover:
+                                    r = obj.touch_test(Input.mouse_pos)
+                                else:
+                                    r = True
+                                if r:
+                                    ev()
+
                         obj.update_components(deltaTime)
                         obj.update(deltaTime)
-                        for c in obj.get_components(Collider):
-                            c.color = (255, 0, 0) if c.get_collided(Game.get_components(Collider)) is not None else (
-                                0, 255, 0)
 
             for ul in Game.after_update_listeners:
                 ul(deltaTime)
@@ -211,3 +245,28 @@ class Game:
     def before_draw(draw_func):
         Game.before_draw_listeners.append(draw_func)
         return draw_func
+
+    @staticmethod
+    def on_key_down(func=None, *, key=None, continuos=False):
+
+        def wrapper(func):
+            func.event_descriptor = 1
+            func.key = key
+            func.type = "key_down"
+            func.continuos = continuos
+            return func
+
+        return wrapper if func is None else wrapper(func)
+
+    @staticmethod
+    def on_mouse_down(func=None, *, button=None, continuos=False, hover=True):
+
+        def wrapper(func):
+            func.event_descriptor = 1
+            func.button = button
+            func.type = "mouse_down"
+            func.continuos = continuos
+            func.hover = hover
+            return func
+
+        return wrapper if func is None else wrapper(func)

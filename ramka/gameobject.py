@@ -9,6 +9,7 @@ from .timers import Timers
 class GameObject: ...
 
 
+
 class GameObject:
     from .component import Component
 
@@ -32,6 +33,17 @@ class GameObject:
         self.opacity = 1.0
 
         self.timers = Timers()
+
+        self.event_listeners = []
+        self.init_event_listeners()
+
+    def init_event_listeners(self):
+        self.event_listeners = []
+
+        for m in self.__dir__():
+            m1 = self.__getattribute__(m)
+            if callable(m1) and getattr(m1, 'event_descriptor', 0):
+                self.event_listeners.append(m1)
 
     def update(self, deltaTime: float):
         self.time += deltaTime
@@ -81,7 +93,7 @@ class GameObject:
         pass
 
     def touch_test(self, point: Vector, func: Callable = None):
-        self.get_rect().colliderect(pygame.Rect(point.x, point.y, 1, 1))
+        return self.get_rect().colliderect(pygame.Rect(point.x, point.y, 1, 1)) is not None
 
     def is_collided(self, other: GameObject, func: Callable = None) -> Union[bool, Tuple[int, int]]:
         return other.visible and self.get_rect().colliderect(other.get_rect())

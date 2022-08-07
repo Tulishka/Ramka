@@ -2,6 +2,8 @@ import math
 from typing import Dict, List, Union
 import pygame
 
+from ramka import Vector
+
 
 class InputControl:
     def __init__(self, name: str):
@@ -121,6 +123,8 @@ class Input:
     pygame.joystick.init()
 
     raw_keys = []
+    raw_mouse_buttons = []
+    mouse_pos = Vector(0,0)
     raw_joy = [pygame.joystick.Joystick(i) for i in range(pygame.joystick.get_count())]
 
     for i in raw_joy:
@@ -168,6 +172,9 @@ class Input:
     def update(deltaTime: float):
         from .game import Game
         Input.raw_keys = pygame.key.get_pressed()
+        Input.raw_mouse_buttons = pygame.mouse.get_pressed()
+        Input.mouse_pos=Vector(pygame.mouse.get_pos())
+
         for c in Input.control.values():
             c.before_update()
             for b in filter(lambda x: x.control == c, Input.binding):

@@ -5,7 +5,6 @@ from typing import Dict
 from ramka import pygame, Vector, FlipStyle, slice_image, Game, Sprite, Animation, Input, Cooldown
 
 
-
 class Area(Sprite):
     def __init__(self, animations: Dict[str, Animation]):
         super().__init__(animations)
@@ -21,7 +20,7 @@ class Area(Sprite):
 class Box(Sprite):
     def __init__(self, animations: Dict[str, Animation]):
         super().__init__(animations)
-        self.per1=Cooldown(3)
+        self.per1 = Cooldown(3)
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
@@ -30,7 +29,7 @@ class Box(Sprite):
         self.transform.pos = self.transform.pos + v
 
         if Input.get("Jump") and self.per1():
-            self.transform.scale_xy = self.transform.scale_x + 0.1,self.transform.scale_y + 0.1
+            self.transform.scale_xy = self.transform.scale_x + 0.1, self.transform.scale_y + 0.1
             self.per1.start()
 
 
@@ -47,13 +46,22 @@ class Animal(Sprite):
     def get_flip(self) -> FlipStyle:
         return self.vx > 0, False
 
+    @Game.on_key_down(continuos=True)
+    def test2(self, kk):
+        print("кнопка", kk)
+
+    @Game.on_mouse_down
+    def test(self, kk):
+        print("клик", kk)
+
     def update(self, deltaTime: float):
         # super().update(deltaTime)
 
         # self.transform.look_at_ip(Vector(pygame.mouse.get_pos()),False)
         # self.vx = 1 if Vector(1, 0).rotate(self.transform.parent.angle if self.transform.parent else 0).y < 0 else -1
 
-        Game.debug_str = str(self.test_touch(Vector(pygame.mouse.get_pos())))+str(Game.keys_pressed)+","+str(Game.time)
+        Game.debug_str = str(self.touch_test(Vector(pygame.mouse.get_pos()))) + str(Game.keys_pressed) + "," + str(
+            Game.time)
 
         # self.transform.x += self.vx * deltaTime * 80
 
@@ -85,52 +93,50 @@ class Animal(Sprite):
 
     def draw(self, dest: pygame.Surface):
         super().draw(dest)
-        p0=Vector(self.lc[0], self.lc[1])
-        p1=self.image_pos_to_global(p0)
-        p2=self.global_to_image_pos(p1)
+        p0 = Vector(self.lc[0], self.lc[1])
+        p1 = self.image_pos_to_global(p0)
+        p2 = self.global_to_image_pos(p1)
         # Game.debug_str = f'({round(p0.x-p2.x)},{round(p0.y-p2.y)})'
         pygame.draw.circle(dest, (255, 0, 0), p1, 2)
-
 
 
 class Looker(Sprite):
     def __init__(self):
         super(Looker, self).__init__("sprites/arrow.png")
-        self.transform.angle=-600
+        self.transform.angle = -600
 
     def update(self, deltaTime: float):
         super(Looker, self).update(deltaTime)
 
-        obj=Game.get_objects(filter=lambda x: isinstance(x,Animal))
-        mind=0
-        mino=None
+        obj = Game.get_objects(filter=lambda x: isinstance(x, Animal))
+        mind = 0
+        mino = None
         for o in obj:
-            d=self.transform.pos.distance_squared_to(o.transform.pos)
-            if d<mind or mino is None:
-                mind=d
-                mino=o
+            d = self.transform.pos.distance_squared_to(o.transform.pos)
+            if d < mind or mino is None:
+                mind = d
+                mino = o
 
         if not mino is None:
-            self.transform.look_at_ip(mino,max_delta=0.3)
+            self.transform.look_at_ip(mino, max_delta=0.3)
 
 
 class Piston(Sprite):
     def __init__(self):
         super(Piston, self).__init__("sprites/piston1.png")
-        self.section=[Sprite("sprites/piston2.png"),Sprite("sprites/piston3.png")]
-        self.expand=1
+        self.section = [Sprite("sprites/piston2.png"), Sprite("sprites/piston3.png")]
+        self.expand = 1
         self.section[0].transform.set_parent(self)
         self.section[1].transform.set_parent(self.section[0])
-
 
 
 Game.init('Рамка')
 test_img = pygame.image.load("./sprites/test.png").convert_alpha()
 
-v=Vector(0)
+v = Vector(0)
 
-l=Looker()
-l.transform.xy= 100,400
+l = Looker()
+l.transform.xy = 100, 400
 Game.add_object(l)
 
 # === area
@@ -157,7 +163,7 @@ h_walk = Animation(slice_image(hyena_walk), 12, True)
 hyena = Animal({"idle": h_idle, "default": h_walk})
 Game.add_object(hyena)
 hyena.transform.xy = (0, 0)
-hyena.transform.scale = 1,1
+hyena.transform.scale = 1, 1
 hyena.image_offset.xy = 0, hyena_walk.get_height() / 2
 hyena.transform.set_parent(area)
 

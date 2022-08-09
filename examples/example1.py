@@ -52,7 +52,12 @@ class Animal(Sprite):
 
     @Game.on_mouse_down
     def test(self, kk):
-        print("клик", kk)
+        print("клик down", kk)
+
+    @Game.on_mouse_up
+    def test3(self, kk):
+        print("клик up", kk)
+
 
     def update(self, deltaTime: float):
         # super().update(deltaTime)

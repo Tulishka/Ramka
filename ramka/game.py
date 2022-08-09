@@ -128,6 +128,7 @@ class Game:
             Game.time += deltaTime
             Game.keys_pressed = set()
             Game.mouse_pressed = set()
+            Game.mouse_released = set()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
@@ -137,16 +138,18 @@ class Game:
                         Game.keys_pressed.add(event.key)
                         for li in Game.key_press_listeners:
                             li(event.key)
-                    if (event.type == pygame.MOUSEBUTTONDOWN):
+                    elif (event.type == pygame.MOUSEBUTTONDOWN):
                         Game.mouse_pressed.add(event.button)
+                    elif (event.type == pygame.MOUSEBUTTONUP):
+                        Game.mouse_released.add(event.button)
 
             Input.update(deltaTime)
             Game.frame_begin()
 
             Game.timers.update(deltaTime)
 
-            keys = [i+1 for i, j in enumerate(Input.raw_keys) if j]
-            mbtn = [i+1 for i, j in enumerate(Input.raw_mouse_buttons) if j]
+            keys = [i + 1 for i, j in enumerate(Input.raw_keys) if j]
+            mbtn = [i + 1 for i, j in enumerate(Input.raw_mouse_buttons) if j]
 
             for ul in Game.before_update_listeners:
                 ul(deltaTime)
@@ -158,7 +161,7 @@ class Game:
                         for ev in obj.event_listeners:
                             if ev.type == "key_down":
                                 ks = keys if ev.continuos else Game.keys_pressed
-                                if len(ks)>0:
+                                if ks:
                                     if not ev.key or ev.key in ks:
                                         if ev.key is not None:
                                             ev()
@@ -166,7 +169,7 @@ class Game:
                                             ev(ks)
                             elif ev.type == "mouse_down":
                                 bs = mbtn if ev.continuos else Game.mouse_pressed
-                                if len(bs)>0:
+                                if bs:
                                     if ev.hover:
                                         r = obj.touch_test(Input.mouse_pos)
                                     else:
@@ -176,13 +179,17 @@ class Game:
                                             ev()
                                         else:
                                             ev(bs)
-                            elif ev.type == "mouse_move":
-                                if ev.hover:
-                                    r = obj.touch_test(Input.mouse_pos)
-                                else:
-                                    r = True
-                                if r:
-                                    ev()
+                            elif ev.type == "mouse_up":
+                                if Game.mouse_released:
+                                    if ev.hover:
+                                        r = obj.touch_test(Input.mouse_pos)
+                                    else:
+                                        r = True
+                                    if r and (ev.button is None or ev.button in Game.mouse_released):
+                                        if ev.button is not None:
+                                            ev()
+                                        else:
+                                            ev(Game.mouse_released)
 
                         obj.update_components(deltaTime)
                         obj.update(deltaTime)
@@ -266,6 +273,18 @@ class Game:
             func.button = button
             func.type = "mouse_down"
             func.continuos = continuos
+            func.hover = hover
+            return func
+
+        return wrapper if func is None else wrapper(func)
+
+    @staticmethod
+    def on_mouse_up(func=None, *, button=None, hover=True):
+
+        def wrapper(func):
+            func.event_descriptor = 1
+            func.button = button
+            func.type = "mouse_up"
             func.hover = hover
             return func
 

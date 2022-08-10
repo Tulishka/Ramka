@@ -22,8 +22,9 @@ class Layer:
 
     def change_order(self, object: GameObject, delta=None, order=None):
 
+        idx = self.gameObjects.index(object)
+
         if delta is not None:
-            idx = self.gameObjects.index(object)
             nidx = idx + delta
         else:
             nidx = order

@@ -2,7 +2,7 @@ import math
 from random import random
 from typing import Dict
 
-from ramka import pygame, Vector, FlipStyle, slice_image, Game, Sprite, Animation, Input, Cooldown
+from ramka import pygame, Vector, FlipStyle, slice_image, Game, Sprite, Animation, Input, Cooldown, GameObject
 
 
 class Area(Sprite):
@@ -15,6 +15,7 @@ class Area(Sprite):
         v = 180 * deltaTime * Input.get("Rotate")
 
         self.transform.angle = self.transform.angle + v
+
 
 
 class Box(Sprite):
@@ -49,15 +50,6 @@ class Animal(Sprite):
     @Game.on_key_down(continuos=True)
     def test2(self, kk):
         print("кнопка", kk)
-
-    @Game.on_mouse_down
-    def test(self, kk):
-        print("клик down", kk)
-
-    @Game.on_mouse_up
-    def test3(self, kk):
-        print("клик up", kk)
-
 
     def update(self, deltaTime: float):
         # super().update(deltaTime)
@@ -135,6 +127,40 @@ class Piston(Sprite):
         self.section[1].transform.set_parent(self.section[0])
 
 
+
+
+class DraggableAnimal(Animal):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.dragging = False
+        self.start_pos = None
+        self.touch_pos = None
+
+    @Game.on_mouse_down(hover=True, button=1)
+    def mouse_down(self):
+        print("111")
+        self.dragging = True
+        self.start_pos = self.transform.pos
+        self.touch_pos = Input.mouse_pos
+
+    def update(self, dt: float):
+        super().update(dt)
+        if self.dragging:
+            self.transform.pos = (Input.mouse_pos + self.start_pos - self.touch_pos) / self.transform.parent.scale.x
+
+    @Game.on_mouse_up(button=1,hover=False)
+    def mouse_up(self):
+        print("222")
+        if self.dragging:
+            print("333")
+            self.dragging = False
+            self.transform.pos = Input.mouse_pos + self.start_pos - self.touch_pos
+            self.start_pos = None
+            self.touch_pos = None
+
+
+
 Game.init('Рамка')
 test_img = pygame.image.load("./sprites/test.png").convert_alpha()
 
@@ -165,12 +191,14 @@ hyena_walk = pygame.image.load("./sprites/Hyena_walk.png")
 h_idle = Animation(slice_image(hyena_idle), 6, True)
 h_walk = Animation(slice_image(hyena_walk), 12, True)
 
-hyena = Animal({"idle": h_idle, "default": h_walk})
+hyena = DraggableAnimal({"idle": h_idle, "default": h_walk})
 Game.add_object(hyena)
 hyena.transform.xy = (0, 0)
 hyena.transform.scale = 1, 1
 hyena.image_offset.xy = 0, hyena_walk.get_height() / 2
 hyena.transform.set_parent(area)
+
+
 
 # Game.drawOptions['show_offset']=True
 # === RUN GAME
@@ -178,7 +206,7 @@ Game.run()
 
 # todo: состояния
 # todo: эффекты : индивидуальные, групповые, глобальные
-# todo: таймер? последовательности
+# todo: последовательности
 # todo: анимация:  скорость анимации множитель, события анимации, свойства кадрам анимации: обработчики, отправка событий
 # todo: коллайдер : can collide
 # todo: звуки

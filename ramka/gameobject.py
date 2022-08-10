@@ -37,6 +37,10 @@ class GameObject:
         self.event_listeners = []
         self.init_event_listeners()
 
+
+    def w_transform(self):
+        return self.transform.get_world_transform()
+
     def init_event_listeners(self):
         self.event_listeners = []
 

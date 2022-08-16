@@ -17,6 +17,7 @@ class Game:
     mouse_pressed = set([])
     pygame.init()
     defaultLayer = Layer("default", 0)
+    uiLayer = Layer("ui", 999)
     showFPS = True
     font = pygame.font.SysFont("arial", 14)
     gameObjects: List[GameObject] = []
@@ -33,7 +34,7 @@ class Game:
     before_draw_listeners = []
     after_draw_listeners = []
 
-    layers: List[Layer] = [defaultLayer]
+    layers: List[Layer] = [defaultLayer,uiLayer]
 
     ph_space = pymunk.Space()
     ph_gravity = (0.0, 900.0)

@@ -70,8 +70,7 @@ class Sprite(GameObject):
         return Vector(img.get_size())
 
     def get_computed_size(self) -> Vector:
-        return self.get_size()*self.transform.get_world_transform().scale.elementwise()
-
+        return self.get_size()*abs(self.transform.get_world_transform().scale.elementwise()).elementwise()
 
     def get_rect(self):
         if self.sprite.rect.size[0] == 0:

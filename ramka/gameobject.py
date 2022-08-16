@@ -9,7 +9,6 @@ from .timers import Timers
 class GameObject: ...
 
 
-
 class GameObject:
     from .component import Component
 
@@ -37,17 +36,22 @@ class GameObject:
         self.event_listeners = []
         self.init_event_listeners()
 
-
     def w_transform(self):
         return self.transform.get_world_transform()
 
+    def screen_pos(self):
+        return self.transform.get_world_transform().pos
+
+
     def init_event_listeners(self):
         self.event_listeners = []
-
-        for m in self.__dir__():
-            m1 = self.__getattribute__(m)
-            if callable(m1) and getattr(m1, 'event_descriptor', 0):
-                self.event_listeners.append(m1)
+        try:
+            for m in self.__dir__():
+                m1 = self.__getattribute__(m)
+                if callable(m1) and getattr(m1, 'event_descriptor', 0):
+                    self.event_listeners.append(m1)
+        except:
+            pass
 
     def update(self, deltaTime: float):
         self.time += deltaTime

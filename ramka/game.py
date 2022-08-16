@@ -3,6 +3,7 @@ import pygame
 import pymunk
 import pymunk.pygame_util
 
+from . import Vector
 from .timers import Timers
 from .collider import Collider
 from .gameobject import GameObject
@@ -21,6 +22,7 @@ class Game:
     gameObjects: List[GameObject] = []
     экран: pygame.Surface
     ширинаЭкрана, высотаЭкрана = размерЭкрана = (1024, 768)
+    screen_size = Vector(ширинаЭкрана, высотаЭкрана)
     цветФона: pygame.Color = (0, 0, 20)
     clock = pygame.time.Clock()
     debug_str = ''
@@ -89,6 +91,18 @@ class Game:
             Game.цветФона = back_color
 
     @staticmethod
+    def _notify_enter_leave_listeners(game_object, event_type):
+        objs = Game.get_objects(filter=lambda x: x.event_listeners)
+        ls = []
+        for o in objs:
+            ls.extend(filter(lambda z: z.type == event_type, o.event_listeners))
+
+        for l in ls:
+            if (l.clas is None or isinstance(game_object, l.clas)) and (
+                    l.layer is None or game_object.layer == l.layer) and (l.filter(game_object) if l.filter else True):
+                l(game_object)
+
+    @staticmethod
     def add_object(game_object: GameObject, layer: Union[str, Layer, None] = None):
         if layer is None:
             layer = Game.defaultLayer
@@ -97,6 +111,8 @@ class Game:
         game_object.set_layer(layer)
 
         if game_object not in Game.gameObjects:
+            Game._notify_enter_leave_listeners(game_object, "other_enter_game")
+
             Game.gameObjects.append(game_object)
             game_object.on_enter_game()
 
@@ -106,6 +122,7 @@ class Game:
             game_object.on_leave_game()
             game_object.set_layer(None)
             Game.gameObjects.remove(game_object)
+            Game._notify_enter_leave_listeners(game_object, "other_leave_game")
 
     @staticmethod
     def deltaTime():
@@ -157,8 +174,9 @@ class Game:
             for l in Game.layers:
                 for obj in l.gameObjects:
                     if obj.enabled:
-
                         for ev in obj.event_listeners:
+                            if ev.event_descriptor != 1:
+                                continue
                             if ev.type == "key_down":
                                 ks = keys if ev.continuos else Game.keys_pressed
                                 if ks:
@@ -261,6 +279,30 @@ class Game:
             func.key = key
             func.type = "key_down"
             func.continuos = continuos
+            return func
+
+        return wrapper if func is None else wrapper(func)
+
+    @staticmethod
+    def on_other_enter_game(func=None, *, clas=None, layer=None, filter=None):
+        def wrapper(func):
+            func.event_descriptor = 2
+            func.clas = clas
+            func.layer = layer
+            func.filter = filter
+            func.type = "other_enter_game"
+            return func
+
+        return wrapper if func is None else wrapper(func)
+
+    @staticmethod
+    def on_other_leave_game(func=None, *, clas=None, layer=None, filter=None):
+        def wrapper(func):
+            func.event_descriptor = 2
+            func.clas = clas
+            func.layer = layer
+            func.filter = filter
+            func.type = "other_leave_game"
             return func
 
         return wrapper if func is None else wrapper(func)

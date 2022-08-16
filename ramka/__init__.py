@@ -26,6 +26,7 @@ from .transform_modifiers import *
 from .component import *
 from .gameobject import *
 from .sprite import *
+from .camera import *
 
 from .cooldown import *
 from .timers import *

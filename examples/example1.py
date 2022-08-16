@@ -159,10 +159,16 @@ class DraggableAnimal(Animal):
             self.start_pos = None
             self.touch_pos = None
 
+class Logger(GameObject):
 
+    @Game.on_other_enter_game
+    def log_enter(self,object):
+        print("welcome!",object)
 
 Game.init('Рамка')
 test_img = pygame.image.load("./sprites/test.png").convert_alpha()
+
+Game.add_object(Logger())
 
 v = Vector(0)
 

@@ -121,7 +121,7 @@ class Flower(Sprite):
                     self.particle_spawn_timeout = 0.2
                     imp = self.impulse - self.old_impulse
                     self.spawn_particle(imp)
-                    self.old_impulse=Vector(self.impulse)
+                    self.old_impulse = Vector(self.impulse)
 
         c = self.get_collided(Game.get_objects(filter=lambda x: isinstance(x, Bee) or isinstance(x, Pollen)))
         if len(c):
@@ -253,12 +253,12 @@ class Bee(Sprite):
 
         self.auto_harvest = False
         self.auto_dest = None
-        self.auto_dest_offset=Vector(0.0)
-        self.swarm=list(Game.get_objects(clas=Swarm))
-        if len(self.swarm)>0:
-            self.swarm=self.swarm[0]
+        self.auto_dest_offset = Vector(0.0)
+        self.swarm = list(Game.get_objects(clas=Swarm))
+        if len(self.swarm) > 0:
+            self.swarm = self.swarm[0]
         else:
-            self.swarm=self
+            self.swarm = self
 
     def create_pollen(self):
         pollen = Pollen(Bee.pollen_pic)
@@ -282,65 +282,64 @@ class Bee(Sprite):
 
         if self.auto_harvest:
             if self.auto_dest is None and self.pollen.количество > self.pollen.min_size:
-                if self.transform.pos.distance_squared_to(self.swarm.transform.pos)<400:
-                    self.auto_dest=self.swarm
+                if self.transform.pos.distance_squared_to(self.swarm.transform.pos) < 400:
+                    self.auto_dest = self.swarm
             if self.auto_dest is None and self.pollen.количество < self.pollen.max_size:
                 self.auto_dest = random.choice(list(Game.get_objects(clas=Flower)))
-            if self.pollen.количество>=self.pollen.max_size:
-                self.auto_dest=self.swarm
+            if self.pollen.количество >= self.pollen.max_size:
+                self.auto_dest = self.swarm
 
         if Input.get("Jump" + self.control_suff):
             self.drop_pollen()
 
         if self.auto_dest is None:
-            dp=Vector(Input.get("Horizontal" + self.control_suff),Input.get("Vertical" + self.control_suff)) * self.Ускорение
-            spd=self.скорость.length_squared()
+            dp = Vector(Input.get("Horizontal" + self.control_suff),
+                        Input.get("Vertical" + self.control_suff)) * self.Ускорение
+            spd = self.скорость.length_squared()
             if dp.x:
                 self.Направление = dp.x >= 0
         else:
-            if isinstance(self.auto_dest,GameObject):
-                dest=self.auto_dest.transform.pos
+            if isinstance(self.auto_dest, GameObject):
+                dest = self.auto_dest.transform.pos
             else:
-                dest=self.auto_dest
+                dest = self.auto_dest
 
-            dif=dest-self.transform.pos + self.auto_dest_offset*self.transform.scale.elementwise()
-            spd=self.скорость.length()
-            stop_time=spd / self.Ускорение
-            stop_dist = spd * stop_time + self.Ускорение * (stop_time**2) / 2
-            dst=dif.length_squared()
-            if dst>stop_dist*stop_dist:
+            dif = dest - self.transform.pos + self.auto_dest_offset * self.transform.scale.elementwise()
+            spd = self.скорость.length()
+            stop_time = spd / self.Ускорение
+            stop_dist = spd * stop_time + self.Ускорение * (stop_time ** 2) / 2
+            dst = dif.length_squared()
+            if dst > stop_dist * stop_dist:
                 dif.scale_to_length(self.Ускорение)
-                dp=dif
+                dp = dif
             else:
-                dp=Vector(0)
+                dp = Vector(0)
 
-            if dst<100 and spd<20:
-                self.auto_dest=None
+            if dst < 100 and spd < 20:
+                self.auto_dest = None
 
-            if dp.x and spd>10:
+            if dp.x and spd > 10:
                 self.Направление = self.скорость.x >= 0
 
-
-        if dp.length_squared()<0.1 and spd>0:
-            dp=-self.скорость
-            dp.scale_to_length(min(spd,self.Ускорение))
+        if dp.length_squared() < 0.1 and spd > 0:
+            dp = -self.скорость
+            dp.scale_to_length(min(spd, self.Ускорение))
 
         self.скорость += dp * deltaTime
 
         if self.скорость.length_squared() > self.максСкорость * self.максСкорость:
             self.скорость.scale_to_length(self.максСкорость)
 
-
         if self.ВременнойСдвигДрейфа - self.time < 0:
             self.ВременнойСдвигДрейфа = self.time + 0.5
             # self.ТочкаДрейфа = Vector(randint(0, Game.ширинаЭкрана), randint(0, Game.высотаЭкрана))
-            obj=list(Game.get_objects(clas=Bee, filter=lambda p: p.control_suff==self.control_suff))
+            obj = list(Game.get_objects(clas=Bee, filter=lambda p: p.control_suff == self.control_suff))
             if len(obj):
-                sr=Vector(0.0)
+                sr = Vector(0.0)
                 for o in obj:
-                    sr +=o.transform.pos
-                sr *= 1/len(obj)
-                self.ТочкаДрейфа = sr+Vector(randint(-60, 60), randint(-60, 60))
+                    sr += o.transform.pos
+                sr *= 1 / len(obj)
+                self.ТочкаДрейфа = sr + Vector(randint(-60, 60), randint(-60, 60))
             else:
                 self.ТочкаДрейфа = Vector(randint(0, Game.ширинаЭкрана), randint(0, Game.высотаЭкрана))
 
@@ -369,6 +368,7 @@ class Bee(Sprite):
     #     super().draw(dest)
     #     pygame.draw.circle(dest,(255,0,0),self.ТочкаДрейфа,2)
 
+
 class Spider(Sprite):
     pics_walk = [
         pygame.image.load("./sprites/spider_walk1.png").convert_alpha(),
@@ -388,27 +388,31 @@ class Spider(Sprite):
         self.Направление = False
         self.максСкорость = 100 + randint(0, 50)
         self.Ускорение = 100 + randint(0, 50)
-        self.скорость = Vector(self.максСкорость,0)
+        self.скорость = Vector(self.максСкорость, 0)
 
         self.точкаНазначения = Vector(0)
         self.времяОжидания = randint(3, 15)
 
     def update(self, deltaTime: float):
 
-        if self.transform.x>Game.ширинаЭкрана or self.transform.x<0:
-            self.скорость.x=-self.скорость.x
+        if self.transform.x > Game.ширинаЭкрана or self.transform.x < 0:
+            self.скорость.x = -self.скорость.x
 
-        if self.transform.y>Game.высотаЭкрана or self.transform.y<0:
-            self.скорость.y=-self.скорость.y
+        if self.transform.y > Game.высотаЭкрана or self.transform.y < 0:
+            self.скорость.y = -self.скорость.y
 
-        self.transform.pos+=self.скорость * deltaTime
+        self.transform.pos += self.скорость * deltaTime
 
-        self.Направление = self.скорость.x>0
+        self.Направление = self.скорость.x > 0
 
         self.transform.scale_x = math.copysign(self.transform.scale_x, -1 if self.Направление else 1)
 
         super().update(deltaTime)
 
+
+
+cam = Camera()
+Game.add_object(cam)
 
 # СОЗДАНИЕ УЛЕЯ ==============
 swarm_pic = pygame.image.load("./sprites/swarm.png").convert_alpha()
@@ -439,8 +443,8 @@ Game.add_object(qwin_bee)
 qwin_bee.transform.xy = 100, 100
 qwin_bee.transform.scale_xy = 2, 2
 
-qwin_bee.auto_harvest= True
-qwin_bee.auto_dest_offset=Vector(4, -16)
+qwin_bee.auto_harvest = True
+qwin_bee.auto_dest_offset = Vector(4, -16)
 
 # СОЗДАНИЕ КОРОНЫ ==============
 crown_pic = pygame.image.load("./sprites/crown.png").convert_alpha()
@@ -448,7 +452,6 @@ crown = Sprite(crown_pic)
 Game.add_object(crown)
 crown.transform.xy = -10, -10
 crown.transform.set_parent(qwin_bee)
-
 
 # bee = Bee("1")
 # Game.add_object(bee)
@@ -461,17 +464,18 @@ for i in range(10):
     bee = Bee("2")
     Game.add_object(bee)
     bee.transform.xy = 50 + randint(0, 100), 50 + randint(0, 100)
-    bee.transform.scale_xy = 0.5+a, 0.5+a
-    bee.auto_harvest= True
-    bee.auto_dest_offset=Vector(4, -16)
-
-
+    bee.transform.scale_xy = 0.5 + a, 0.5 + a
+    bee.auto_harvest = True
+    bee.auto_dest_offset = Vector(4, -16)
 
 # СОЗДАНИЕ ПАУКА ================
 spider = Spider()
 Game.add_object(spider)
-spider.transform.xy = 100, Game.высотаЭкрана-48
+spider.transform.xy = 100, Game.высотаЭкрана - 48
 spider.transform.scale_xy = 3, 3
+
+cam.set_focus(qwin_bee)
+
 
 # hat=Sprite(flower_pic)
 # Game.add_object(hat)

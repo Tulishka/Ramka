@@ -411,8 +411,8 @@ class Spider(Sprite):
 
 
 
-cam = Camera()
-Game.add_object(cam)
+# cam = Camera()
+# Game.add_object(cam)
 
 # СОЗДАНИЕ УЛЕЯ ==============
 swarm_pic = pygame.image.load("./sprites/swarm.png").convert_alpha()
@@ -474,7 +474,7 @@ Game.add_object(spider)
 spider.transform.xy = 100, Game.высотаЭкрана - 48
 spider.transform.scale_xy = 3, 3
 
-cam.set_focus(qwin_bee)
+# cam.set_focus(qwin_bee)
 
 
 # hat=Sprite(flower_pic)

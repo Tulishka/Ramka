@@ -7,9 +7,8 @@ class Camera(GameObject):
         super().__init__()
         self._focus = None
 
-
-    def set_focus(self,focus_object):
-        self._focus=focus_object
+    def set_focus(self, focus_object):
+        self._focus = focus_object
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
@@ -26,6 +25,5 @@ class Camera(GameObject):
 
     @Game.on_other_enter_game
     def on_newbie(self, obj):
-        if not obj.transform.parent:
+        if not obj.transform.parent and obj.layer != Game.uiLayer:
             obj.transform.set_parent(self)
-

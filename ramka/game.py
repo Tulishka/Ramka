@@ -261,9 +261,10 @@ class Game:
         if filter is None:
             filter = lambda x: True
 
-        for c in Game.gameObjects:
-            if (clas is None or isinstance(c, clas)) and (layer is None or c.layer == layer) and filter(c):
-                yield c
+        for l in Game.layers:
+            for c in l.gameObjects:
+                if (clas is None or isinstance(c, clas)) and (layer is None or c.layer == layer) and filter(c):
+                    yield c
 
     @staticmethod
     def before_update(update_func):

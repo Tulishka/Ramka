@@ -1,9 +1,6 @@
-from typing import Union, Iterable, Tuple
+from typing import Union
 
-import pygame
-
-from . import GameObject, Game
-from .transformbase import TransformBase
+from . import GameObject
 from .component import Component
 from .shared import Vector
 
@@ -11,7 +8,6 @@ from .shared import Vector
 class Approacher(Component):
 
     def __init__(self, game_oject: Component.GameObject):
-        from .transform import Transform
         super().__init__(game_oject)
         self.target = None
         self.max_speed = 0
@@ -24,7 +20,7 @@ class Approacher(Component):
         self.speed = Vector(0, 0)
         self.x_direction = 1
 
-    def approach(self, target: Union[Vector, GameObject], max_speed=200, acceleration=0, deceleration=0,
+    def approach(self, target: Union[Vector, GameObject], max_speed=800, acceleration=400, deceleration=0,
                  initial_speed: Vector = Vector(0, 0), max_distance=0,
                  min_distance=0, ignore_distance=0, start_pos=None, ignore_zone_deceleration=0):
         self.target = target

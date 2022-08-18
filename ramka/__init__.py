@@ -27,6 +27,7 @@ from .component import *
 from .gameobject import *
 from .sprite import *
 from .camera import *
+from .approacher import *
 
 from .cooldown import *
 from .timers import *

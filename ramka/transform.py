@@ -20,10 +20,9 @@ class Transform(TransformBase):
         self.modifier = defaultTransformModifier
         self.__world_transform_cache: Union[None, TransformBase] = None
 
-        self.parent: Union[None,Transform] = None
+        self.parent: Union[None, Transform] = None
         if parent is not None:
             self.set_parent(parent)
-
 
     def on_change(self):
         if self.__world_transform_cache is not None:
@@ -43,7 +42,8 @@ class Transform(TransformBase):
                 else:
                     self.__world_transform_cache = self.modifier.apply(self).add_ip(self.parent.get_world_transform())
 
-        return self.__world_transform_cache.copy()
+        res = self.__world_transform_cache.copy()
+        return res
 
     def __nocache_get_world_transform(self) -> TransformBase:
         if self.parent is None:
@@ -73,7 +73,7 @@ class Transform(TransformBase):
     def detach(self, to_world: bool = False):
         if self.parent:
             if to_world:
-                t=self.get_world_transform()
+                t = self.get_world_transform()
                 self.assign_positions(t)
 
             self.parent.__remove_child(self)
@@ -93,8 +93,8 @@ class Transform(TransformBase):
             self.sub_ip(parent.get_world_transform())
 
     @staticmethod
-    def to_local_coord(parent: Transform, target: Union[Vector, TransformBase, Transform.GameObject] ,
-                       local_target: bool = True ) ->Vector:
+    def to_local_coord(parent: Transform, target: Union[Vector, TransformBase, Transform.GameObject],
+                       local_target: bool = True) -> Vector:
         if isinstance(target, Transform.GameObject):
             target = target.transform
 
@@ -107,12 +107,12 @@ class Transform(TransformBase):
 
         if not local_target and parent:
             transform = parent.get_world_transform()
-            target=transform.sub_from_vector(target)
+            target = transform.sub_from_vector(target)
         else:
             target = Vector(target)
 
         return target
 
     def to_parent_local_coord(self, target: Union[Vector, TransformBase, Transform.GameObject],
-                              local_target: bool = True) ->Vector:
+                              local_target: bool = True) -> Vector:
         return self.to_local_coord(self.parent, target, local_target)

@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Callable
 
 from . import GameObject
 from .component import Component
@@ -20,7 +20,7 @@ class Approacher(Component):
         self.speed = Vector(0, 0)
         self.x_direction = 1
 
-    def approach(self, target: Union[Vector, GameObject], max_speed=800, acceleration=400, deceleration=0,
+    def approach(self, target: Union[Vector, GameObject, Callable], max_speed=800, acceleration=400, deceleration=0,
                  initial_speed: Vector = Vector(0, 0), max_distance=0,
                  min_distance=0, ignore_distance=0, start_pos=None, ignore_zone_deceleration=0):
         self.target = target
@@ -43,10 +43,13 @@ class Approacher(Component):
 
                 transform = self.gameObject.transform
 
-                if isinstance(self.target, GameObject):
-                    dest = transform.to_parent_local_coord(self.target.transform)
+                if callable(self.target):
+                    dest = self.target()
                 else:
                     dest = self.target
+
+                if isinstance(dest, GameObject):
+                    dest = transform.to_parent_local_coord(dest.transform)
 
                 dif = dest - transform.pos
                 dst = dif.length_squared()

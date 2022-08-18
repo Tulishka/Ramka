@@ -45,4 +45,4 @@ class Layer:
         self.change_order(object, order=0)
 
     def change_order_last(self, object: GameObject):
-        self.change_order(object, order=len(self.gameObjects) - 1)
+        self.change_order(object, order=len(self.gameObjects))

@@ -29,14 +29,17 @@ class Layer:
         else:
             nidx = order
 
-        if nidx < 0 or nidx >= len(self.gameObjects):
-            return
+        if nidx < 0:
+            nidx = 0
 
         self.gameObjects.remove(object)
         if nidx > idx and nidx > 0:
             nidx -= 1
 
-        self.gameObjects.insert(nidx, object)
+        if nidx >= len(self.gameObjects):
+            self.gameObjects.append(object)
+        else:
+            self.gameObjects.insert(nidx, object)
 
     def change_order_first(self, object: GameObject):
         self.change_order(object, order=0)

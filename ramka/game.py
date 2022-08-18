@@ -33,7 +33,7 @@ class Game:
     before_draw_listeners = []
     after_draw_listeners = []
 
-    layers: List[Layer] = [defaultLayer,uiLayer]
+    layers: List[Layer] = [defaultLayer, uiLayer]
 
     ph_space = pymunk.Space()
     ph_gravity = (0.0, 900.0)
@@ -118,11 +118,25 @@ class Game:
 
     @staticmethod
     def remove_object(game_object: GameObject):
+
+        def remove(obj):
+
+            tr = obj.transform
+            if tr:
+                rem = []
+                for o in Game.gameObjects:
+                    if o.transform.parent == tr:
+                        rem.append(o)
+                for o in rem:
+                    remove(obj)
+
+            obj.on_leave_game()
+            obj.set_layer(None)
+            Game.gameObjects.remove(obj)
+            Game._notify_enter_leave_listeners(obj, "other_leave_game")
+
         if game_object in Game.gameObjects:
-            game_object.on_leave_game()
-            game_object.set_layer(None)
-            Game.gameObjects.remove(game_object)
-            Game._notify_enter_leave_listeners(game_object, "other_leave_game")
+            remove(game_object)
 
     @staticmethod
     def deltaTime():

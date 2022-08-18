@@ -12,11 +12,13 @@ class TransformBase(Component):
 class TransformBase(Component):
 
     def __init__(self, game_oject: Component.GameObject, pos: Vector = None, rotate: float = 0.0, scale: Vector = None):
-        super().__init__(game_oject)
-
+        super().__init__(game_oject, auto_add=False)
         self._pos: Vector = pos if pos is not None else Vector()
         self._scale: Vector = scale if scale is not None else Vector(1.0)
         self._angle = rotate
+
+
+
 
     def on_change(self):
         pass

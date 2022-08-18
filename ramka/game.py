@@ -182,49 +182,51 @@ class Game:
             keys = [i + 1 for i, j in enumerate(Input.raw_keys) if j]
             mbtn = [i + 1 for i, j in enumerate(Input.raw_mouse_buttons) if j]
 
+            gobs=[obj for l in Game.layers for obj in l.gameObjects]
+            Game.gameObjects=gobs
+
             for ul in Game.before_update_listeners:
                 ul(deltaTime)
 
-            for l in Game.layers:
-                for obj in l.gameObjects:
-                    if obj.enabled:
-                        for ev in obj.event_listeners:
-                            if ev.event_descriptor != 1:
-                                continue
-                            if ev.type == "key_down":
-                                ks = keys if ev.continuos else Game.keys_pressed
-                                if ks:
-                                    if not ev.key or ev.key in ks:
-                                        if ev.key is not None:
-                                            ev()
-                                        else:
-                                            ev(ks)
-                            elif ev.type == "mouse_down":
-                                bs = mbtn if ev.continuos else Game.mouse_pressed
-                                if bs:
-                                    if ev.hover:
-                                        r = obj.touch_test(Input.mouse_pos)
+            for obj in gobs:
+                if obj.enabled:
+                    for ev in obj.event_listeners:
+                        if ev.event_descriptor != 1:
+                            continue
+                        if ev.type == "key_down":
+                            ks = keys if ev.continuos else Game.keys_pressed
+                            if ks:
+                                if not ev.key or ev.key in ks:
+                                    if ev.key is not None:
+                                        ev()
                                     else:
-                                        r = True
-                                    if r and (ev.button is None or ev.button in bs):
-                                        if ev.button is not None:
-                                            ev()
-                                        else:
-                                            ev(bs)
-                            elif ev.type == "mouse_up":
-                                if Game.mouse_released:
-                                    if ev.hover:
-                                        r = obj.touch_test(Input.mouse_pos)
+                                        ev(ks)
+                        elif ev.type == "mouse_down":
+                            bs = mbtn if ev.continuos else Game.mouse_pressed
+                            if bs:
+                                if ev.hover:
+                                    r = obj.touch_test(Input.mouse_pos)
+                                else:
+                                    r = True
+                                if r and (ev.button is None or ev.button in bs):
+                                    if ev.button is not None:
+                                        ev()
                                     else:
-                                        r = True
-                                    if r and (ev.button is None or ev.button in Game.mouse_released):
-                                        if ev.button is not None:
-                                            ev()
-                                        else:
-                                            ev(Game.mouse_released)
+                                        ev(bs)
+                        elif ev.type == "mouse_up":
+                            if Game.mouse_released:
+                                if ev.hover:
+                                    r = obj.touch_test(Input.mouse_pos)
+                                else:
+                                    r = True
+                                if r and (ev.button is None or ev.button in Game.mouse_released):
+                                    if ev.button is not None:
+                                        ev()
+                                    else:
+                                        ev(Game.mouse_released)
 
-                        obj.update_components(deltaTime)
-                        obj.update(deltaTime)
+                    obj.update_components(deltaTime)
+                    obj.update(deltaTime)
 
             for ul in Game.after_update_listeners:
                 ul(deltaTime)
@@ -232,11 +234,10 @@ class Game:
             for dl in Game.before_draw_listeners:
                 dl(Game.экран)
 
-            for l in Game.layers:
-                for obj in l.gameObjects:
-                    if obj.visible:
-                        obj.draw(Game.экран)
-                        obj.draw_components(Game.экран)
+            for obj in gobs:
+                if obj.visible:
+                    obj.draw(Game.экран)
+                    obj.draw_components(Game.экран)
 
             for dl in Game.after_draw_listeners:
                 dl(Game.экран)
@@ -261,10 +262,9 @@ class Game:
         if filter is None:
             filter = lambda x: True
 
-        for l in Game.layers:
-            for c in l.gameObjects:
-                if (clas is None or isinstance(c, clas)) and (layer is None or c.layer == layer) and filter(c):
-                    yield c
+        for c in Game.gameObjects:
+            if (clas is None or isinstance(c, clas)) and (layer is None or c.layer == layer) and filter(c):
+                yield c
 
     @staticmethod
     def before_update(update_func):

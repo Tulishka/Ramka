@@ -5,7 +5,6 @@ import pymunk.pygame_util
 
 from . import Vector
 from .timers import Timers
-from .collider import Collider
 from .gameobject import GameObject
 from .input import Input
 from .layers import Layer

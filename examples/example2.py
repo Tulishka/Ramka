@@ -45,6 +45,7 @@ class Particle:
         self.bounce = 1.0
         self.live_check = default_particle_check
 
+
     def update(self, deltaTime: float, g_force: Vector):
         self.life_time -= deltaTime
         if self.life_time <= 0:
@@ -414,6 +415,10 @@ cam = Camera()
 Game.add_object(cam)
 
 
+class Trigger(GameObject):
+    pass
+
+
 class Dummy(GameObject):
     def __init__(self, target):
         super().__init__()
@@ -512,7 +517,7 @@ d=Dummy(qwin_bee)
 Game.add_object(d)
 d.follower.approach(qwin_bee,max_speed=800,acceleration=300)
 
-cam.set_focus(d)
+cam.set_focus(d,lock_y=True)
 
 
 Game.run()

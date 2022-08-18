@@ -11,11 +11,15 @@ class GameObject: ...
 
 class GameObject:
     from .component import Component
+    _cur_obj_id = 1
 
     def __init__(self):
         from .transform import Transform
         from .layers import Layer
         from .state import State
+
+        self._obj_id = GameObject._cur_obj_id
+        GameObject._cur_obj_id += 1
 
         self.transform: Transform = Transform(self)
         self.components: List[GameObject.Component] = []

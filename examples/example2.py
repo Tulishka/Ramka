@@ -2,7 +2,10 @@ import math
 import random
 from random import randint
 
+import pygame
+
 from ramka import *
+from ramka.timeline import Timeline
 
 Game.init('Пчелка')
 Game.цветФона = 200, 200, 255
@@ -44,7 +47,6 @@ class Particle:
         self.mass = mass
         self.bounce = 1.0
         self.live_check = default_particle_check
-
 
     def update(self, deltaTime: float, g_force: Vector):
         self.life_time -= deltaTime
@@ -416,17 +418,54 @@ Game.add_object(cam)
 
 
 class Trigger(GameObject):
-    pass
 
+    def __init__(self, pos: Vector = None, radius=50, parent: GameObject = None):
+        super().__init__()
+        self.radius = radius
+        if pos:
+            self.transform.pos = pos
+
+        if parent:
+            self.transform.set_parent(parent)
+
+    def draw(self, dest: pygame.Surface):
+        pygame.draw.circle(dest, (0, 255, 0), self.screen_pos(), self.radius, 1)
+
+
+
+class Effects(Component):
+    def __init__(self,game_oject):
+        super().__init__(game_oject=game_oject)
+
+
+    def pulse(self,duration):
+        t=self.gameObject.get_components(Timeline,self.pulse.__name__)
+        for i in t: return
+
+        tl=Timeline(self,self.pulse.__name__)
+        tl.do()
 
 class Dummy(GameObject):
     def __init__(self):
         super().__init__()
         self.follower = Approacher(self)
-        self.add_component(self.follower)
+
+        # self.tl = Timeline(self)
+
+        def a(time, dt):
+            print(int(self.time)," - ",int(time))
+
+        Timeline(self).wait(4).do(a).wait(4).do(a).kill()
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
+
+    @Game.on_key_down(key=pygame.K_1)
+    def click(self):
+        tll=self.get_components(Timeline)
+        for tl in tll:
+            print(tl.ready(),":",tl.progress())
+
 
     def draw(self, dest: pygame.Surface):
         pygame.draw.circle(dest, (255, 0, 0), self.screen_pos(), 10)
@@ -513,11 +552,14 @@ def game_update(disp):
 def pnt():
     return Input.mouse_pos
 
-d=Dummy()
+
+d = Dummy()
 Game.add_object(d)
-d.follower.approach(qwin_bee,max_speed=800,acceleration=300,ignore_distance=15)
+d.follower.approach(qwin_bee, max_speed=800, acceleration=300, ignore_distance=15)
 
-cam.set_focus(d,lock_y=True)
+cam.set_focus(d, lock_y=True)
 
+Game.add_object(Trigger(0.5 * Game.screen_size))
+Game.add_object(Trigger(parent=qwin_bee))
 
 Game.run()

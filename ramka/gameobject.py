@@ -21,8 +21,9 @@ class GameObject:
         self._obj_id = GameObject._cur_obj_id
         GameObject._cur_obj_id += 1
 
-        self.transform: Transform = Transform(self)
         self.components: List[GameObject.Component] = []
+
+        self.transform: Transform = Transform(self)
 
         self.state = State(self)
         self.time = 0
@@ -69,8 +70,9 @@ class GameObject:
         self.timers.update(deltaTime)
 
     def add_component(self, component: Component):
-        self.components.append(component)
-        self.__add_event_listers(component)
+        if not component in self.components:
+            self.components.append(component)
+            self.__add_event_listers(component)
 
     def remove_component(self, component: Component):
         if component in self.components:
@@ -98,9 +100,9 @@ class GameObject:
             self.layer = layer
             layer.add_object(self)
 
-    def get_components(self, component_class=None):
+    def get_components(self, component_class=None,component_tag=None):
         for c in self.components:
-            if component_class is None or isinstance(c, component_class):
+            if (component_class is None or isinstance(c, component_class)) and (component_tag is None or component_tag==c.component_tag):
                 yield c
 
     def on_enter_game(self):

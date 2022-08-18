@@ -39,7 +39,7 @@ class Animal(Sprite):
     def __init__(self, animations: Dict[str, Animation]):
         super().__init__(animations)
 
-        # self.add_component( BoxCollider(self,Vector(48,48), Vector(0,-24)))
+        # BoxCollider(self,Vector(48,48), Vector(0,-24))
 
         self.vx = 1.0
         self.lc = (0, 0)

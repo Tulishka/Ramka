@@ -410,9 +410,25 @@ class Spider(Sprite):
         super().update(deltaTime)
 
 
+cam = Camera()
+Game.add_object(cam)
 
-# cam = Camera()
-# Game.add_object(cam)
+
+class Dummy(GameObject):
+    def __init__(self, target):
+        super().__init__()
+        # self.target = target
+        self.follower = Approacher(self)
+        self.add_component(self.follower)
+
+    def update(self, deltaTime: float):
+        super().update(deltaTime)
+        # if self.target:
+        #     self.transform.move_toward_ip(self.target, self.spd * deltaTime, ignore_distance=50)
+
+    def draw(self, dest: pygame.Surface):
+        pygame.draw.circle(dest, (255, 0, 0), self.screen_pos(), 10)
+
 
 # СОЗДАНИЕ УЛЕЯ ==============
 swarm_pic = pygame.image.load("./sprites/swarm.png").convert_alpha()
@@ -474,8 +490,6 @@ Game.add_object(spider)
 spider.transform.xy = 100, Game.высотаЭкрана - 48
 spider.transform.scale_xy = 3, 3
 
-# cam.set_focus(qwin_bee)
-
 
 # hat=Sprite(flower_pic)
 # Game.add_object(hat)
@@ -492,6 +506,13 @@ def game_update(deltaTime):
 @Game.after_draw
 def game_update(disp):
     Particle.draw_all(disp)
+
+
+d=Dummy(qwin_bee)
+Game.add_object(d)
+d.follower.approach(qwin_bee,max_speed=800,acceleration=300)
+
+cam.set_focus(d)
 
 
 Game.run()

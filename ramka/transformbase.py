@@ -250,7 +250,8 @@ class TransformBase(Component):
 
     def move_toward_ip(self, target: Union[Vector, TransformBase, Component.GameObject], distance: float,
                        look_to_target: bool = False,
-                       use_local: bool = True, step_info=None) -> TransformBase:
+                       use_local: bool = True, step_info=None, max_distance=0, min_distance=0,
+                       ignore_distance=0) -> TransformBase:
         if isinstance(target, Component.GameObject):
             target = target.transform
 
@@ -271,6 +272,18 @@ class TransformBase(Component):
             pr = self.gameObject.transform.parent.get_world_transform()
             diff = self.add(pr)._pos - target
             angle = -Vector(1.0, 0.0).angle_to(diff) - pr._angle
+
+        if max_distance or min_distance or ignore_distance:
+            dl = diff.length()
+            if max_distance:
+                if (dl - distance) > max_distance:
+                    distance = dl - max_distance
+            if min_distance:
+                if (dl - distance) < min_distance:
+                    distance = dl - min_distance
+            if ignore_distance:
+                if (dl - distance) < ignore_distance:
+                    distance = 0
 
         v = Vector(0)
         if distance:
@@ -297,5 +310,7 @@ class TransformBase(Component):
 
     def move_toward(self, target: Union[Vector, TransformBase, Component.GameObject], distance: float,
                     look_to_target: bool = False,
-                    use_local: bool = True, step_info=None) -> TransformBase:
-        return self.copy().move_toward_ip(target, distance, use_local, step_info=step_info)
+                    use_local: bool = True, step_info=None, max_distance=0, min_distance=0,
+                    ignore_distance=0) -> TransformBase:
+        return self.copy().move_toward_ip(target, distance, use_local, step_info=step_info, max_distance=max_distance,
+                                          min_distance=min_distance, ignore_distance=ignore_distance)

@@ -34,7 +34,7 @@ class GameObject:
         self.timers = Timers()
 
         self.event_listeners = []
-        self.init_event_listeners()
+        self.__add_event_listers(self)
 
     def w_transform(self):
         return self.transform.get_world_transform()
@@ -42,16 +42,23 @@ class GameObject:
     def screen_pos(self):
         return self.transform.get_world_transform().pos
 
-
-    def init_event_listeners(self):
-        self.event_listeners = []
-        try:
-            for m in self.__dir__():
-                m1 = self.__getattribute__(m)
+    def __add_event_listers(self, source):
+        for m in source.__dir__():
+            try:
+                m1 = source.__getattribute__(m)
                 if callable(m1) and getattr(m1, 'event_descriptor', 0):
                     self.event_listeners.append(m1)
-        except:
-            pass
+            except:
+                pass
+
+    def __remove_event_listers(self, source):
+        for m in source.__dir__():
+            try:
+                m1 = source.__getattribute__(m)
+                if callable(m1) and getattr(m1, 'event_descriptor', 0) and m1 in self.event_listeners:
+                    self.event_listeners.remove(m1)
+            except:
+                pass
 
     def update(self, deltaTime: float):
         self.time += deltaTime
@@ -59,6 +66,12 @@ class GameObject:
 
     def add_component(self, component: Component):
         self.components.append(component)
+        self.__add_event_listers(component)
+
+    def remove_component(self, component: Component):
+        if component in self.components:
+            self.components.remove(component)
+            self.__remove_event_listers(component)
 
     def draw(self, dest: pygame.Surface):
         pass

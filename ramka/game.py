@@ -113,7 +113,9 @@ class Game:
         if game_object not in Game.gameObjects:
             Game._notify_enter_leave_listeners(game_object, "other_enter_game")
 
-            Game.gameObjects.append(game_object)
+            # Game.gameObjects.append(game_object)
+            Game.rearrange_gobjects()
+
             game_object.on_enter_game()
 
     @staticmethod
@@ -152,6 +154,10 @@ class Game:
         Game.clock.tick(60)
 
     @staticmethod
+    def rearrange_gobjects():
+        Game.gameObjects = [obj for l in Game.layers for obj in l.gameObjects]
+
+    @staticmethod
     def run():
         while 1:
 
@@ -182,8 +188,8 @@ class Game:
             keys = [i + 1 for i, j in enumerate(Input.raw_keys) if j]
             mbtn = [i + 1 for i, j in enumerate(Input.raw_mouse_buttons) if j]
 
-            gobs=[obj for l in Game.layers for obj in l.gameObjects]
-            Game.gameObjects=gobs
+            Game.rearrange_gobjects()
+            gobs=Game.gameObjects.copy()
 
             for ul in Game.before_update_listeners:
                 ul(deltaTime)

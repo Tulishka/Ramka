@@ -420,16 +420,13 @@ class Trigger(GameObject):
 
 
 class Dummy(GameObject):
-    def __init__(self, target):
+    def __init__(self):
         super().__init__()
-        # self.target = target
         self.follower = Approacher(self)
         self.add_component(self.follower)
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
-        # if self.target:
-        #     self.transform.move_toward_ip(self.target, self.spd * deltaTime, ignore_distance=50)
 
     def draw(self, dest: pygame.Surface):
         pygame.draw.circle(dest, (255, 0, 0), self.screen_pos(), 10)
@@ -513,9 +510,12 @@ def game_update(disp):
     Particle.draw_all(disp)
 
 
-d=Dummy(qwin_bee)
+def pnt():
+    return Input.mouse_pos
+
+d=Dummy()
 Game.add_object(d)
-d.follower.approach(qwin_bee,max_speed=800,acceleration=300)
+d.follower.approach(qwin_bee,max_speed=800,acceleration=300,ignore_distance=15)
 
 cam.set_focus(d,lock_y=True)
 

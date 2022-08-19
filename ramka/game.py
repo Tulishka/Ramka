@@ -121,6 +121,7 @@ class Game:
     @staticmethod
     def remove_object(game_object: GameObject):
 
+        to_rem=[]
         def remove(obj):
 
             tr = obj.transform
@@ -134,11 +135,17 @@ class Game:
 
             obj.on_leave_game()
             obj.set_layer(None)
-            Game.gameObjects.remove(obj)
+            to_rem.append(obj)
             Game._notify_enter_leave_listeners(obj, "other_leave_game")
 
         if game_object in Game.gameObjects:
+            for c in game_object.transform.children:
+                if c in Game.gameObjects:
+                    remove(c)
             remove(game_object)
+
+        for c in to_rem:
+            Game.gameObjects.remove(c)
 
     @staticmethod
     def deltaTime():

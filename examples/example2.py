@@ -5,7 +5,7 @@ from random import randint
 import pygame
 
 from ramka import *
-from ramka.timeline import Timeline
+from ramka.timeline import Timeline, TimeLineProgressInfo
 
 Game.init('Пчелка')
 Game.цветФона = 200, 200, 255
@@ -239,7 +239,7 @@ class Bee(Sprite):
 
     pollen_pic = pygame.image.load("./sprites/pollen.png").convert_alpha()
 
-    def __init__(self, control_suff=""):
+    def __init__(self, control_suff="", a_scale=1.0):
         super().__init__(Bee.bee_ani)
 
         self.Направление = False
@@ -262,6 +262,9 @@ class Bee(Sprite):
             self.swarm = self.swarm[0]
         else:
             self.swarm = self
+
+        self.a_scale = a_scale if a_scale else 1
+        self.transform.scale_xy = self.a_scale, self.a_scale
 
     def create_pollen(self):
         pollen = Pollen(Bee.pollen_pic)
@@ -396,6 +399,22 @@ class Spider(Sprite):
         self.точкаНазначения = Vector(0)
         self.времяОжидания = randint(3, 15)
 
+        self.eff = Effects(self)
+
+        Timeline(self).do(self.jjj,duration=0.6).repeat(7).kill()
+
+    @Game.on_key_down(key=pygame.K_1)
+    def jjj(self,*arg):
+        self.eff.hop()
+
+    @Game.on_key_down(key=pygame.K_2)
+    def jjj2(self,*arg):
+        self.eff.pulse()
+
+    @Game.on_key_down(key=pygame.K_3)
+    def jjj3(self,*arg):
+        self.eff.flip()
+
     def update(self, deltaTime: float):
 
         if self.transform.x > Game.ширинаЭкрана or self.transform.x < 0:
@@ -410,11 +429,9 @@ class Spider(Sprite):
 
         self.transform.scale_x = math.copysign(self.transform.scale_x, -1 if self.Направление else 1)
 
+        Game.debug_str=str(len(self.components))
+
         super().update(deltaTime)
-
-
-cam = Camera()
-Game.add_object(cam)
 
 
 class Trigger(GameObject):
@@ -432,40 +449,83 @@ class Trigger(GameObject):
         pygame.draw.circle(dest, (0, 255, 0), self.screen_pos(), self.radius, 1)
 
 
-
 class Effects(Component):
-    def __init__(self,game_oject):
-        super().__init__(game_oject=game_oject)
+    def __init__(self, game_object):
+        super().__init__(game_object)
 
+    def pulse(self, koef=1.2):
+        t = self.gameObject.get_components(Timeline, self.pulse.__name__)
+        for i in t: return
+        interp = interp_pulse((1, koef), (0, 1))
 
-    def pulse(self,duration):
-        t=self.gameObject.get_components(Timeline,self.pulse.__name__)
+        initial_scale = abs(self.gameObject.transform.scale.elementwise())
+
+        def scaling(pi: TimeLineProgressInfo):
+            sc = interp(pi.section_progress)
+            self.gameObject.transform.scale_xy = initial_scale.x * sc, initial_scale.y * sc
+
+        def reset(pi: TimeLineProgressInfo):
+            self.gameObject.transform.scale_xy = initial_scale
+
+        tl = Timeline(self.gameObject, self.pulse.__name__)
+        tl.do(scaling, duration=0.5, continuous=True).do(reset).kill()
+
+    def hop(self, height=60):
+        t = self.gameObject.get_components(Timeline, self.hop.__name__)
         for i in t: return
 
-        tl=Timeline(self,self.pulse.__name__)
-        tl.do()
+        interp = interp_pulse((1, 1), (0, 0))
+        initial = self.gameObject.transform.y
+
+        def eff(pi: TimeLineProgressInfo):
+            sc = interp(pi.section_progress)
+            self.gameObject.transform.y = initial - sc * height
+
+        def reset(pi: TimeLineProgressInfo):
+            self.gameObject.transform.y = initial
+
+        tl = Timeline(self.gameObject, self.hop.__name__)
+        tl.do(eff, duration=0.5, continuous=True).do(reset).kill()
+
+    def flip(self, direction=1):
+        t = self.gameObject.get_components(Timeline, self.flip.__name__)
+        for i in t: return
+
+        interp = interp_pulse((1, 1), (0, 0), 2)
+        initial = self.gameObject.transform.angle
+
+        def eff(pi: TimeLineProgressInfo):
+            sc = interp(pi.section_progress)
+            self.gameObject.transform.angle = initial + direction * sc * 360
+
+        def reset(pi: TimeLineProgressInfo):
+            self.gameObject.transform.angle = initial
+
+        tl = Timeline(self.gameObject, self.flip.__name__)
+        tl.do(eff, duration=0.5, continuous=True).do(reset).kill()
+
 
 class Dummy(GameObject):
     def __init__(self):
         super().__init__()
-        self.follower = Approacher(self)
 
-        # self.tl = Timeline(self)
+        # self.dist = Game.ширинаЭкрана
+        # self.t= 3
+        # self.g=12*self.dist / (self.t**3)
+        # self.v0 = self.g * self.t / 2
 
-        def a(time, dt):
-            print(int(self.time)," - ",int(time))
-
-        Timeline(self).wait(4).do(a).wait(4).do(a).kill()
+        self.interp_x = interp_mid_spd((5, 600), (0, 10))
+        self.interp_y = interp_pulse((5, 600), (0, 10))
+        self.transform.pos = 0, 200
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
 
-    @Game.on_key_down(key=pygame.K_1)
-    def click(self):
-        tll=self.get_components(Timeline)
-        for tl in tll:
-            print(tl.ready(),":",tl.progress())
+        # time=self.time
+        # self.transform.x = 0 + self.v0*(time**2) / 2 - self.g * (time**3) / 6
 
+        self.transform.x = self.interp_x(self.time)
+        self.transform.y = self.interp_y(self.time)
 
     def draw(self, dest: pygame.Surface):
         pygame.draw.circle(dest, (255, 0, 0), self.screen_pos(), 10)
@@ -495,10 +555,9 @@ for i in range(flower_count):
     flower.transform.scale_xy = 3, 3
 
 # СОЗДАНИЕ КОРОЛЕВЫ ==============
-qwin_bee = Bee("1")
+qwin_bee = Bee("1", 2)
 Game.add_object(qwin_bee)
 qwin_bee.transform.xy = 100, 100
-qwin_bee.transform.scale_xy = 2, 2
 
 qwin_bee.auto_harvest = True
 qwin_bee.auto_dest_offset = Vector(4, -16)
@@ -518,10 +577,9 @@ crown.transform.set_parent(qwin_bee)
 # СОЗДАНИЕ ПЧЕЛОК ==============
 for i in range(10):
     a = randint(1, 5) / 10
-    bee = Bee("2")
+    bee = Bee("2", 0.5 + a)
     Game.add_object(bee)
     bee.transform.xy = 50 + randint(0, 100), 50 + randint(0, 100)
-    bee.transform.scale_xy = 0.5 + a, 0.5 + a
     bee.auto_harvest = True
     bee.auto_dest_offset = Vector(4, -16)
 
@@ -555,9 +613,10 @@ def pnt():
 
 d = Dummy()
 Game.add_object(d)
-d.follower.approach(qwin_bee, max_speed=800, acceleration=300, ignore_distance=15)
 
-cam.set_focus(d, lock_y=True)
+# cam = Camera()
+# Game.add_object(cam)
+# cam.set_focus(d, lock_y=True)
 
 Game.add_object(Trigger(0.5 * Game.screen_size))
 Game.add_object(Trigger(parent=qwin_bee))

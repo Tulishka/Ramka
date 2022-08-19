@@ -9,11 +9,11 @@ class Component: ...
 class Component:
     from .gameobject import GameObject
 
-    def __init__(self, game_oject: GameObject, auto_add=True, tag=""):
-        self.gameObject = game_oject
+    def __init__(self, game_object: GameObject, auto_add=True, tag=""):
+        self.gameObject = game_object
         self.component_tag=tag
         if auto_add:
-            self.add(game_oject)
+            self.add(game_object)
 
     def add(self, game_object: GameObject) -> Component:
         self.gameObject = game_object

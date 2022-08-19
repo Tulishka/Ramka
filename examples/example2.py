@@ -402,18 +402,18 @@ class Spider(Sprite):
 
         self.eff = Effects(self)
 
-        Timeline(self).do(self.jjj,duration=0.6).repeat(7).kill()
+        Timeline(self).do(self.jjj, duration=0.6).repeat(7).kill()
 
     @Game.on_key_down(key=pygame.K_1)
-    def jjj(self,*arg):
+    def jjj(self, *arg):
         self.eff.hop()
 
     @Game.on_key_down(key=pygame.K_2)
-    def jjj2(self,*arg):
+    def jjj2(self, *arg):
         self.eff.pulse()
 
     @Game.on_key_down(key=pygame.K_3)
-    def jjj3(self,*arg):
+    def jjj3(self, *arg):
         self.eff.flip()
 
     def update(self, deltaTime: float):
@@ -430,7 +430,7 @@ class Spider(Sprite):
 
         self.transform.scale_x = math.copysign(self.transform.scale_x, -1 if self.Направление else 1)
 
-        Game.debug_str=str(len(self.components))
+        Game.debug_str = str(len(self.components))
 
         super().update(deltaTime)
 
@@ -450,31 +450,17 @@ class Trigger(GameObject):
         pygame.draw.circle(dest, (0, 255, 0), self.screen_pos(), self.radius, 1)
 
 
-
 class Dummy(GameObject):
-    def __init__(self):
+    def __init__(self, pos):
         super().__init__()
-
-        # self.dist = Game.ширинаЭкрана
-        # self.t= 3
-        # self.g=12*self.dist / (self.t**3)
-        # self.v0 = self.g * self.t / 2
-
-        self.interp_x = interp_mid_spd((5, 600), (0, 10))
-        self.interp_y = interp_pulse((5, 600), (0, 10))
-        self.transform.pos = 0, 200
+        self.transform.pos = pos
+        self.color = (randint(0, 255), randint(0, 255), randint(0, 255))
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
 
-        # time=self.time
-        # self.transform.x = 0 + self.v0*(time**2) / 2 - self.g * (time**3) / 6
-
-        self.transform.x = self.interp_x(self.time)
-        self.transform.y = self.interp_y(self.time)
-
     def draw(self, dest: pygame.Surface):
-        pygame.draw.circle(dest, (255, 0, 0), self.screen_pos(), 10)
+        pygame.draw.circle(dest, self.color, self.screen_pos(), 40)
 
 
 # СОЗДАНИЕ УЛЕЯ ==============
@@ -557,8 +543,27 @@ def pnt():
     return Input.mouse_pos
 
 
-d = Dummy()
-Game.add_object(d)
+p = Dummy((400, 400))
+Game.add_object(p)
+p.color=(0,0,0)
+
+c = Dummy((120, 120))
+c.transform.set_parent(p)
+c.color=(255,0,0)
+Game.add_object(c)
+c.parent_sort_me_by="_"
+
+for d in range(1,6):
+    c = Dummy((d * 20, d * 20))
+    c.color = (d*20,d*20,d*20)
+    c.opacity=0.5
+    c.transform.set_parent(p)
+    Game.add_object(c)
+
+
+# Game.defaultLayer.change_order_last(p)
+
+# Game.defaultLayer.sort_object_children(p)
 
 # cam = Camera()
 # Game.add_object(cam)

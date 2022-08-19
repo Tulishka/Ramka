@@ -22,6 +22,8 @@ class GameObject:
         GameObject._cur_obj_id += 1
 
         self.components: List[GameObject.Component] = []
+        self.layer: Union[Layer, None] = None
+        self._parent_sort_me_by = str(self._obj_id).rjust(6, "0")
 
         self.transform: Transform = Transform(self)
 
@@ -31,8 +33,6 @@ class GameObject:
         self.enabled: bool = True
         self.visible: bool = True
 
-        self.layer: Union[Layer, None] = None
-
         self.props = {}
         self.opacity = 1.0
 
@@ -40,6 +40,17 @@ class GameObject:
 
         self.event_listeners = []
         self.__add_event_listers(self)
+
+    @property
+    def parent_sort_me_by(self):
+        return self._parent_sort_me_by
+
+    @parent_sort_me_by.setter
+    def parent_sort_me_by(self,value):
+        self._parent_sort_me_by=value
+        # if self.transform.parent:
+        #     self.layer.sort_object_children(self.transform.parent.gameObject)
+
 
     def w_transform(self):
         return self.transform.get_world_transform()
@@ -100,9 +111,10 @@ class GameObject:
             self.layer = layer
             layer.add_object(self)
 
-    def get_components(self, component_class=None,component_tag=None):
+    def get_components(self, component_class=None, component_tag=None):
         for c in self.components:
-            if (component_class is None or isinstance(c, component_class)) and (component_tag is None or component_tag==c.component_tag):
+            if (component_class is None or isinstance(c, component_class)) and (
+                    component_tag is None or component_tag == c.component_tag):
                 yield c
 
     def on_enter_game(self):

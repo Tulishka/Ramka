@@ -1,7 +1,7 @@
 # from __future__ import division
 
 import math
-from typing import Tuple, Union
+from typing import Tuple, Union, List
 
 # from .shared import Vector
 import pygame
@@ -78,3 +78,45 @@ def point_inside_poly(x, y, poly):
         p1x, p1y = p2x, p2y
 
     return inside
+
+
+def interp_mid_spd(to_val: Union[Vector, List, Tuple],
+                   from_val: Union[Vector, List, Tuple] = (0, 0)):
+    d = [0, 0]
+    d[0] = to_val[0] - from_val[0]
+    d[1] = to_val[1] - from_val[1]
+    g = 12 * d[1] / (d[0] ** 3)
+    v0 = g * d[0] / 2
+
+    def interp(x):
+        x = x - from_val[0]
+        if x <= 0:
+            return from_val[1]
+        elif x >= to_val[0]:
+            return to_val[1]
+
+        return from_val[1] + v0 * (x ** 2) / 2 - g * (x ** 3) / 6
+
+    return interp
+
+
+def interp_pulse(to_val: Union[Vector, List, Tuple],
+                 from_val: Union[Vector, List, Tuple] = (0, 0), type=1):
+    d = [0, 0]
+    d[0] = to_val[0] - from_val[0]
+    d[1] = to_val[1] - from_val[1]
+    type = 2 if type == 1 else 1
+
+    if not d[0]:
+        return lambda x: from_val[1]
+
+    def interp(x):
+        x = (x - from_val[0]) / d[0]
+        if x <= 0:
+            x = 0
+        elif x > 1:
+            x = 1
+
+        return from_val[1] + d[1] * math.exp(-0.8 * (type * math.e * x - math.e) ** 2)
+
+    return interp

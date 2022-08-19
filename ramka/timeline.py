@@ -16,6 +16,16 @@ class TimeEvent:
         self.continuous = continuous
 
 
+class TimeLineProgressInfo:
+    def __init__(self):
+        self.timeline = None
+        self.entire_progress = 0
+        self.section_progress = 0
+        self.entire_time = 0
+        self.section_time = 0
+        self.deltaTime = 0
+
+
 class Timeline(Component):
     def __init__(self, game_object, tag=""):
         super().__init__(game_object, tag=tag)
@@ -46,7 +56,8 @@ class Timeline(Component):
     def ready(self):
         return self.duration() <= self.gameObject.time
 
-    def do(self, action: Callable, duration=0, absolute =None, continuous=False) -> Timeline:
+    def do(self, action: Callable[[TimeLineProgressInfo], None], duration=0, absolute=None,
+           continuous=False) -> Timeline:
         "Запланировать выполнение действия (action - функция)"
         if not self.plan:
             self.start_time = self.gameObject.time
@@ -70,8 +81,20 @@ class Timeline(Component):
         "Перемотать время на новую позицию, по умолч. на 0"
 
         def rew(*a, **b):
-            self.start_time = self.gameObject.time - new_pos
-            self.fired_time = -1
+            self.start_time = self.gameObject.time + new_pos
+            self.fired_time = new_pos - 0.01
+
+        return self.do(rew)
+
+    def repeat(self, times: int, from_pos=0):
+        "Повторить times раз с позиции (по умолч. с 0)"
+
+        def rew(*a, **b):
+            nonlocal times
+            if times > 0:
+                self.start_time = self.gameObject.time + from_pos
+                self.fired_time = from_pos - 0.01
+            times -= 1
 
         return self.do(rew)
 
@@ -127,12 +150,26 @@ class Timeline(Component):
         if self.__paused_progress is not None:
             return
 
-        pt = self.gameObject.time - self.start_time
+        for gg in range(5):
+            pt = self.gameObject.time - self.start_time
+            pi = TimeLineProgressInfo()
+            pi.entire_time = pt
+            pi.entire_progress = self.progress()
+            pi.timeline = self
+            pi.deltaTime = deltaTime
 
-        for i in self.plan:
-            if (pt >= i.start_time > self.fired_time) or (i.continuous and (
-                    i.start_time <= pt <= i.start_time + i.duration)):
-                if callable(i.action):
-                    i.action(pt, deltaTime)
+            stt = self.start_time
+
+            for i in self.plan:
+                if (pt >= i.start_time > self.fired_time) or (i.continuous and (
+                        i.start_time <= pt <= i.start_time + i.duration)):
+                    if callable(i.action):
+                        pi.section_time = pt - i.start_time
+                        pi.section_progress = pi.section_time / i.duration if i.duration else 1
+                        i.action(pi)
+                        if stt != self.start_time:
+                            break
+            if stt == self.start_time:
+                break
 
         self.fired_time = pt

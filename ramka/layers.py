@@ -43,7 +43,6 @@ class Layer:
         self.sort_object_children(object)
 
     def sort_object_children(self, object: GameObject):
-        print("sort:",object)
         if object.transform.children:
             idx = self.gameObjects.index(object)
             object.transform.children.sort(key=lambda x: x.gameObject._parent_sort_me_by)

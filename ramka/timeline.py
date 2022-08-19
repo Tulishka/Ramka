@@ -91,7 +91,6 @@ class Timeline(Component):
 
         def rew(*a, **b):
             nonlocal times
-            print("rep: ", times)
             if times > 0:
                 self.start_time = self.gameObject.time + from_pos
                 self.fired_time = from_pos - 0.01

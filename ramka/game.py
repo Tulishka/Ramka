@@ -231,8 +231,8 @@ class Game:
                                     else:
                                         ev(Game.mouse_released)
 
-                    obj.update_components(deltaTime)
                     obj.update(deltaTime)
+                    obj.update_components(deltaTime)
 
             for ul in Game.after_update_listeners:
                 ul(deltaTime)

@@ -285,6 +285,20 @@ class Game:
                 yield cc
 
     @staticmethod
+    def get_object(clas: Union[type, Iterable[type]] = None, layer: Layer = None, filter: Callable = None):
+        if filter is None:
+            filter = lambda x: True
+
+        if not isinstance(clas, Iterable):
+            for c in Game.gameObjects:
+                if (clas is None or isinstance(c, clas)) and (layer is None or c.layer == layer) and filter(c):
+                    return c
+        else:
+            for c in Game.gameObjects:
+                if (not clas or type(c) in clas) and (layer is None or c.layer == layer) and filter(c):
+                    return c
+
+    @staticmethod
     def get_objects(clas: Union[type, Iterable[type]] = None, layer: Layer = None, filter: Callable = None):
         if filter is None:
             filter = lambda x: True

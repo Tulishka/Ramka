@@ -3,7 +3,8 @@ from random import random, randint
 from typing import Dict, Union
 
 from examples.Components.DragAndDrop import Draggable, DragAndDropController
-from ramka import Sprite, Game, Animation, Cooldown, Camera, Component, Input, GameObject
+from ramka import Sprite, Game, Animation, Cooldown, Camera, Component, Input, GameObject, Vector
+from ramka.trigger import Trigger
 
 Game.init('TocaBoca')
 Game.цветФона = 250, 250, 250
@@ -16,10 +17,11 @@ class FallingDown(Component):
 
         self.spd = 0
         self.g = 900
+        self.enabled=True
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
-        if isinstance(self.gameObject, Draggable) and self.gameObject.is_dragged():
+        if not self.enabled or isinstance(self.gameObject, Draggable) and self.gameObject.is_dragged():
             return
 
         y = self.gameObject.screen_pos().y + self.gameObject.get_computed_size().y * 0.5
@@ -56,20 +58,35 @@ class Blink(Component):
             self.blink_time = self.gameObject.time + randint(1, 8)
 
 
-class DropZone(GameObject):
-    pass
+class BaseItem(Sprite):
+    ...
 
 
-class Docker(Sprite):
+class DropZone(Trigger):
+    def __init__(self, parent: BaseItem, name, pos: Vector = None, radius=None):
+        super().__init__(name, pos, radius, parent, color=(0, 255, 0))
+
+        self.set_watch_for(Input.get_mouse_pos)
+
+
+class BaseItem(Sprite):
+    dd_manager: DragAndDropController = None
+
     def __init__(self, anim: Union[str, Dict], pos, mass=None):
         if isinstance(anim, str):
-            anim = Docker.create_animation(anim)
+            anim = BaseItem.create_animation(anim)
 
-        super(Docker, self).__init__(anim)
+        super(BaseItem, self).__init__(anim)
         self.drop_zones = []
         self.state.id = 1
         self.transform.pos = pos
         self.mouse_start_point = None
+        self.current_dz = None
+        self.current_dobj: GameObject = None
+
+        if not BaseItem.dd_manager:
+            BaseItem.dd_manager = Game.get_object(clas=DragAndDropController)
+
         if mass:
             self.mass = mass
         else:
@@ -77,6 +94,32 @@ class Docker(Sprite):
 
         if "blink" in self.animations:
             Blink(self)
+
+    def is_attached(self):
+        return isinstance(self.get_parent(),DropZone)
+
+    @Game.on_message(name="trigger.enter")
+    def trigger_in(self, sender, name, object):
+        if BaseItem.dd_manager.obj:
+            self.current_dz = sender
+            self.current_dobj = BaseItem.dd_manager.obj
+
+    @Game.on_message(name="trigger.exit")
+    def trigger_out(self, sender, name, object):
+        self.current_dz = None
+        self.current_dobj= None
+
+    @Game.on_mouse_up(button=1)
+    def mouse_up(self):
+        if self.current_dobj:
+            self.current_dobj.transform.pos = 0,0
+            self.current_dobj.transform.set_parent(self.current_dz)
+            a=self.current_dobj.get_components(FallingDown)
+            for c in a:
+                c.enabled=False
+
+            self.current_dz = None
+            self.current_dobj= None
 
     @staticmethod
     def create_animation(name):
@@ -93,8 +136,11 @@ class Docker(Sprite):
                 obj[f"state{f[-5]}"] = Animation(f, 5, True)
         return obj
 
-    def drop_zone_add(self, zone):
-        pass
+    def drop_zone_add(self, name, pos: Vector = None, radius=35) -> BaseItem:
+
+        Game.add_object(DropZone(self, name, pos, radius))
+
+        return self
 
     def state_next(self):
         n = f"state{self.state.id + 1}"
@@ -127,17 +173,17 @@ class Docker(Sprite):
     def update_mass(self):
         sq = self.get_size()
         self.mass = sq.x * sq.y / (100 * 100)
-        if self.mass<1:
-            self.mass=1
+        if self.mass < 1:
+            self.mass = 1
         return self.mass
 
 
-class Interier(Docker):
+class Interier(BaseItem):
     def __init__(self, *a, **b):
         super(Interier, self).__init__(*a, **b)
 
 
-class Movable(Draggable, Docker):
+class Movable(Draggable, BaseItem):
     def __init__(self, *a, **b):
         super().__init__(*a, **b)
         self.__fallcomp = FallingDown(self)
@@ -146,7 +192,10 @@ class Movable(Draggable, Docker):
         self.last_vert_spd = 0
 
     def on_drag_start(self):
-        pass
+        if self.is_attached():
+            self.__fallcomp.enabled=True
+            self.transform.detach(True)
+            self.transform.set_parent(Game.get_object(clas=Camera),from_world=True)
 
     def on_drag_end(self):
         if self.last_vert_spd < 0:
@@ -191,6 +240,8 @@ class Chelik(Item):
         super().update(deltaTime)
 
 
+Game.add_object(DragAndDropController())
+
 komnata2 = Background("img/komnata2.png")
 komnata2.transform.scale = Game.ширинаЭкрана / komnata2.get_size().x, Game.ширинаЭкрана / komnata2.get_size().x
 komnata2.transform.pos = Game.ширинаЭкрана / 2, Game.высотаЭкрана / 2
@@ -201,13 +252,15 @@ Game.add_object(Interier("mebel|window", (693, 278)))
 
 Game.add_object(Pet("pets|oblachko", (700, 100)))
 
-Game.add_object(Chelik("pers|pusya", (600, 100)))
+Game.add_object(Chelik("pers|pusya", (600, 100))
+                .drop_zone_add("L", Vector(-56, 107))
+                .drop_zone_add("R", Vector(60, 107))
+                .drop_zone_add("H", Vector(0, -130), radius=50)
+                )
 
 Game.add_object(Item("predmet|rykzak", (600, 100)))
 Game.add_object(Item("predmet|telefon", (650, 100)))
 Game.add_object(Item("predmet|kormushka", (700, 100)))
-
-Game.add_object(DragAndDropController())
 
 camera = Camera(lock_y=True)
 Game.add_object(camera)

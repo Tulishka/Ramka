@@ -86,7 +86,7 @@ class GameObject:
     def on_message(self, sender: GameObject, name, param):
         for mh in self._messages_handlers:
             if (not mh.name or mh.name == name) and (not mh.sender or isinstance(sender, mh.sender)):
-                mh(name, sender, param)
+                mh(sender, name, param)
 
     def send_message(self, receiver: Union[GameObject, Iterable[GameObject]], name, param,
                      asyn_callback: Callable = None):

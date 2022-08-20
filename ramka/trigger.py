@@ -56,7 +56,7 @@ class Trigger(GameObject):
 
     def get_w_poly(self):
 
-        if not len(self.__poly): return []
+        if not self.__poly: return []
 
         tr = self.transform.get_world_transform()
 
@@ -92,7 +92,7 @@ class Trigger(GameObject):
         if dl.length_squared() > rr:
             return False
         else:
-            if len(self.__poly):
+            if self.__poly:
                 poly = self.get_w_poly()
                 return point_inside_poly(pos.x, pos.y, poly)
             else:
@@ -145,7 +145,7 @@ class Trigger(GameObject):
             if notify:
                 self.__notify_listeners(other if isinstance(obj, pygame.math.Vector2) else obj, c, deltatime)
 
-    def set_watch_for(self, objects: List[Union[GameObject, Vector, Callable]]):
+    def set_watch_for(self, objects: Union[Union[GameObject, Vector, Callable],List[Union[GameObject, Vector, Callable]]]):
         for e in self.entered:
             self.__notify_listeners(e, False, 0)
         self.entered = []

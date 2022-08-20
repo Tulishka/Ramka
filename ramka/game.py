@@ -385,3 +385,15 @@ class Game:
             return func
 
         return wrapper if func is None else wrapper(func)
+
+    @staticmethod
+    def on_message(func=None,*, name=None, sender=None):
+        def wrapper(func):
+            func.event_descriptor = 3
+            func.name = name
+            func.sender = sender
+            func.type = "on_message"
+            return func
+
+        return wrapper if func is None else wrapper(func)
+

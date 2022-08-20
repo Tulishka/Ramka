@@ -2,6 +2,7 @@ import math
 import random
 from random import randint
 
+import numpy as np
 import pygame
 
 from ramka import *
@@ -10,6 +11,143 @@ from ramka.timeline import Timeline, TimeLineProgressInfo
 
 Game.init('Пчелка')
 Game.цветФона = 200, 200, 255
+
+
+class Trigger(GameObject):
+
+    def __init__(self, trigger_name, pos: Vector = None, radius=None, parent: GameObject = None, color=None, poly=None):
+        super().__init__()
+
+        self.trigger_name = trigger_name
+
+        self.radius = radius if radius else 20
+
+        if pos:
+            self.transform.pos = pos
+
+        if parent:
+            self.transform.set_parent(parent)
+            if radius is None:
+                r = sum(parent.get_size()) / 4
+                if r > 2:
+                    self.radius = r
+
+        self.__poly = poly
+        self.__w_poly = []
+        self.__dirty_signature = Vector(0)
+
+        self.__trigger_listeners = []
+        self.color = color
+        self.trigged_by = []
+
+    def set_squared_poly(self, size):
+        w = size[0] / 2
+        h = size[1] / 2
+        new_poly = [Vector(-w, h), Vector(w, h), Vector(w, -h), Vector(-w, -h)]
+        self.set_poly(new_poly)
+        return self
+
+    def set_n_poly(self, n, start_angle=0):
+        v = Vector(self.radius, 0)
+        a = 360 / n
+        new_poly = [v.rotate(start_angle + i * a) for i in range(n)]
+        self.set_poly(new_poly)
+        return self
+
+    def set_poly(self, poly):
+        self.__poly = poly
+        self.__w_poly = []
+        self.__dirty_signature = Vector(0)
+
+    def get_w_poly(self):
+
+        if not len(self.__poly): return []
+
+        tr = self.transform.get_world_transform()
+
+        p = Vector(1001, 1001)
+        p = tr.add_to_vector(p)
+
+        if p != self.__dirty_signature:
+            self.__dirty_signature = p
+            self.__w_poly = []
+            for p in self.__poly:
+                self.__w_poly.append(tr.add_to_vector(p).xy)
+
+            self.__w_poly = np.array(self.__w_poly)
+
+        return self.__w_poly
+
+    def w_radius(self):
+        tr = self.w_transform()
+        return self.radius * (abs(tr.scale.x) + abs(tr.scale.y)) * 0.5
+
+    def is_collided(self, other: Union[GameObject, Vector], func: Callable = None) -> Union[bool, Tuple[int, int]]:
+
+        r = self.w_radius()
+        rr = r * r
+
+        if isinstance(other, GameObject):
+            pos = other.w_transform().pos
+        else:
+            pos = other
+
+        dl = pos - self.w_transform().pos
+
+        if dl.length_squared() > rr:
+            return False
+        else:
+            if len(self.__poly):
+                poly = self.get_w_poly()
+                return point_inside_poly(pos.x, pos.y, poly)
+            else:
+                return True
+
+    def add_listener(self, listener: GameObject):
+        if listener not in self.__trigger_listeners:
+            self.__trigger_listeners.append(listener)
+
+    def remove_listener(self, listener: GameObject):
+        if listener in self.__trigger_listeners:
+            self.__trigger_listeners.remove(listener)
+
+    def __get_listener(self):
+        if self.__trigger_listeners:
+            return self.__trigger_listeners
+        return self.get_parent()
+
+    def __notify_listeners(self, other, status, deltatime):
+        if other not in self.trigged_by:
+            if status:
+                p = self.__get_listener()
+                if p:
+                    self.send_message(p, "trigger.enter", other)
+                self.trigged_by.append(other)
+        elif not status:
+            p = self.__get_listener()
+            if p:
+                self.send_message(p, "trigger.exit", other)
+            self.trigged_by.remove(other)
+        else:
+            p = self.__get_listener()
+            self.send_message(p, "trigger.update", (other, deltatime))
+
+    def update(self, deltaTime: float):
+        super().update(deltaTime)
+
+        other = Input.mouse_pos
+        c = self.is_collided(other)
+        self.color = (255, 0, 0) if c else (0, 255, 0)
+        self.__notify_listeners(other, c, deltaTime)
+
+    def draw(self, dest: pygame.Surface):
+
+        if self.color:
+            poly = self.get_w_poly()
+            if len(poly):
+                pygame.draw.polygon(dest, self.color, poly, 1)
+            else:
+                pygame.draw.circle(dest, self.color, self.screen_pos(), self.w_radius(), 1)
 
 
 class Swarm(Sprite):
@@ -267,6 +405,10 @@ class Bee(Sprite):
         self.a_scale = a_scale if a_scale else 1
         self.transform.scale_xy = self.a_scale, self.a_scale
 
+    @Game.on_message(name="trigger.exit", sender=Trigger)
+    def trex(self, *a):
+        print("trex", a)
+
     def create_pollen(self):
         pollen = Pollen(Bee.pollen_pic)
         Game.add_object(pollen)
@@ -435,50 +577,6 @@ class Spider(Sprite):
         super().update(deltaTime)
 
 
-class Trigger(GameObject):
-
-    def __init__(self, pos: Vector = None, radius=50, parent: GameObject = None, poly=None):
-        super().__init__()
-        self.radius = radius
-        if pos:
-            self.transform.pos = pos
-
-        if parent:
-            self.transform.set_parent(parent)
-
-        self.__poly = poly
-        self.__w_poly = []
-        self.__dirty_signature = Vector(0)
-
-    def poly_update(self,poly):
-        self.__poly = poly
-        self.__w_poly = []
-        self.__dirty_signature = Vector(0)
-
-    def get_w_poly(self):
-
-        if not self.__poly: return []
-
-        tr = self.transform.get_world_transform()
-
-        p = Vector(1001, 1001)
-        p = tr.add_to_vector(p)
-
-        if p != self.__dirty_signature:
-            self.__dirty_signature = p
-            self.__w_poly = []
-            for p in self.__poly:
-                self.__w_poly.append(tr.add_to_vector(p))
-
-        return self.__w_poly
-
-
-
-
-    def draw(self, dest: pygame.Surface):
-        pygame.draw.circle(dest, (0, 255, 0), self.screen_pos(), self.radius, 1)
-
-
 class Dummy(GameObject):
     def __init__(self, pos):
         super().__init__()
@@ -589,11 +687,15 @@ def game_update(disp):
 # Game.defaultLayer.sort_object_children(p)
 
 
-# cam = Camera()
-# Game.add_object(cam)
+cam = Camera()
+Game.add_object(cam)
 # cam.set_focus(d, lock_y=True)
 
-Game.add_object(Trigger(0.5 * Game.screen_size))
-Game.add_object(Trigger(parent=qwin_bee))
+tr = Trigger("triger 1", parent=qwin_bee, color=(255, 0, 0)).set_n_poly(5, 180)
+Game.add_object(tr)
+
+print(tr.get_parent())
+print(tr.get_parent(clas=Bee))
+print(tr.get_parent(clas=Camera))
 
 Game.run()

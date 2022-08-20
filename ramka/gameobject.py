@@ -39,6 +39,8 @@ class GameObject:
         self.timers = Timers()
 
         self.event_listeners = []
+        self._messages_handlers = []
+
         self.__add_event_listers(self)
 
     @property
@@ -46,11 +48,49 @@ class GameObject:
         return self._parent_sort_me_by
 
     @parent_sort_me_by.setter
-    def parent_sort_me_by(self,value):
-        self._parent_sort_me_by=value
+    def parent_sort_me_by(self, value):
+        self._parent_sort_me_by = value
         # if self.transform.parent:
         #     self.layer.sort_object_children(self.transform.parent.gameObject)
 
+    def get_children(self, recursive=False) -> Iterable[GameObject]:
+        for c in self.transform.children:
+            yield c.gameObject
+            if recursive:
+                for v in c.gameObject.get_children(True):
+                    yield v
+
+    def get_parent(self, clas=None, filter: Callable[[GameObject], bool] = None) -> GameObject:
+        p = self.transform.parent
+        if not p:
+            return None
+        p = p.gameObject
+
+        if clas or filter:
+            if not ((clas is None or isinstance(p, clas)) and (not callable(filter) or filter(p))):
+                p = p.get_parent(clas, filter)
+
+        return p
+
+    def on_message(self, sender: GameObject, name, param):
+        for mh in self._messages_handlers:
+            if (not mh.name or mh.name == name)and(not mh.sender or isinstance(sender,mh.sender)):
+                mh(name, sender, param)
+
+    def send_message(self, receiver: Union[GameObject, Iterable[GameObject]], name, param,
+                     asyn_callback: Callable = None):
+        if isinstance(receiver, GameObject):
+            receiver = [receiver]
+        for object in receiver:
+            if not asyn_callback:
+                return object.on_message(self, name, param)
+            else:
+                def dd(*ar):
+                    a = object.on_message(self, name, param)
+                    if callable(asyn_callback):
+                        asyn_callback(a)
+
+                object.timers.set_timeout(0, dd)
 
     def w_transform(self):
         return self.transform.get_world_transform()
@@ -62,8 +102,12 @@ class GameObject:
         for m in source.__dir__():
             try:
                 m1 = source.__getattribute__(m)
-                if callable(m1) and getattr(m1, 'event_descriptor', 0):
-                    self.event_listeners.append(m1)
+                if callable(m1):
+                    de = getattr(m1, 'event_descriptor', 0)
+                    if de == 3:
+                        self._messages_handlers.append(m1)
+                    elif de:
+                        self.event_listeners.append(m1)
             except:
                 pass
 

@@ -72,9 +72,20 @@ class GameObject:
 
         return p
 
+    def get_all_parents(self, clas=None, filter: Callable[[GameObject], bool] = None) -> List[GameObject]:
+        res = []
+        p = self.transform.parent
+
+        while p:
+            if (clas is None or isinstance(p, clas)) and (not callable(filter) or filter(p)):
+                res.append(p.gameObject)
+            p = p.parent
+
+        return res
+
     def on_message(self, sender: GameObject, name, param):
         for mh in self._messages_handlers:
-            if (not mh.name or mh.name == name)and(not mh.sender or isinstance(sender,mh.sender)):
+            if (not mh.name or mh.name == name) and (not mh.sender or isinstance(sender, mh.sender)):
                 mh(name, sender, param)
 
     def send_message(self, receiver: Union[GameObject, Iterable[GameObject]], name, param,

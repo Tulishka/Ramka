@@ -13,6 +13,44 @@ Game.init('Пчелка')
 Game.цветФона = 200, 200, 255
 
 
+class Animator(Component):
+
+    def __init__(self, game_object: GameObject):
+        super().__init__(game_object)
+
+    def move_to(self, new_val, duration, interp_func=None) -> Timeline:
+        tl = Timeline(self.gameObject)
+
+        start_val = self.gameObject.transform.pos
+        spd = (new_val - start_val)
+
+        def f(x):
+            return start_val + spd * x
+
+        interp_func = interp_func if interp_func else f
+
+        def do(ti: TimeLineProgressInfo):
+            self.gameObject.transform.pos = interp_func(ti.entire_progress)
+
+        return tl.do(do, duration).kill()
+
+    def scale_to(self, new_val, duration, interp_func=None) -> Timeline:
+        tl = Timeline(self.gameObject)
+
+        def do(ti: TimeLineProgressInfo):
+            self.gameObject.transform.pos = interp_func(ti.entire_progress)
+
+        return tl
+
+    def rotate_to(self, new_val, duration, interp_func=None) -> Timeline:
+        tl = Timeline(self.gameObject)
+
+        def do(ti: TimeLineProgressInfo):
+            self.gameObject.transform.pos = interp_func(ti.entire_progress)
+
+        return tl
+
+
 class Swarm(Sprite):
 
     def draw(self, dest: pygame.Surface):
@@ -268,16 +306,16 @@ class Bee(Sprite):
         self.a_scale = a_scale if a_scale else 1
         self.transform.scale_xy = self.a_scale, self.a_scale
 
-        self.eff=Effects(self)
+        self.eff = Effects(self)
 
     @Game.on_message(name="trigger.enter")
     def trex1(self, *a):
-        self.transform.angle=self.transform.angle+20
+
         print("enter")
 
     @Game.on_message(name="trigger.exit")
     def trex2(self, *a):
-        self.transform.angle = self.transform.angle-20
+
         print("exit")
 
     def create_pollen(self):
@@ -562,8 +600,7 @@ cam = Camera()
 Game.add_object(cam)
 # cam.set_focus(d, lock_y=True)
 
-Game.add_object(Trigger("triger 1", parent=qwin_bee, color=(255, 0, 0)).set_n_poly(5, 180).set_watch_for(ObjectFilter(clas=Flower)))
-
-
+Game.add_object(
+    Trigger("triger 1", parent=qwin_bee, color=(255, 0, 0)).set_n_poly(5, 180).set_watch_for(ObjectFilter(clas=Flower)))
 
 Game.run()

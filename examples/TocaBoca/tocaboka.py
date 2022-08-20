@@ -25,12 +25,12 @@ class FallingDown(Component):
             return
 
         y = self.gameObject.screen_pos().y + self.gameObject.get_computed_size().y * 0.5
-        if y < self.floor_y:
+        if y < self.floor_y or self.spd<0:
             self.spd += self.g * deltaTime
         elif self.spd > 0:
             if self.spd < 200:
                 self.spd = 0
-                self.gameObject.transform.y = self.floor_y + 1 - self.gameObject.get_computed_size().y * 0.5
+                # self.gameObject.transform.y = self.floor_y + 1 - self.gameObject.get_computed_size().y * 0.5
 
             else:
                 self.spd *= -0.3
@@ -109,17 +109,7 @@ class BaseItem(Sprite):
         self.current_dz = None
         self.current_dobj= None
 
-    @Game.on_mouse_up(button=1)
-    def mouse_up(self):
-        if self.current_dobj:
-            self.current_dobj.transform.pos = 0,0
-            self.current_dobj.transform.set_parent(self.current_dz)
-            a=self.current_dobj.get_components(FallingDown)
-            for c in a:
-                c.enabled=False
 
-            self.current_dz = None
-            self.current_dobj= None
 
     @staticmethod
     def create_animation(name):
@@ -156,6 +146,16 @@ class BaseItem(Sprite):
     def on_mouse_up(self):
         if self.mouse_start_point:
             self.state_next()
+
+        if self.current_dobj:
+            self.current_dobj.transform.pos = 0,0
+            self.current_dobj.transform.set_parent(self.current_dz)
+            a=self.current_dobj.get_components(FallingDown)
+            for c in a:
+                c.enabled=False
+
+            self.current_dz = None
+            self.current_dobj= None
 
     @Game.on_mouse_down(button=1)
     def on_mouse_down(self):

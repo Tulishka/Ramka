@@ -9,6 +9,12 @@ class Draggable:
             return (h.obj == self)
         return False
 
+    def on_drag_start(self):
+        return True
+
+    def on_drag_end(self):
+        pass
+
 
 class DragAndDropController(GameObject):
     def __init__(self):
@@ -23,12 +29,13 @@ class DragAndDropController(GameObject):
         sel.reverse()
         for s in sel:
             if s.touch_test(Input.mouse_pos):
-                Game.defaultLayer.change_order_last(s)
-                z = list(Game.get_objects(clas=Draggable))
-                self.drag_start_pos = Input.mouse_pos
-                self.obj_start_pos = s.transform.pos
-                self.obj = s
-                break
+                if s.on_drag_start()!=False:
+                    Game.defaultLayer.change_order_last(s)
+                    z = list(Game.get_objects(clas=Draggable))
+                    self.drag_start_pos = Input.mouse_pos
+                    self.obj_start_pos = s.transform.pos
+                    self.obj = s
+                    break
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
@@ -39,6 +46,7 @@ class DragAndDropController(GameObject):
     def release_mi(self):
         if self.obj:
             self.obj.transform.pos = self.obj_start_pos + Input.mouse_pos - self.drag_start_pos
+            self.obj.on_drag_end()
             self.obj_start_pos = None
             self.drag_start_pos = None
             self.obj = None

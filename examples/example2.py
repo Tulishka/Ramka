@@ -437,7 +437,7 @@ class Spider(Sprite):
 
 class Trigger(GameObject):
 
-    def __init__(self, pos: Vector = None, radius=50, parent: GameObject = None):
+    def __init__(self, pos: Vector = None, radius=50, parent: GameObject = None, poly=None):
         super().__init__()
         self.radius = radius
         if pos:
@@ -445,6 +445,35 @@ class Trigger(GameObject):
 
         if parent:
             self.transform.set_parent(parent)
+
+        self.__poly = poly
+        self.__w_poly = []
+        self.__dirty_signature = Vector(0)
+
+    def poly_update(self,poly):
+        self.__poly = poly
+        self.__w_poly = []
+        self.__dirty_signature = Vector(0)
+
+    def get_w_poly(self):
+
+        if not self.__poly: return []
+
+        tr = self.transform.get_world_transform()
+
+        p = Vector(1001, 1001)
+        p = tr.add_to_vector(p)
+
+        if p != self.__dirty_signature:
+            self.__dirty_signature = p
+            self.__w_poly = []
+            for p in self.__poly:
+                self.__w_poly.append(tr.add_to_vector(p))
+
+        return self.__w_poly
+
+
+
 
     def draw(self, dest: pygame.Surface):
         pygame.draw.circle(dest, (0, 255, 0), self.screen_pos(), self.radius, 1)
@@ -539,31 +568,26 @@ def game_update(disp):
     Particle.draw_all(disp)
 
 
-def pnt():
-    return Input.mouse_pos
-
-
-p = Dummy((400, 400))
-Game.add_object(p)
-p.color=(0,0,0)
-
-c = Dummy((120, 120))
-c.transform.set_parent(p)
-c.color=(255,0,0)
-Game.add_object(c)
-c.parent_sort_me_by="_"
-
-for d in range(1,6):
-    c = Dummy((d * 20, d * 20))
-    c.color = (d*20,d*20,d*20)
-    c.opacity=0.5
-    c.transform.set_parent(p)
-    Game.add_object(c)
-
+# p = Dummy((400, 400))
+# Game.add_object(p)
+# p.color=(0,0,0)
+#
+# c = Dummy((120, 120))
+# c.transform.set_parent(p)
+# c.color=(255,0,0)
+# Game.add_object(c)
+# c.parent_sort_me_by="_"
+#
+# for d in range(1,6):
+#     c = Dummy((d * 20, d * 20))
+#     c.color = (d*20,d*20,d*20)
+#     c.opacity=0.5
+#     c.transform.set_parent(p)
+#     Game.add_object(c)
 
 # Game.defaultLayer.change_order_last(p)
-
 # Game.defaultLayer.sort_object_children(p)
+
 
 # cam = Camera()
 # Game.add_object(cam)

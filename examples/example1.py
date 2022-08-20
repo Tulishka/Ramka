@@ -211,18 +211,14 @@ hyena.transform.set_parent(area)
 Game.run()
 
 # todo: состояния
-# todo: эффекты : индивидуальные, групповые, глобальные
-# todo: последовательности
+
 # todo: анимация:  скорость анимации множитель, события анимации, свойства кадрам анимации: обработчики, отправка событий
 # todo: коллайдер : can collide
 # todo: звуки
 # todo: сообщения всем, паренту, чилдам. Сообщения pygame?
-# todo: input.events
 # todo: тригеры
-# todo: game_object: before_update, after_update
 # todo: pymunk
 # todo: particles
-# todo: мышка
 # todo: автоматизированные перемещения, повороты, маштабирование: moveTo (target, time=, spd=, easing=, complete%=), stop(),
 
 # todo: документация в коде

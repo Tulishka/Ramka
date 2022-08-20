@@ -61,7 +61,7 @@ class DropZone(GameObject):
 
 
 class Docker(Sprite):
-    def __init__(self, anim: Union[str, Dict], pos):
+    def __init__(self, anim: Union[str, Dict], pos, mass=None):
         if isinstance(anim, str):
             anim = Docker.create_animation(anim)
 
@@ -70,6 +70,11 @@ class Docker(Sprite):
         self.state.id = 1
         self.transform.pos = pos
         self.mouse_start_point = None
+        if mass:
+            self.mass = mass
+        else:
+            self.update_mass()
+
         if "blink" in self.animations:
             Blink(self)
 
@@ -119,6 +124,13 @@ class Docker(Sprite):
 
         self.state.animation = self.state_anim_name()
 
+    def update_mass(self):
+        sq = self.get_size()
+        self.mass = sq.x * sq.y / (100 * 100)
+        if self.mass<1:
+            self.mass=1
+        return self.mass
+
 
 class Interier(Docker):
     def __init__(self, *a, **b):
@@ -128,7 +140,27 @@ class Interier(Docker):
 class Movable(Draggable, Docker):
     def __init__(self, *a, **b):
         super().__init__(*a, **b)
-        FallingDown(self)
+        self.__fallcomp = FallingDown(self)
+
+        self.last_position = self.transform.pos
+        self.last_vert_spd = 0
+
+    def on_drag_start(self):
+        pass
+
+    def on_drag_end(self):
+        if self.last_vert_spd < 0:
+            self.__fallcomp.spd = max(self.last_vert_spd / self.mass, -600)
+
+    def update(self, deltaTime: float):
+        super().update(deltaTime)
+
+        if self.is_dragged() and deltaTime > 0:
+            self.last_vert_spd = (self.transform.pos.y - self.last_position.y) / deltaTime
+        else:
+            self.last_vert_spd = 0
+
+        self.last_position = self.transform.pos
 
 
 class Item(Movable):

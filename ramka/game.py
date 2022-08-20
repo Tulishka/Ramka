@@ -91,8 +91,11 @@ class Game:
             Game.цветФона = back_color
 
     @staticmethod
-    def _notify_enter_leave_listeners(game_object, event_type):
-        objs = Game.get_objects(filter=lambda x: x.event_listeners)
+    def _notify_event_listeners(game_object, event_type,notified_object: GameObject =None):
+        if not notified_object:
+            objs = Game.get_objects(filter=lambda x: x.event_listeners)
+        else:
+            objs = [notified_object]
         ls = []
         for o in objs:
             ls.extend(filter(lambda z: z.type == event_type, o.event_listeners))
@@ -111,7 +114,7 @@ class Game:
         game_object.set_layer(layer)
 
         if game_object not in Game.gameObjects:
-            Game._notify_enter_leave_listeners(game_object, "other_enter_game")
+            Game._notify_event_listeners(game_object, "other_enter_game")
 
             # Game.gameObjects.append(game_object)
             Game.rearrange_gobjects()
@@ -136,7 +139,7 @@ class Game:
             obj.on_leave_game()
             obj.set_layer(None)
             to_rem.append(obj)
-            Game._notify_enter_leave_listeners(obj, "other_leave_game")
+            Game._notify_event_listeners(obj, "other_leave_game")
 
         if game_object in Game.gameObjects:
             for c in game_object.transform.children:
@@ -301,7 +304,6 @@ class Game:
 
     @staticmethod
     def on_key_down(func=None, *, key=None, continuos=False):
-
         def wrapper(func):
             func.event_descriptor = 1
             func.key = key
@@ -356,6 +358,30 @@ class Game:
             func.button = button
             func.type = "mouse_up"
             func.hover = hover
+            return func
+
+        return wrapper if func is None else wrapper(func)
+
+    @staticmethod
+    def on_child_add(func=None, *, clas=None, layer=None, filter=None):
+        def wrapper(func):
+            func.event_descriptor = 2
+            func.clas = clas
+            func.layer = layer
+            func.filter = filter
+            func.type = "on_child_add"
+            return func
+
+        return wrapper if func is None else wrapper(func)
+
+    @staticmethod
+    def on_child_remove(func=None, *, clas=None, layer=None, filter=None):
+        def wrapper(func):
+            func.event_descriptor = 2
+            func.clas = clas
+            func.layer = layer
+            func.filter = filter
+            func.type = "on_child_remove"
             return func
 
         return wrapper if func is None else wrapper(func)

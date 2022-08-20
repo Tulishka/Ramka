@@ -80,6 +80,12 @@ def point_inside_poly(x, y, poly):
     return inside
 
 
+def _point_inside_poly(points,polygon):
+    import matplotlib.path as mpltPath
+    path = mpltPath.Path(polygon)
+    inside2 = path.contains_points(points)
+
+
 def interp_mid_spd(to_val: Union[Vector, List, Tuple],
                    from_val: Union[Vector, List, Tuple] = (0, 0)):
     d = [0, 0]

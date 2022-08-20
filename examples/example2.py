@@ -138,7 +138,7 @@ class Trigger(GameObject):
         other = Input.mouse_pos
         c = self.is_collided(other)
         self.color = (255, 0, 0) if c else (0, 255, 0)
-        self.__notify_listeners(other, c, deltaTime)
+        self.__notify_listeners("mouse", c, deltaTime)
 
     def draw(self, dest: pygame.Surface):
 
@@ -405,9 +405,17 @@ class Bee(Sprite):
         self.a_scale = a_scale if a_scale else 1
         self.transform.scale_xy = self.a_scale, self.a_scale
 
-    @Game.on_message(name="trigger.exit", sender=Trigger)
-    def trex(self, *a):
-        print("trex", a)
+        self.eff=Effects(self)
+
+    @Game.on_message(name="trigger.enter")
+    def trex1(self, *a):
+        self.transform.angle=180
+        print("enter")
+
+    @Game.on_message(name="trigger.exit")
+    def trex2(self, *a):
+        self.transform.angle=0
+        print("exit")
 
     def create_pollen(self):
         pollen = Pollen(Bee.pollen_pic)

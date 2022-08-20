@@ -1,4 +1,4 @@
-from typing import Dict, Union, List
+from typing import Dict, Union, List, Callable, Iterable
 import pygame
 import pymunk
 import pymunk.pygame_util
@@ -8,6 +8,16 @@ from .timers import Timers
 from .gameobject import GameObject
 from .input import Input
 from .layers import Layer
+
+
+class ObjectFilter:
+    def __init__(self, clas: Union[type, Iterable[type]] = None, layer: Layer = None, filter: Callable = None):
+        self.clas = clas
+        self.layer = layer
+        self.filter = filter
+
+    def __call__(self, *args, **kwargs) -> Iterable[GameObject]:
+        return Game.get_objects(self.clas, self.layer, self.filter)
 
 
 class Game:
@@ -91,7 +101,7 @@ class Game:
             Game.цветФона = back_color
 
     @staticmethod
-    def _notify_event_listeners(game_object, event_type,notified_object: GameObject =None):
+    def _notify_event_listeners(game_object, event_type, notified_object: GameObject = None):
         if not notified_object:
             objs = Game.get_objects(filter=lambda x: x.event_listeners)
         else:
@@ -124,7 +134,8 @@ class Game:
     @staticmethod
     def remove_object(game_object: GameObject):
 
-        to_rem=[]
+        to_rem = []
+
         def remove(obj):
 
             tr = obj.transform
@@ -199,7 +210,7 @@ class Game:
             mbtn = [i + 1 for i, j in enumerate(Input.raw_mouse_buttons) if j]
 
             Game.rearrange_gobjects()
-            gobs=Game.gameObjects.copy()
+            gobs = Game.gameObjects.copy()
 
             for ul in Game.before_update_listeners:
                 ul(deltaTime)
@@ -274,13 +285,18 @@ class Game:
                 yield cc
 
     @staticmethod
-    def get_objects(clas=None, layer=None, filter=None):
+    def get_objects(clas: Union[type, Iterable[type]] = None, layer: Layer = None, filter: Callable = None):
         if filter is None:
             filter = lambda x: True
 
-        for c in Game.gameObjects:
-            if (clas is None or isinstance(c, clas)) and (layer is None or c.layer == layer) and filter(c):
-                yield c
+        if not isinstance(clas, Iterable):
+            for c in Game.gameObjects:
+                if (clas is None or isinstance(c, clas)) and (layer is None or c.layer == layer) and filter(c):
+                    yield c
+        else:
+            for c in Game.gameObjects:
+                if (not clas or type(c) in clas) and (layer is None or c.layer == layer) and filter(c):
+                    yield c
 
     @staticmethod
     def before_update(update_func):
@@ -387,7 +403,7 @@ class Game:
         return wrapper if func is None else wrapper(func)
 
     @staticmethod
-    def on_message(func=None,*, name=None, sender=None):
+    def on_message(func=None, *, name=None, sender=None):
         def wrapper(func):
             func.event_descriptor = 3
             func.name = name
@@ -396,4 +412,3 @@ class Game:
             return func
 
         return wrapper if func is None else wrapper(func)
-

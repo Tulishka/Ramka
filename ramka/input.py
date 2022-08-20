@@ -65,7 +65,7 @@ class Axis(InputControl):
         return False
 
 
-class Trigger(InputControl):
+class TriggerKey(InputControl):
     def __init__(self, name: str):
         super().__init__(name)
 
@@ -131,6 +131,10 @@ class Input:
         i.init()
 
     @staticmethod
+    def get_mouse_pos():
+        return Input.mouse_pos
+
+    @staticmethod
     def bind_key(control: Union[str, InputControl], key: int, value=1):
         if type(control) == str:
             control = Input.control[control]
@@ -186,7 +190,7 @@ class Input:
 
     @classmethod
     def add_key(cls, name: str):
-        c = Trigger(name)
+        c = TriggerKey(name)
         Input.control[name] = c
         return c
 

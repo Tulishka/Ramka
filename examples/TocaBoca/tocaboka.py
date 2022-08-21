@@ -95,6 +95,10 @@ class BaseItem(Sprite):
     def new_child(self, obj):
         print("add", obj)
 
+    @Game.on_child_remove(clas=Draggable)
+    def del_child(self, obj):
+        print("remove", obj)
+
     @staticmethod
     def create_animation(name):
         a = name.split("|")

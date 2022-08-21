@@ -410,7 +410,7 @@ class Game:
         return wrapper if func is None else wrapper(func)
 
     @staticmethod
-    def on_child_add(func=None, *, recursively=True, clas=None, layer=None, filter=None):
+    def on_child_add(func=None, *, recursively=False, clas=None, layer=None, filter=None):
         def wrapper(func):
             func.event_descriptor = 2
             func.clas = clas
@@ -423,7 +423,7 @@ class Game:
         return wrapper if func is None else wrapper(func)
 
     @staticmethod
-    def on_child_remove(func=None, *, recursively=True, clas=None, layer=None, filter=None):
+    def on_child_remove(func=None, *, recursively=False, clas=None, layer=None, filter=None):
         def wrapper(func):
             func.event_descriptor = 2
             func.clas = clas

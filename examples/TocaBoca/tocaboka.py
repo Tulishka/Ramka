@@ -3,7 +3,7 @@ from random import random, randint
 from typing import Dict, Union
 
 from examples.Components.DragAndDrop import Draggable, DragAndDropController
-from ramka import Sprite, Game, Animation, Cooldown, Camera, Component, Input, GameObject, Vector
+from ramka import Sprite, Game, Animation, Cooldown, Camera, Component, Input, GameObject, Vector, ObjectFilter
 from ramka.trigger import Trigger
 
 Game.init('TocaBoca')
@@ -17,7 +17,7 @@ class FallingDown(Component):
 
         self.spd = 0
         self.g = 900
-        self.enabled=True
+        self.enabled = True
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
@@ -25,7 +25,7 @@ class FallingDown(Component):
             return
 
         y = self.gameObject.screen_pos().y + self.gameObject.get_computed_size().y * 0.5
-        if y < self.floor_y or self.spd<0:
+        if y < self.floor_y or self.spd < 0:
             self.spd += self.g * deltaTime
         elif self.spd > 0:
             if self.spd < 200:
@@ -66,8 +66,6 @@ class DropZone(Trigger):
     def __init__(self, parent: BaseItem, name, pos: Vector = None, radius=None):
         super().__init__(name, pos, radius, parent, color=(0, 255, 0))
 
-        self.set_watch_for(Input.get_mouse_pos)
-
 
 class BaseItem(Sprite):
     dd_manager: DragAndDropController = None
@@ -76,13 +74,11 @@ class BaseItem(Sprite):
         if isinstance(anim, str):
             anim = BaseItem.create_animation(anim)
 
-        super(BaseItem, self).__init__(anim)
+        super().__init__(anim)
         self.drop_zones = []
         self.state.id = 1
         self.transform.pos = pos
         self.mouse_start_point = None
-        self.current_dz = None
-        self.current_dobj: GameObject = None
 
         if not BaseItem.dd_manager:
             BaseItem.dd_manager = Game.get_object(clas=DragAndDropController)
@@ -94,21 +90,6 @@ class BaseItem(Sprite):
 
         if "blink" in self.animations:
             Blink(self)
-
-    def is_attached(self):
-        return isinstance(self.get_parent(),DropZone)
-
-    @Game.on_message(name="trigger.enter")
-    def trigger_in(self, sender, name, object):
-        if BaseItem.dd_manager.obj:
-            self.current_dz = sender
-            self.current_dobj = BaseItem.dd_manager.obj
-
-    @Game.on_message(name="trigger.exit")
-    def trigger_out(self, sender, name, object):
-        self.current_dz = None
-        self.current_dobj= None
-
 
 
     @staticmethod
@@ -147,16 +128,6 @@ class BaseItem(Sprite):
         if self.mouse_start_point:
             self.state_next()
 
-        if self.current_dobj:
-            self.current_dobj.transform.pos = 0,0
-            self.current_dobj.transform.set_parent(self.current_dz)
-            a=self.current_dobj.get_components(FallingDown)
-            for c in a:
-                c.enabled=False
-
-            self.current_dz = None
-            self.current_dobj= None
-
     @Game.on_mouse_down(button=1)
     def on_mouse_down(self):
         self.mouse_start_point = Input.mouse_pos
@@ -191,13 +162,50 @@ class Movable(Draggable, BaseItem):
         self.last_position = self.transform.pos
         self.last_vert_spd = 0
 
+        self.__restore_parent = None
+
     def on_drag_start(self):
+        self.detach()
+
+    def is_attachable(self):
+        return True
+
+    def can_attach_to(self, dz: DropZone):
+        return True
+
+    def is_attached(self):
+        return isinstance(self.get_parent(), DropZone)
+
+    def attach_to(self, dz: DropZone):
+        if not self.is_attached():
+            self.__restore_parent = self.get_parent()
+            self.transform.pos = 0, 0
+            self.transform.set_parent(dz)
+            self.on_attach(dz)
+
+    def detach(self):
         if self.is_attached():
-            self.__fallcomp.enabled=True
+            dz = self.get_parent()
             self.transform.detach(True)
-            self.transform.set_parent(Game.get_object(clas=Camera),from_world=True)
+            if self.__restore_parent:
+                self.transform.set_parent(self.__restore_parent, from_world=True)
+                self.__restore_parent = None
+            self.on_detach(dz)
+
+    def on_attach(self, dz):
+        self.__fallcomp.enabled = False
+
+    def on_detach(self, dz):
+        self.__fallcomp.enabled = True
 
     def on_drag_end(self):
+        if self.is_attachable():
+            for dz in Game.get_objects(clas=DropZone):
+                if dz.is_collided(self) or dz.is_collided(Input.mouse_pos):
+                    if self.can_attach_to(dz):
+                        self.attach_to(dz)
+                        return
+
         if self.last_vert_spd < 0:
             self.__fallcomp.spd = max(self.last_vert_spd / self.mass, -600)
 

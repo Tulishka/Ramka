@@ -1,4 +1,4 @@
-from typing import Union, Callable, Tuple, Type, List, Iterable
+from typing import Union, Callable, Tuple, Type, List, Iterable, Any
 import numpy as np
 
 import pygame
@@ -127,27 +127,31 @@ class Trigger(GameObject):
             p = self.__get_listener()
             self.send_message(p, "trigger.update", (other, deltatime))
 
-    def manual_watch(self, other: Union[
-        Callable[[None], Union[GameObject, Vector, Iterable[GameObject]]], GameObject, Vector, Iterable[
-            Union[Vector, GameObject]]], deltatime,
-                     notify=True):
+    def __cancel_watch(self, obj):
+        if obj in self.entered:
+            self.send_message(self.__get_listener(), "trigger.cancel", obj)
+            self.entered.remove(obj)
 
-        if callable(other):
-            objs = other()
-        else:
-            objs = other
+    def __get_watched_obj(self) -> Iterable[Tuple[Union[GameObject, Vector], Any]]:
 
-        if isinstance(objs, pygame.math.Vector2) or not isinstance(objs, Iterable):
-            objs = [objs]
+        for other in self.__watch_for:
+            if callable(other):
+                objs = other()
+            else:
+                objs = other
 
-        for obj in objs:
-            c = self.is_collided(obj)
-            if notify:
-                self.__notify_listeners(other if isinstance(obj, pygame.math.Vector2) else obj, c, deltatime)
+            if isinstance(objs, pygame.math.Vector2) or not isinstance(objs, Iterable):
+                objs = [objs]
 
-    def set_watch_for(self, objects: Union[Union[GameObject, Vector, Callable],List[Union[GameObject, Vector, Callable]]]):
-        for e in self.entered:
-            self.__notify_listeners(e, False, 0)
+            for obj in objs:
+                yield obj, other if isinstance(obj, pygame.math.Vector2) else obj
+
+    def set_watch_for(self,
+                      objects: Union[Union[GameObject, Vector, Callable], List[Union[GameObject, Vector, Callable]]]):
+
+        for e in list(self.entered):
+            self.__cancel_watch(e)
+
         self.entered = []
         if isinstance(objects, pygame.math.Vector2) or not isinstance(objects, Iterable):
             objects = [objects]
@@ -157,8 +161,17 @@ class Trigger(GameObject):
     def update(self, deltaTime: float):
         super().update(deltaTime)
 
-        for w in self.__watch_for:
-            self.manual_watch(w, deltaTime)
+        if (any(self.__watch_for) or any(self.entered)) and (self.__get_listener()):
+
+            was = set()
+            for w in self.__get_watched_obj():
+                was.add(w[1])
+                c = self.is_collided(w[0])
+                self.__notify_listeners(w[1], c, deltaTime)
+
+            for e in list(self.entered):
+                if e not in was:
+                    self.__cancel_watch(e)
 
     def draw(self, dest: pygame.Surface):
 

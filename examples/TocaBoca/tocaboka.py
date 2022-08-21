@@ -2,6 +2,8 @@ import glob
 from random import random, randint
 from typing import Dict, Union
 
+import pygame
+
 from examples.Components.DragAndDrop import Draggable, DragAndDropController
 from ramka import Sprite, Game, Animation, Cooldown, Camera, Component, Input, GameObject, Vector, ObjectFilter
 from ramka.trigger import Trigger
@@ -66,6 +68,41 @@ class DropZone(Trigger):
     def __init__(self, parent: BaseItem, name, pos: Vector = None, radius=None):
         super().__init__(name, pos, radius, parent)
 
+    def can_attach_object(self, object: GameObject):
+        return True
+
+    def attach_object(self, object: GameObject):
+        object.transform.set_parent(self)
+        self.layer.sort_object_children(self.get_parent())
+        return True
+
+    def detach_object(self, object: GameObject):
+        object.transform.detach(True)
+        return True
+
+
+class FrontPart(Draggable, Sprite):
+    def __init__(self, animations: Union[Animation, pygame.Surface, str, Dict[str, Animation]], parent: BaseItem):
+        super().__init__(animations)
+        self.transform.set_parent(parent)
+        self.parent_sort_me_by = "__" + self.parent_sort_me_by
+
+    @Game.on_mouse_down(button=1, hover=True)
+    def mouse_down_proxy(self):
+        return self.get_parent()
+
+    @Game.on_mouse_up(button=1, hover=True)
+    def mouse_up_proxy(self):
+        return self.get_parent()
+
+    def on_drag_start(self):
+        p = self.get_parent()
+        if isinstance(p, Draggable):
+            p.on_drag_start()
+            return self.get_parent()
+        else:
+            return False
+
 
 class BaseItem(Sprite):
     dd_manager: DragAndDropController = None
@@ -99,9 +136,7 @@ class BaseItem(Sprite):
         if isinstance(anim, str):
             front_anim = BaseItem.create_animation(anim, "_f")
             if front_anim:
-                self.front_object = Sprite(front_anim)
-                self.front_object.parent_sort_me_by = "__" + self.front_object.parent_sort_me_by
-                self.front_object.transform.set_parent(self)
+                self.front_object = FrontPart(front_anim, self)
 
     def on_enter_game(self):
         if self.front_object:
@@ -109,11 +144,11 @@ class BaseItem(Sprite):
 
     @Game.on_child_add(clas=Draggable, recursively=True)
     def new_child(self, obj):
-        print("add", obj)
+        pass
 
     @Game.on_child_remove(clas=Draggable, recursively=True)
     def del_child(self, obj):
-        print("remove", obj)
+        pass
 
     @staticmethod
     def create_animation(name, suffix=""):
@@ -196,7 +231,7 @@ class Movable(Draggable, BaseItem):
         return True
 
     def can_attach_to(self, dz: DropZone):
-        return True
+        return dz.can_attach_object(self)
 
     def is_attached(self):
         return isinstance(self.get_parent(), DropZone)
@@ -204,19 +239,25 @@ class Movable(Draggable, BaseItem):
     def attach_to(self, dz: DropZone):
         if not self.is_attached():
             self.__restore_parent = self.get_parent()
-            self.transform.pos = 0, 0
-            self.transform.set_parent(dz)
-            self.layer.change_order_after(self, dz)
-            self.on_attach(dz)
+            if dz.attach_object(self):
+                self.transform.pos = 0, 0
+                self.on_attach(dz)
 
     def detach(self):
         if self.is_attached():
             dz = self.get_parent()
-            self.transform.detach(True)
-            if self.__restore_parent:
-                self.transform.set_parent(self.__restore_parent, from_world=True)
-                self.__restore_parent = None
-            self.on_detach(dz)
+
+            if isinstance(dz, DropZone):
+                res = dz.detach_object(self)
+            else:
+                res = True
+                self.transform.detach(True)
+
+            if res:
+                if self.__restore_parent:
+                    self.transform.set_parent(self.__restore_parent, from_world=True)
+                    self.__restore_parent = None
+                self.on_detach(dz)
 
     def on_attach(self, dz):
         self.__fallcomp.enabled = False
@@ -226,7 +267,8 @@ class Movable(Draggable, BaseItem):
 
     def on_drag_end(self):
         if self.is_attachable():
-            for dz in Game.get_objects(clas=DropZone, filter=lambda x: self not in x.get_all_parents()):
+            ll=list(Game.get_objects(clas=DropZone, filter=lambda x: self not in x.get_all_parents()))
+            for dz in reversed(ll):
                 if dz.is_collided(self) or dz.is_collided(Input.mouse_pos):
                     if self.can_attach_to(dz):
                         self.attach_to(dz)

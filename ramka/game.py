@@ -234,6 +234,12 @@ class Game:
 
             for obj in gobs:
                 if obj.enabled:
+                    obj.update(deltaTime)
+                    obj.update_components(deltaTime)
+
+            mouse_capture=None
+            for obj in reversed(gobs):
+                if obj.enabled:
                     for ev in obj.event_listeners:
                         if ev.event_descriptor != 1:
                             continue
@@ -249,28 +255,35 @@ class Game:
                             bs = mbtn if ev.continuos else Game.mouse_pressed
                             if bs:
                                 if ev.hover:
-                                    r = obj.touch_test(Input.mouse_pos)
+                                    r = (mouse_capture is None or mouse_capture==obj) and obj.visible and obj.opacity and obj.touch_test(Input.mouse_pos)
+                                    if r and mouse_capture is None:
+                                        mouse_capture = obj
                                 else:
                                     r = True
                                 if r and (ev.button is None or ev.button in bs):
                                     if ev.button is not None:
-                                        ev()
+                                        cap=ev()
                                     else:
-                                        ev(bs)
+                                        cap=ev(bs)
+                                    if ev.hover and isinstance(cap,GameObject):
+                                        mouse_capture=cap
+
                         elif ev.type == "mouse_up":
                             if Game.mouse_released:
                                 if ev.hover:
-                                    r = obj.touch_test(Input.mouse_pos)
+                                    r = (mouse_capture is None or mouse_capture==obj) and obj.visible and obj.opacity and obj.touch_test(Input.mouse_pos)
+                                    if r and mouse_capture is None:
+                                        mouse_capture = obj
                                 else:
                                     r = True
                                 if r and (ev.button is None or ev.button in Game.mouse_released):
                                     if ev.button is not None:
-                                        ev()
+                                        cap=ev()
                                     else:
-                                        ev(Game.mouse_released)
+                                        cap=ev(Game.mouse_released)
+                                    if ev.hover and isinstance(cap,GameObject):
+                                        mouse_capture=cap
 
-                    obj.update(deltaTime)
-                    obj.update_components(deltaTime)
 
             for ul in Game.after_update_listeners:
                 ul(deltaTime)

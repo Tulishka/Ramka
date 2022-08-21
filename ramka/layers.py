@@ -62,13 +62,14 @@ class Layer:
 
     def sort_object_children(self, object: GameObject):
         if object.transform.children:
-            idx = self.gameObjects.index(object)
             object.transform.children.sort(key=lambda x: x.gameObject._parent_sort_me_by)
             for c in object.transform.children:
                 if c.gameObject in self.gameObjects:
                     self.gameObjects.remove(c.gameObject)
-                    self.gameObjects.insert(idx + 1, c.gameObject)
-                    idx += 1
+            idx = self.gameObjects.index(object)
+            for c in object.transform.children:
+                self.gameObjects.insert(idx + 1, c.gameObject)
+                idx += 1
             for c in object.transform.children:
                 self.sort_object_children(c.gameObject)
 

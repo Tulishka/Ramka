@@ -72,9 +72,11 @@ class BaseItem(Sprite):
 
     def __init__(self, anim: Union[str, Dict], pos, mass=None):
         if isinstance(anim, str):
-            anim = BaseItem.create_animation(anim)
+            animations = BaseItem.create_animation(anim)
+        else:
+            animations = anim
 
-        super().__init__(anim)
+        super().__init__(animations)
         self.drop_zones = []
         self.state.id = 1
         self.transform.pos = pos
@@ -91,21 +93,34 @@ class BaseItem(Sprite):
         if "blink" in self.animations:
             Blink(self)
 
-    @Game.on_child_add(clas=Draggable,recursively=True)
+        self.front_object = None
+        if isinstance(anim, str):
+            front_anim = BaseItem.create_animation(anim, "_f")
+            if front_anim:
+                self.front_object = Sprite(front_anim)
+                self.front_object.parent_sort_me_by="__"
+                self.front_object.transform.set_parent(self)
+
+    def on_enter_game(self):
+        if self.front_object:
+            Game.add_object(self.front_object)
+
+
+    @Game.on_child_add(clas=Draggable, recursively=True)
     def new_child(self, obj):
         print("add", obj)
 
-    @Game.on_child_remove(clas=Draggable,recursively=True)
+    @Game.on_child_remove(clas=Draggable, recursively=True)
     def del_child(self, obj):
         print("remove", obj)
 
     @staticmethod
-    def create_animation(name):
+    def create_animation(name, suffix=""):
         a = name.split("|")
         directory = a[-2]
         name = a[-1]
         obj = {}
-        files = list(glob.glob(f".\\img\\{directory}\\{name}_?.png"))
+        files = list(glob.glob(f".\\img\\{directory}\\{name}{suffix}_?.png"))
         files.sort()
         for f in files:
             if f[-5] == "m":
@@ -147,6 +162,8 @@ class BaseItem(Sprite):
                 self.mouse_start_point = None
 
         self.state.animation = self.state_anim_name()
+        if self.front_object:
+            self.front_object.state.animation = self.state.animation
 
     def update_mass(self):
         sq = self.get_size()
@@ -262,7 +279,7 @@ komnata2.transform.scale = Game.ширинаЭкрана / komnata2.get_size().x
 komnata2.transform.pos = Game.ширинаЭкрана / 2, Game.высотаЭкрана / 2
 Game.add_object(komnata2)
 
-Game.add_object(Interier("mebel|bed2", (150, 545)))
+Game.add_object(Interier("mebel|bed2", (150, 545)).drop_zone_add("T", Vector(0, -50), radius=90))
 Game.add_object(Interier("mebel|window", (693, 278)))
 
 Game.add_object(Pet("pets|oblachko", (700, 100)))

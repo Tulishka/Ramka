@@ -72,9 +72,11 @@ class BaseItem(Sprite):
 
     def __init__(self, anim: Union[str, Dict], pos, mass=None):
         if isinstance(anim, str):
+            self.name = anim.split("|")[-1]
             animations = BaseItem.create_animation(anim)
         else:
             animations = anim
+            self.name = "no name"
 
         super().__init__(animations)
         self.drop_zones = []
@@ -98,13 +100,12 @@ class BaseItem(Sprite):
             front_anim = BaseItem.create_animation(anim, "_f")
             if front_anim:
                 self.front_object = Sprite(front_anim)
-                self.front_object.parent_sort_me_by="__"
+                self.front_object.parent_sort_me_by = "__" + self.front_object.parent_sort_me_by
                 self.front_object.transform.set_parent(self)
 
     def on_enter_game(self):
         if self.front_object:
             Game.add_object(self.front_object)
-
 
     @Game.on_child_add(clas=Draggable, recursively=True)
     def new_child(self, obj):
@@ -205,6 +206,7 @@ class Movable(Draggable, BaseItem):
             self.__restore_parent = self.get_parent()
             self.transform.pos = 0, 0
             self.transform.set_parent(dz)
+            self.layer.change_order_after(self, dz)
             self.on_attach(dz)
 
     def detach(self):
@@ -249,6 +251,24 @@ class Item(Movable):
         super().__init__(*a, **b)
 
 
+class HandableItem(Item):
+    def __init__(self, *a, **b):
+        super().__init__(*a, **b)
+
+    def on_attach(self, dz):
+        super().on_attach(dz)
+        if dz.trigger_name == "LeftArm":
+            self.transform.angle = 45
+        elif dz.trigger_name == "RightArm":
+            self.transform.angle = -45
+        elif dz.trigger_name in ("Head", "Sleep"):
+            self.transform.angle = -90
+
+    def on_detach(self, dz):
+        super().detach()
+        self.transform.angle = 0
+
+
 class Pet(Item):
     def __init__(self, *a, **b):
         super().__init__(*a, **b)
@@ -266,10 +286,21 @@ class Background(Sprite):
 class Chelik(Item):
     def __init__(self, name, *a, **b):
         super().__init__(name, *a, **b)
-        self.name = name.split("|")[-1]
+        self.im_sleep = False
+
+    def on_attach(self, dz):
+        super().on_attach(dz)
+        if dz.trigger_name == "Sleep":
+            self.im_sleep = True
+
+    def on_detach(self, dz):
+        super().on_detach()
+        self.im_sleep = False
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
+        if self.im_sleep:
+            self.state.animation = "blink"
 
 
 Game.add_object(DragAndDropController())
@@ -279,19 +310,19 @@ komnata2.transform.scale = Game.ширинаЭкрана / komnata2.get_size().x
 komnata2.transform.pos = Game.ширинаЭкрана / 2, Game.высотаЭкрана / 2
 Game.add_object(komnata2)
 
-Game.add_object(Interier("mebel|bed2", (150, 545)).drop_zone_add("T", Vector(0, -50), radius=90))
+Game.add_object(Interier("mebel|bed2", (150, 545)).drop_zone_add("Sleep", Vector(0, -50), radius=90))
 Game.add_object(Interier("mebel|window", (693, 278)))
 
 Game.add_object(Pet("pets|oblachko", (700, 100)))
 
 Game.add_object(Chelik("pers|pusya", (600, 100))
-                .drop_zone_add("L", Vector(-56, 107))
-                .drop_zone_add("R", Vector(60, 107))
-                .drop_zone_add("H", Vector(0, -130), radius=50)
+                .drop_zone_add("LeftArm", Vector(-56, 107))
+                .drop_zone_add("RightArm", Vector(60, 107))
+                .drop_zone_add("Head", Vector(0, -130), radius=50)
                 )
 
-Game.add_object(Item("predmet|rykzak", (600, 100)))
-Game.add_object(Item("predmet|telefon", (650, 100)))
+Game.add_object(Item("predmet|rykzak", (600, 100)).drop_zone_add("Bag", Vector(0, 0)))
+Game.add_object(HandableItem("predmet|telefon", (650, 100)))
 Game.add_object(Item("predmet|kormushka", (700, 100)))
 
 camera = Camera(lock_y=True)

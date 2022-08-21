@@ -64,7 +64,7 @@ class BaseItem(Sprite):
 
 class DropZone(Trigger):
     def __init__(self, parent: BaseItem, name, pos: Vector = None, radius=None):
-        super().__init__(name, pos, radius, parent, color=(0, 255, 0))
+        super().__init__(name, pos, radius, parent)
 
 
 class BaseItem(Sprite):
@@ -200,7 +200,7 @@ class Movable(Draggable, BaseItem):
 
     def on_drag_end(self):
         if self.is_attachable():
-            for dz in Game.get_objects(clas=DropZone):
+            for dz in Game.get_objects(clas=DropZone,filter=lambda x: self not in x.get_all_parents()):
                 if dz.is_collided(self) or dz.is_collided(Input.mouse_pos):
                     if self.can_attach_to(dz):
                         self.attach_to(dz)

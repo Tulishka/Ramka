@@ -265,7 +265,7 @@ class HandableItem(Item):
             self.transform.angle = -90
 
     def on_detach(self, dz):
-        super().detach()
+        super().on_detach(dz)
         self.transform.angle = 0
 
 
@@ -294,7 +294,7 @@ class Chelik(Item):
             self.im_sleep = True
 
     def on_detach(self, dz):
-        super().on_detach()
+        super().on_detach(dz)
         self.im_sleep = False
 
     def update(self, deltaTime: float):

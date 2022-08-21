@@ -6,49 +6,12 @@ import pygame
 
 from ramka import *
 from ramka.effects import Effects
+from ramka.gameobject_animators import *
 from ramka.timeline import Timeline, TimeLineProgressInfo
 from ramka.trigger import Trigger
 
 Game.init('Пчелка')
 Game.цветФона = 200, 200, 255
-
-
-class Animator(Component):
-
-    def __init__(self, game_object: GameObject):
-        super().__init__(game_object)
-
-    def move_to(self, new_val, duration, interp_func=None) -> Timeline:
-        tl = Timeline(self.gameObject)
-
-        start_val = self.gameObject.transform.pos
-        spd = (new_val - start_val)
-
-        def f(x):
-            return start_val + spd * x
-
-        interp_func = interp_func if interp_func else f
-
-        def do(ti: TimeLineProgressInfo):
-            self.gameObject.transform.pos = interp_func(ti.entire_progress)
-
-        return tl.do(do, duration).kill()
-
-    def scale_to(self, new_val, duration, interp_func=None) -> Timeline:
-        tl = Timeline(self.gameObject)
-
-        def do(ti: TimeLineProgressInfo):
-            self.gameObject.transform.pos = interp_func(ti.entire_progress)
-
-        return tl
-
-    def rotate_to(self, new_val, duration, interp_func=None) -> Timeline:
-        tl = Timeline(self.gameObject)
-
-        def do(ti: TimeLineProgressInfo):
-            self.gameObject.transform.pos = interp_func(ti.entire_progress)
-
-        return tl
 
 
 class Swarm(Sprite):
@@ -466,6 +429,10 @@ class Spider(Sprite):
     @Game.on_key_down(key=pygame.K_3)
     def jjj3(self, *arg):
         self.eff.flip()
+
+    @Game.on_key_down(key=pygame.K_4)
+    def jjj4(self, *arg):
+        ScaleAnimator(self, Vector(6,6),1)()
 
     def update(self, deltaTime: float):
 

@@ -91,11 +91,11 @@ class BaseItem(Sprite):
         if "blink" in self.animations:
             Blink(self)
 
-    @Game.on_child_add(clas=Draggable)
+    @Game.on_child_add(clas=Draggable,recursively=True)
     def new_child(self, obj):
         print("add", obj)
 
-    @Game.on_child_remove(clas=Draggable)
+    @Game.on_child_remove(clas=Draggable,recursively=True)
     def del_child(self, obj):
         print("remove", obj)
 

@@ -42,6 +42,24 @@ class Layer:
 
         self.sort_object_children(object)
 
+    def change_order_relative(self, object: GameObject, other: GameObject, delta):
+
+        if other in self.gameObjects:
+
+            idx = self.gameObjects.index(other) + delta
+            self.gameObjects.remove(object)
+            idx += delta
+            if idx < 0:
+                idx = 0
+            self.gameObjects.insert(idx, object)
+            self.sort_object_children(object)
+
+    def change_order_before(self, object: GameObject, other: GameObject):
+        self.change_order_relative(object, other, 0)
+
+    def change_order_after(self, object: GameObject, other: GameObject):
+        self.change_order_relative(object, other, 1)
+
     def sort_object_children(self, object: GameObject):
         if object.transform.children:
             idx = self.gameObjects.index(object)

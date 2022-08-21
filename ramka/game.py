@@ -101,14 +101,31 @@ class Game:
             Game.цветФона = back_color
 
     @staticmethod
-    def _notify_event_listeners(game_object, event_type, notified_object: GameObject = None):
+    def _notify_event_listeners(game_object, event_type, notified_object: GameObject = None,
+                                check_parent_recursively=False):
         if not notified_object:
             objs = Game.get_objects(filter=lambda x: x.event_listeners)
         else:
             objs = [notified_object]
         ls = []
+
+        if check_parent_recursively and notified_object:
+
+            objs = game_object.get_all_parents()
+
+            def enum(o: GameObject) -> Iterable[Callable]:
+                for z in o.event_listeners:
+                    if z.type == event_type:
+                        if getattr(z, "recursively", False) or o is notified_object:
+                            yield z
+
+            get_listeners = enum
+
+        else:
+            get_listeners = lambda o: filter(lambda z: z.type == event_type, o.event_listeners)
+
         for o in objs:
-            ls.extend(filter(lambda z: z.type == event_type, o.event_listeners))
+            ls.extend(get_listeners(o))
 
         for l in ls:
             if (l.clas is None or isinstance(game_object, l.clas)) and (
@@ -393,24 +410,26 @@ class Game:
         return wrapper if func is None else wrapper(func)
 
     @staticmethod
-    def on_child_add(func=None, *, clas=None, layer=None, filter=None):
+    def on_child_add(func=None, *, recursively=True, clas=None, layer=None, filter=None):
         def wrapper(func):
             func.event_descriptor = 2
             func.clas = clas
             func.layer = layer
             func.filter = filter
+            func.recursively = recursively
             func.type = "on_child_add"
             return func
 
         return wrapper if func is None else wrapper(func)
 
     @staticmethod
-    def on_child_remove(func=None, *, clas=None, layer=None, filter=None):
+    def on_child_remove(func=None, *, recursively=True, clas=None, layer=None, filter=None):
         def wrapper(func):
             func.event_descriptor = 2
             func.clas = clas
             func.layer = layer
             func.filter = filter
+            func.recursively = recursively
             func.type = "on_child_remove"
             return func
 

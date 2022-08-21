@@ -57,12 +57,12 @@ class Transform(TransformBase):
     def __add_child(self, child: Transform):
         if child not in self.children:
             self.children.append(child)
-            Game._notify_event_listeners(child.gameObject, "on_child_add", notified_object=self.gameObject)
+            Game._notify_event_listeners(child.gameObject, "on_child_add", notified_object=self.gameObject, check_parent_recursively=True)
 
     def __remove_child(self, child: Transform):
         if child in self.children:
             self.children.remove(child)
-            Game._notify_event_listeners(child.gameObject, "on_child_remove", notified_object=self.gameObject)
+            Game._notify_event_listeners(child.gameObject, "on_child_remove", notified_object=self.gameObject, check_parent_recursively=True)
 
     def __iter__(self):
         for obj in self.children:

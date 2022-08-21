@@ -91,6 +91,9 @@ class BaseItem(Sprite):
         if "blink" in self.animations:
             Blink(self)
 
+    @Game.on_child_add(clas=Draggable)
+    def new_child(self, obj):
+        print("add", obj)
 
     @staticmethod
     def create_animation(name):
@@ -200,7 +203,7 @@ class Movable(Draggable, BaseItem):
 
     def on_drag_end(self):
         if self.is_attachable():
-            for dz in Game.get_objects(clas=DropZone,filter=lambda x: self not in x.get_all_parents()):
+            for dz in Game.get_objects(clas=DropZone, filter=lambda x: self not in x.get_all_parents()):
                 if dz.is_collided(self) or dz.is_collided(Input.mouse_pos):
                     if self.can_attach_to(dz):
                         self.attach_to(dz)

@@ -3,13 +3,13 @@ from ramka import GameObject, Game
 
 class Camera(GameObject):
 
-    def __init__(self,target=None,lock_x=False,lock_y=False):
+    def __init__(self, target=None, lock_x=False, lock_y=False):
         super().__init__()
         self._focus = target
         self.lock_x = lock_x
         self.lock_y = lock_y
 
-    def set_focus(self, focus_object,lock_x=False,lock_y=False):
+    def set_focus(self, focus_object, lock_x=False, lock_y=False):
         self._focus = focus_object
         self.lock_x = lock_x
         self.lock_y = lock_y
@@ -26,7 +26,6 @@ class Camera(GameObject):
 
             if not self.lock_y:
                 self.transform.y = wt.y
-
 
     def on_enter_game(self):
         for o in Game.gameObjects:

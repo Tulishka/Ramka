@@ -14,11 +14,15 @@ class BaseItem(Sprite):
 
 
 class DropZone(Trigger):
-    def __init__(self, parent: BaseItem, name, pos: Vector = None, radius=None):
+    def __init__(self, parent: BaseItem, name, pos: Vector = None, radius=None, max_items=1, accept_class=[]):
         super().__init__(name, pos, radius, parent)
+        self.max_items = max_items
+        self.accept_class = accept_class
 
     def can_attach_object(self, object: GameObject):
-        return True
+        return self.max_items > len(
+            self.transform.children) and (not self.accept_class or type(
+            object) in self.accept_class) and self.get_parent().can_accept_dropzone_object(self, object)
 
     def attach_object(self, object: GameObject):
         object.transform.set_parent(self, True)
@@ -87,6 +91,9 @@ class BaseItem(Sprite):
             if front_anim:
                 self.front_object = FrontPart(front_anim, self)
 
+    def can_accept_dropzone_object(self, dropzone: DropZone, obj: Sprite):
+        return obj.get_size().x < self.get_size().x
+
     def on_enter_game(self):
         if self.front_object:
             Game.add_object(self.front_object)
@@ -114,9 +121,9 @@ class BaseItem(Sprite):
                 obj[f"state{f[-5]}"] = Animation(f, 5, True)
         return obj
 
-    def drop_zone_add(self, name, pos: Vector = None, radius=35) -> BaseItem:
+    def drop_zone_add(self, name, pos: Vector = None, radius=35, max_items=1, accept_class=[]) -> BaseItem:
 
-        Game.add_object(DropZone(self, name, pos, radius))
+        Game.add_object(DropZone(self, name, pos, radius, max_items, accept_class))
 
         return self
 

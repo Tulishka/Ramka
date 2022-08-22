@@ -1,7 +1,9 @@
 from examples.Components.DragAndDrop import Draggable
 from examples.TocaBoca.base_item import BaseItem, DropZone
 from examples.TocaBoca.base_item_components import FallingDown
-from ramka import Input, Game
+from ramka import Input, Game, Vector
+from ramka.effects import Effects
+from ramka.gameobject_animators import PosAnimator
 
 
 class Movable(Draggable, BaseItem):
@@ -11,11 +13,13 @@ class Movable(Draggable, BaseItem):
 
         self.last_position = self.transform.pos
         self.last_vert_spd = 0
+        self.eff = Effects(self)
 
         self.__restore_parent = None
 
     def on_drag_start(self):
         self.detach()
+        self.eff.pulse(1.1, 0.5)
 
     def is_attachable(self):
         return True
@@ -30,7 +34,8 @@ class Movable(Draggable, BaseItem):
         if not self.is_attached():
             self.__restore_parent = self.get_parent()
             if dz.attach_object(self):
-                self.transform.pos = 0, 0
+                # self.transform.pos = 0, 0
+                PosAnimator(self, Vector(0, 0), 0.2)().kill()
                 self.on_attach(dz)
 
     def detach(self):
@@ -63,6 +68,7 @@ class Movable(Draggable, BaseItem):
                     if self.can_attach_to(dz):
                         self.attach_to(dz)
                         return
+
 
         if self.last_vert_spd < 0:
             self.__fallcomp.spd = max(self.last_vert_spd / self.mass, -600)

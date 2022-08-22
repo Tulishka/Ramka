@@ -1,7 +1,7 @@
 from examples.Components.DragAndDrop import Draggable, DragAndDropController
 from examples.TocaBoca.background import Background
 from examples.TocaBoca.bag import Bag
-from examples.TocaBoca.camera_pos import CameraPos
+# from examples.TocaBoca.camera_pos import CameraPos
 from examples.TocaBoca.chelik import Chelik
 from examples.TocaBoca.handable_item import HandableItem
 from examples.TocaBoca.interier import Interier
@@ -43,10 +43,12 @@ Game.add_object(Bag("predmet|rykzak", (600, 100)).drop_zone_add("Bag", Vector(0,
 Game.add_object(HandableItem("predmet|telefon", (650, 100)))
 Game.add_object(Item("predmet|kormushka", (700, 100)))
 
-cam_pos = CameraPos()
-Game.add_object(cam_pos)
+# cam_pos = CameraPos()
+# Game.add_object(cam_pos)
 
-camera = Camera(lock_y=True, target=cam_pos)
+camera = Camera(lock_y=True)
 Game.add_object(camera)
+
+
 
 Game.run()

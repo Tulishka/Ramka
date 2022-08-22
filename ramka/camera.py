@@ -1,18 +1,32 @@
-from ramka import GameObject, Game
+from ramka import GameObject, Game, Input, Vector
 
 
-class Camera(GameObject):
+class CameraInterface:
+    def set_focus(self, focus_object, lock_x=False, lock_y=False):
+        pass
+
+    def mouse_world_pos(self) -> Vector:
+        pass
+
+
+class Camera(CameraInterface, GameObject):
+    main: CameraInterface = None
 
     def __init__(self, target=None, lock_x=False, lock_y=False):
         super().__init__()
         self._focus = target
         self.lock_x = lock_x
         self.lock_y = lock_y
+        if Camera.main is None:
+            Camera.main = self
 
     def set_focus(self, focus_object, lock_x=False, lock_y=False):
         self._focus = focus_object
         self.lock_x = lock_x
         self.lock_y = lock_y
+
+    def mouse_world_pos(self) -> Vector:
+        return self.transform.add_to_vector(Input.mouse_pos)
 
     def update(self, deltaTime: float):
         super().update(deltaTime)

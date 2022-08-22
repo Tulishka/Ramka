@@ -17,17 +17,23 @@ class BaseAnimator:
 
         self.interp_func = interp_func if interp_func else f
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, **kwargs) -> Timeline:
+        def finish(*a):
+            self.apply_value(self.new_val)
+
+        if self.tl.duration():
+            finish()
+            self.tl.reset()
+
         self.start_val = self.get_start_value()
         self.spd = self.new_val - self.start_val
 
         def do(ti: TimeLineProgressInfo):
             self.apply_value(self.interp_func(ti.entire_progress))
 
-        def finish(*a):
-            self.apply_value(self.new_val)
+        self.tl.do(do, self.duration, continuous=True).do(finish)
 
-        self.tl.do(do, self.duration, continuous=True).do(finish).kill()
+        return self.tl
 
     def get_start_value(self):
         return 0
@@ -68,4 +74,3 @@ class AngleAnimator(BaseAnimator):
     def apply_value(self, value):
         print("apply val")
         self.gameObject.transform.angle = value
-

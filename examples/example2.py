@@ -432,7 +432,7 @@ class Spider(Sprite):
 
     @Game.on_key_down(key=pygame.K_4)
     def jjj4(self, *arg):
-        ScaleAnimator(self, Vector(6, 6), 1)()
+        ScaleAnimator(self, Vector(6, 6), 1)().kill()
 
     def update(self, deltaTime: float):
 

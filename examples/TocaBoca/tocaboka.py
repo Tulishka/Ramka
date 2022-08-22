@@ -1,6 +1,6 @@
 import glob
 from random import random, randint
-from typing import Dict, Union
+from typing import Dict, Union, List
 
 import pygame
 
@@ -12,6 +12,12 @@ Game.init('TocaBoca')
 Game.цветФона = 250, 250, 250
 
 
+# todo: по разным файлам разнести классы
+# todo: предмет нельзя прикрепить к DropZone если 1) он шире чем докер 2) если место занято
+# todo: анимировать плавное перемещение при прикреплении объекта к DropZone
+# todo: перемещение камеры
+
+
 class FallingDown(Component):
     def __init__(self, game_obj: Sprite):
         super().__init__(game_obj)
@@ -21,9 +27,14 @@ class FallingDown(Component):
         self.g = 900
         self.enabled = True
 
+    @Game.on_mouse_down(button=3,hover=True)
+    def mouse_3_click(self):
+        self.spd=-max(800 / self.gameObject.mass,400)
+
     def update(self, deltaTime: float):
         super().update(deltaTime)
         if not self.enabled or isinstance(self.gameObject, Draggable) and self.gameObject.is_dragged():
+            self.spd = 0
             return
 
         y = self.gameObject.screen_pos().y + self.gameObject.get_computed_size().y * 0.5
@@ -72,7 +83,7 @@ class DropZone(Trigger):
         return True
 
     def attach_object(self, object: GameObject):
-        object.transform.set_parent(self)
+        object.transform.set_parent(self, True)
         self.layer.sort_object_children(self.get_parent())
         return True
 
@@ -87,12 +98,12 @@ class FrontPart(Draggable, Sprite):
         self.transform.set_parent(parent)
         self.parent_sort_me_by = "__" + self.parent_sort_me_by
 
-    @Game.on_mouse_down(button=1, hover=True)
-    def mouse_down_proxy(self):
+    @Game.on_mouse_down(hover=True)
+    def mouse_down_proxy(self,btn):
         return self.get_parent()
 
-    @Game.on_mouse_up(button=1, hover=True)
-    def mouse_up_proxy(self):
+    @Game.on_mouse_up(hover=True)
+    def mouse_up_proxy(self,btn):
         return self.get_parent()
 
     def on_drag_start(self):
@@ -267,7 +278,7 @@ class Movable(Draggable, BaseItem):
 
     def on_drag_end(self):
         if self.is_attachable():
-            ll=list(Game.get_objects(clas=DropZone, filter=lambda x: self not in x.get_all_parents()))
+            ll = list(Game.get_objects(clas=DropZone, filter=lambda x: self not in x.get_all_parents()))
             for dz in reversed(ll):
                 if dz.is_collided(self) or dz.is_collided(Input.mouse_pos):
                     if self.can_attach_to(dz):

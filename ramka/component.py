@@ -18,6 +18,7 @@ class Component:
     def add(self, game_object: GameObject) -> Component:
         self.gameObject = game_object
         self.gameObject.add_component(self)
+        self.on_add()
         return self
 
     def update(self, deltaTime: float):
@@ -32,6 +33,13 @@ class Component:
     def on_leave_game(self):
         pass
 
+    def on_add(self):
+        pass
+
+    def on_remove(self):
+        pass
+
     def remove(self):
+        self.on_remove()
         self.gameObject.remove_component(self)
         # self.gameObject = None

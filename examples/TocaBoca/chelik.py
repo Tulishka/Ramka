@@ -24,4 +24,4 @@ class Chelik(Item):
     def update(self, deltaTime: float):
         super().update(deltaTime)
         if self.im_sleep:
-            self.state.animation = "blink"
+            self.state.animation = "blink" + str(self.state.id)

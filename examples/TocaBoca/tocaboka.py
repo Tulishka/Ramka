@@ -14,20 +14,20 @@ Game.цветФона = 250, 250, 250
 
 # todo: перемещение камеры
 
+rooms = [f"img/komnata{i if i > 1 else ''}.png" for i in [2,1,3,4]]
 
 Game.add_object(DragAndDropController())
-cam_pos = CameraPos(min_x=Game.ширинаЭкрана * 0.5,max_x=Game.ширинаЭкрана * 1.5)
+cam_pos = CameraPos(min_x=Game.ширинаЭкрана * 0.5, max_x=Game.ширинаЭкрана * (len(rooms)-0.5))
 Game.add_object(cam_pos)
 
-komnata2 = Background("img/komnata2.png")
-ks = Game.ширинаЭкрана / komnata2.get_size().x, Game.ширинаЭкрана / komnata2.get_size().x
-komnata2.transform.scale = ks
-komnata2.transform.pos = Game.ширинаЭкрана / 2, Game.высотаЭкрана / 2
-Game.add_object(komnata2)
-komnata1 = Background("img/komnata.png")
-komnata1.transform.scale = ks
-komnata1.transform.pos = Game.ширинаЭкрана / 2 + Game.ширинаЭкрана, Game.высотаЭкрана / 2
-Game.add_object(komnata1)
+
+for i,kom in enumerate(rooms):
+    room = Background(kom)
+    ks = Game.ширинаЭкрана / room.get_size().x, Game.ширинаЭкрана / room.get_size().x
+    room.transform.scale = ks
+    room.transform.pos = Game.ширинаЭкрана * (i + 0.5), Game.высотаЭкрана * 0.5
+    Game.add_object(room)
+
 
 Game.add_object(Interier("mebel|window", (693, 278)))
 
@@ -35,8 +35,7 @@ Game.add_object(
     Interier("mebel|bed2", (160, 545)).drop_zone_add("Sleep", Vector(0, -50), radius=90, accept_class=[Chelik, Pet]))
 Game.add_object(
     Interier("mebel|bed3", (1750, 540)).drop_zone_add("Sleep", Vector(-70, -85), radius=90, accept_class=[Chelik, Pet])
-                                      .drop_zone_add("Sleep", Vector(70, -85), radius=90, accept_class=[Chelik, Pet]))
-
+        .drop_zone_add("Sleep", Vector(70, -85), radius=90, accept_class=[Chelik, Pet]))
 
 Game.add_object(Pet("pets|oblachko", (700, 100)))
 Game.add_object(Pet("pets|kohka", (800, 100)))
@@ -62,8 +61,6 @@ Game.add_object(Chelik("pers|pusya", (600, 100))
 Game.add_object(Bag("predmet|rykzak", (600, 100)).drop_zone_add("Bag", Vector(0, 0), max_items=100))
 Game.add_object(HandableItem("predmet|telefon", (650, 100)))
 Game.add_object(Item("predmet|kormushka", (700, 100)))
-
-
 
 camera = Camera(lock_y=True, target=cam_pos)
 Game.add_object(camera)

@@ -1,4 +1,4 @@
-from ramka import GameObject, Game, Input
+from ramka import GameObject, Game, Vector, Camera, Input
 
 
 class DragAndDropControllerInterface:
@@ -17,6 +17,18 @@ class Draggable:
     def on_drag_end(self):
         pass
 
+    def is_inverted_drag(self):
+        return False
+
+    def move_me_top(self):
+        return True
+
+    def use_world_drag(self):
+        return False
+
+    def drag_set_new_position(self, pos: Vector):
+        self.transform.pos = pos
+
 
 class DragAndDropController(DragAndDropControllerInterface, GameObject):
     controller: DragAndDropControllerInterface = None
@@ -33,6 +45,13 @@ class DragAndDropController(DragAndDropControllerInterface, GameObject):
     def get_dragged_object(self):
         return self.obj
 
+    @staticmethod
+    def get_mouse(obj):
+        if obj.use_world_drag():
+            return Input.mouse_pos
+        else:
+            return Camera.main.mouse_world_pos() if Camera.main else Input.mouse_pos
+
     @Game.on_mouse_down(button=1, hover=False)
     def drag_start(self):
         sel = list(Game.get_objects(clas=Draggable, filter=lambda x: x.visible and x.opacity))
@@ -42,21 +61,32 @@ class DragAndDropController(DragAndDropControllerInterface, GameObject):
                 ds = s.on_drag_start()
                 if ds != False:
                     s = s if not isinstance(ds, GameObject) else ds
-                    Game.defaultLayer.change_order_last(s)
-                    self.drag_start_pos = Input.mouse_pos
+                    if s.move_me_top():
+                        Game.defaultLayer.change_order_last(s)
+                    self.drag_start_pos = self.get_mouse(s)
                     self.obj_start_pos = s.transform.pos
                     self.obj = s
                     break
 
+    def __get_delta(self):
+        if self.obj:
+            delta = self.get_mouse(self.obj) - self.drag_start_pos
+            if self.obj.is_inverted_drag():
+                delta *= -1
+        else:
+            delta = Vector(0, 0)
+
+        return delta
+
     def update(self, deltaTime: float):
         super().update(deltaTime)
         if self.obj:
-            self.obj.transform.pos = self.obj_start_pos + Input.mouse_pos - self.drag_start_pos
+            self.obj.drag_set_new_position(self.obj_start_pos + self.__get_delta())
 
     @Game.on_mouse_up(button=1, hover=False)
     def release_mi(self):
         if self.obj:
-            self.obj.transform.pos = self.obj_start_pos + Input.mouse_pos - self.drag_start_pos
+            self.obj.drag_set_new_position(self.obj_start_pos + self.__get_delta())
             self.obj.on_drag_end()
             self.obj_start_pos = None
             self.drag_start_pos = None

@@ -47,7 +47,7 @@ class SelectManager(GameObject):
     def find_new_friend(self):
         sel = Game.get_objects(clas=Selectable)
         for s in sel:
-            if s.touch_test(Input.mouse_pos):
+            if s.touch_test():
                 self.select_item(s)
                 return
         self.selected = []

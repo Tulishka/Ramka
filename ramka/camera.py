@@ -26,7 +26,7 @@ class Camera(CameraInterface, GameObject):
         self.lock_y = lock_y
 
     def mouse_world_pos(self) -> Vector:
-        return self.transform.add_to_vector(Input.mouse_pos)
+        return self.transform.sub_from_vector(Input.mouse_pos)
 
     def update(self, deltaTime: float):
         super().update(deltaTime)

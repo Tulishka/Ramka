@@ -1,7 +1,7 @@
 from examples.Components.DragAndDrop import Draggable, DragAndDropController
 from examples.TocaBoca.background import Background
 from examples.TocaBoca.bag import Bag
-# from examples.TocaBoca.camera_pos import CameraPos
+from examples.TocaBoca.camera_pos import CameraPos
 from examples.TocaBoca.chelik import Chelik
 from examples.TocaBoca.handable_item import HandableItem
 from examples.TocaBoca.interier import Interier
@@ -16,6 +16,8 @@ Game.цветФона = 250, 250, 250
 
 
 Game.add_object(DragAndDropController())
+cam_pos = CameraPos(min_x=Game.ширинаЭкрана * 0.5,max_x=Game.ширинаЭкрана * 1.5)
+Game.add_object(cam_pos)
 
 komnata2 = Background("img/komnata2.png")
 ks = Game.ширинаЭкрана / komnata2.get_size().x, Game.ширинаЭкрана / komnata2.get_size().x
@@ -40,13 +42,11 @@ Game.add_object(Chelik("pers|p9", (500, 100))
                 .drop_zone_add("Head", Vector(0, -130), radius=50)
                 )
 
-
 Game.add_object(Chelik("pers|reb1", (500, 100))
                 .drop_zone_add("LeftArm", Vector(-56, 107))
                 .drop_zone_add("RightArm", Vector(60, 107))
                 .drop_zone_add("Head", Vector(0, -130), radius=50)
                 )
-
 
 Game.add_object(Chelik("pers|pusya", (600, 100))
                 .drop_zone_add("LeftArm", Vector(-56, 107))
@@ -54,17 +54,13 @@ Game.add_object(Chelik("pers|pusya", (600, 100))
                 .drop_zone_add("Head", Vector(0, -130), radius=50)
                 )
 
-
 Game.add_object(Bag("predmet|rykzak", (600, 100)).drop_zone_add("Bag", Vector(0, 0), max_items=100))
 Game.add_object(HandableItem("predmet|telefon", (650, 100)))
 Game.add_object(Item("predmet|kormushka", (700, 100)))
 
-# cam_pos = CameraPos()
-# Game.add_object(cam_pos)
 
-camera = Camera(lock_y=True)
+
+camera = Camera(lock_y=True, target=cam_pos)
 Game.add_object(camera)
-
-
 
 Game.run()

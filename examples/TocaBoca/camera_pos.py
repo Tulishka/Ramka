@@ -45,10 +45,10 @@ class CameraPos(Draggable, GameObject):
         super(CameraPos, self).update(deltaTime)
 
         if self.is_dragged() and deltaTime > 0:
-            self.last_spd = (self.transform.pos - self.last_position) / deltaTime
+            self.last_spd = (self.transform.pos - self.last_position) / deltaTime * 0.5
             self.last_position = self.transform.pos
         else:
-            self.last_spd *= 0.96
+            self.last_spd *= 0.94
 
             if self.last_spd.length_squared() > 1:
                 self.drag_set_new_position(self.transform.pos + self.last_spd * deltaTime)

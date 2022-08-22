@@ -82,7 +82,7 @@ class BaseItem(Sprite):
         else:
             self.update_mass()
 
-        if "blink" in self.animations:
+        if "blink1" in self.animations:
             Blink(self)
 
         self.front_object = None
@@ -112,11 +112,15 @@ class BaseItem(Sprite):
         directory = a[-2]
         name = a[-1]
         obj = {}
-        files = list(glob.glob(f".\\img\\{directory}\\{name}{suffix}_?.png"))
+        files = list(glob.glob(f".\\img\\{directory}\\{name}{suffix}??.png"))
         files.sort()
         for f in files:
             if f[-5] == "m":
-                obj["blink"] = Animation(f, 5, True)
+                if f[-6].isdigit():
+                    i = f[-6]
+                else:
+                    i = '1'
+                obj["blink" + i] = Animation(f, 5, True)
             elif f[-5].isdigit():
                 obj[f"state{f[-5]}"] = Animation(f, 5, True)
         return obj

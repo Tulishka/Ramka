@@ -50,7 +50,7 @@ class Blink(Component):
         super().update(deltaTime)
 
         if not self.blink.ready:
-            self.gameObject.state.animation = "blink"
+            self.gameObject.state.animation = "blink" + str(self.gameObject.state.id)
 
         if self.gameObject.time > self.blink_time:
             self.blink.start()

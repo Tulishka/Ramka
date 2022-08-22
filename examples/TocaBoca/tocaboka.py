@@ -29,9 +29,14 @@ komnata1.transform.scale = ks
 komnata1.transform.pos = Game.ширинаЭкрана / 2 + Game.ширинаЭкрана, Game.высотаЭкрана / 2
 Game.add_object(komnata1)
 
-Game.add_object(
-    Interier("mebel|bed2", (150, 545)).drop_zone_add("Sleep", Vector(0, -50), radius=90, accept_class=[Chelik, Pet]))
 Game.add_object(Interier("mebel|window", (693, 278)))
+
+Game.add_object(
+    Interier("mebel|bed2", (160, 545)).drop_zone_add("Sleep", Vector(0, -50), radius=90, accept_class=[Chelik, Pet]))
+Game.add_object(
+    Interier("mebel|bed3", (1750, 540)).drop_zone_add("Sleep", Vector(-70, -85), radius=90, accept_class=[Chelik, Pet])
+                                      .drop_zone_add("Sleep", Vector(70, -85), radius=90, accept_class=[Chelik, Pet]))
+
 
 Game.add_object(Pet("pets|oblachko", (700, 100)))
 Game.add_object(Pet("pets|kohka", (800, 100)))

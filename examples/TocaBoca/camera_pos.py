@@ -1,3 +1,4 @@
+from math import copysign
 from typing import Callable
 
 import pygame
@@ -46,6 +47,8 @@ class CameraPos(Draggable, GameObject):
 
         if self.is_dragged() and deltaTime > 0:
             self.last_spd = (self.transform.pos - self.last_position) / deltaTime * 0.5
+            self.last_spd[0] = copysign(min(abs(self.last_spd[0]),500),self.last_spd[0])
+            self.last_spd[1] = copysign(min(abs(self.last_spd[1]),500),self.last_spd[1])
             self.last_position = self.transform.pos
         else:
             self.last_spd *= 0.94

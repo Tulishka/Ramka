@@ -32,12 +32,28 @@ Game.add_object(
 Game.add_object(Interier("mebel|window", (693, 278)))
 
 Game.add_object(Pet("pets|oblachko", (700, 100)))
+Game.add_object(Pet("pets|kohka", (800, 100)))
+
+Game.add_object(Chelik("pers|p9", (500, 100))
+                .drop_zone_add("LeftArm", Vector(-56, 107))
+                .drop_zone_add("RightArm", Vector(60, 107))
+                .drop_zone_add("Head", Vector(0, -130), radius=50)
+                )
+
+
+Game.add_object(Chelik("pers|reb1", (500, 100))
+                .drop_zone_add("LeftArm", Vector(-56, 107))
+                .drop_zone_add("RightArm", Vector(60, 107))
+                .drop_zone_add("Head", Vector(0, -130), radius=50)
+                )
+
 
 Game.add_object(Chelik("pers|pusya", (600, 100))
                 .drop_zone_add("LeftArm", Vector(-56, 107))
                 .drop_zone_add("RightArm", Vector(60, 107))
                 .drop_zone_add("Head", Vector(0, -130), radius=50)
                 )
+
 
 Game.add_object(Bag("predmet|rykzak", (600, 100)).drop_zone_add("Bag", Vector(0, 0), max_items=100))
 Game.add_object(HandableItem("predmet|telefon", (650, 100)))

@@ -34,8 +34,6 @@ class Movable(Draggable, BaseItem):
         if not self.is_attached():
             self.__restore_parent = self.get_parent()
             if dz.attach_object(self):
-                # self.transform.pos = 0, 0
-                PosAnimator(self, Vector(0, 0), 0.2)().kill()
                 self.on_attach(dz)
 
     def detach(self):

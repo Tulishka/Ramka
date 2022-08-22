@@ -6,6 +6,7 @@ from examples.Components.DragAndDrop import DragAndDropController, Draggable
 from examples.TocaBoca.base_item_components import Blink
 from ramka import GameObject
 from ramka import Sprite, Game, Animation, Vector, Input
+from ramka.gameobject_animators import PosAnimator
 from ramka.trigger import Trigger
 
 
@@ -27,6 +28,7 @@ class DropZone(Trigger):
     def attach_object(self, object: GameObject):
         object.transform.set_parent(self, True)
         self.layer.sort_object_children(self.get_parent())
+        PosAnimator(object, Vector(0, 0), 0.2)().kill()
         return True
 
     def detach_object(self, object: GameObject):

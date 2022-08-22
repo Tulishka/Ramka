@@ -14,10 +14,10 @@ Game.цветФона = 250, 250, 250
 
 # todo: перемещение камеры
 
-rooms = [f"img/komnata{i if i > 1 else ''}.png" for i in [2,1,3,4]]
+rooms = [f"img/komnata{i if i > 1 else ''}.png" for i in [4,2,1,3]]
 
 Game.add_object(DragAndDropController())
-cam_pos = CameraPos(min_x=Game.ширинаЭкрана * 0.5, max_x=Game.ширинаЭкрана * (len(rooms)-0.5))
+cam_pos = CameraPos(min_x=-Game.ширинаЭкрана * 0.5, max_x=Game.ширинаЭкрана * (len(rooms)-1.5))
 Game.add_object(cam_pos)
 
 
@@ -25,7 +25,7 @@ for i,kom in enumerate(rooms):
     room = Background(kom)
     ks = Game.ширинаЭкрана / room.get_size().x, Game.ширинаЭкрана / room.get_size().x
     room.transform.scale = ks
-    room.transform.pos = Game.ширинаЭкрана * (i + 0.5), Game.высотаЭкрана * 0.5
+    room.transform.pos = Game.ширинаЭкрана * ((i-1) + 0.5), Game.высотаЭкрана * 0.5
     Game.add_object(room)
 
 

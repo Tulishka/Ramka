@@ -20,6 +20,10 @@ class Camera(CameraInterface, GameObject):
         if Camera.main is None:
             Camera.main = self
 
+    @property
+    def target(self) -> GameObject:
+        return self._focus
+
     def set_focus(self, focus_object, lock_x=False, lock_y=False):
         self._focus = focus_object
         self.lock_x = lock_x

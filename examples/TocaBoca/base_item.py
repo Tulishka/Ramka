@@ -29,10 +29,12 @@ class DropZone(Trigger):
         object.transform.set_parent(self, True)
         self.layer.sort_object_children(self.get_parent())
         PosAnimator(object, Vector(0, 0), 0.2)().kill()
+        self.get_parent().on_object_attached(self,object)
         return True
 
     def detach_object(self, object: GameObject):
         object.transform.detach(True)
+        self.get_parent().on_object_detached(self, object)
         return True
 
 
@@ -100,12 +102,10 @@ class BaseItem(Sprite):
         if self.front_object:
             Game.add_object(self.front_object)
 
-    @Game.on_child_add(clas=Draggable, recursively=True)
-    def new_child(self, obj):
+    def on_object_attached(self, dz: DropZone, object: Sprite):
         pass
 
-    @Game.on_child_remove(clas=Draggable, recursively=True)
-    def del_child(self, obj):
+    def on_object_detached(self, dz: DropZone, object: Sprite):
         pass
 
     @staticmethod

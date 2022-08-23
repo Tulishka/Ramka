@@ -416,8 +416,6 @@ class Spider(Sprite):
 
         self.eff = Effects(self)
 
-        Timeline(self).do(self.jjj, duration=0.6).repeat(7).kill()
-
     @Game.on_key_down(key=pygame.K_1)
     def jjj(self, *arg):
         self.eff.hop()
@@ -523,6 +521,12 @@ spider = Spider()
 Game.add_object(spider)
 spider.transform.xy = 100, Game.высотаЭкрана - 48
 spider.transform.scale_xy = 3, 3
+
+mask_test = Sprite("./sprites/flower.png")
+mask_test.transform.pos = 0, -10
+mask_test.use_parent_mask =True
+mask_test.transform.set_parent(spider)
+Game.add_object(mask_test)
 
 
 # hat=Sprite(flower_pic)

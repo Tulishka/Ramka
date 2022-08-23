@@ -13,8 +13,11 @@ class NavBtn(Sprite):
     def on_mouse_down(self):
         self.eff.pulse(duration=0.2)
 
+        def tap(t):
+            self.chelik.eff.pulse(duration=0.5,koef=1.05)
+
         pos = Transform.to_local_coord(Camera.main.transform, self.chelik.transform)
 
         f = interp_mid_spd((1, pos - Camera.main.target.transform.pos), (0, Vector(0)))
 
-        PosAnimator(Camera.main.target, pos, 0.5, interp_func=f)().kill()
+        PosAnimator(Camera.main.target, pos, 0.5, interp_func=f)().do(tap,0.5).kill()

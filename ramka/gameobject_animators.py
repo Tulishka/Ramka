@@ -29,7 +29,7 @@ class BaseAnimator:
         self.spd = self.new_val - self.start_val
 
         def do(ti: TimeLineProgressInfo):
-            self.apply_value(self.start_val+self.interp_func(ti.entire_progress))
+            self.apply_value(self.start_val+self.interp_func(ti.section_progress))
 
         self.tl.do(do, self.duration, continuous=True).do(finish)
 

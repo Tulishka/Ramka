@@ -150,40 +150,37 @@ class Sprite(GameObject):
         img = self.curr_animation().get_image(self.time)
         img = self.get_image_transformed(img, flp, (wtr._scale.x, wtr._scale.y), rotate_image)
 
+        rotated_offset = self.get_rotated_offset(wtr)
+        self.sprite.rect = img.get_rect(center=wtr._pos + rotated_offset)
+
+        if self.use_parent_mask:
+            p = self.get_parent(Sprite, self.transform.parent)
+            if p:
+                p.prepare_image()
+                c = self.__use_parent_mask_cache
+                pos = p.sprite.rect.x - self.sprite.rect.x, p.sprite.rect.y - self.sprite.rect.y
+
+                if c["masked_image"] and c["pos"] == pos and c["image"] == img and c["mask"] == p.sprite.mask:
+                    img = c["masked_image"]
+                else:
+                    m = pygame.mask.Mask(size=self.sprite.rect.size)
+                    m.draw(p.sprite.mask, pos)
+                    img = m.to_surface(surface=None, setsurface=img,
+                                       unsetcolor=(0, 0, 0, 0))
+                    c["masked_image"] = img
+                    c["pos"] = pos
+                    c["image"] = img
+                    c["mask"] = p.sprite.mask
+
         if img != self.sprite.image:
             self.sprite.image = img
             self.prepare_mask()
-
-        rotated_offset = self.get_rotated_offset(wtr)
-        self.sprite.rect = self.sprite.image.get_rect(center=wtr._pos + rotated_offset)
 
     def draw(self, dest: pygame.Surface):
         self.prepare_image()
         if self.opacity:
             # self.sprite.image.set_alpha(int(min(max(self.opacity, 0), 1.0) * 255))
-
-            sp = self.sprite.image
-            if self.use_parent_mask:
-                p = self.get_parent(Sprite, self.transform.parent)
-                if p:
-                    p.prepare_image()
-                    c = self.__use_parent_mask_cache
-                    pos = p.sprite.rect.x - self.sprite.rect.x, p.sprite.rect.y - self.sprite.rect.y
-
-                    if c["masked_image"] and c["pos"] == pos and c["image"] == self.sprite.image and \
-                        c["mask"] == p.sprite.mask:
-                        sp = c["masked_image"]
-                    else:
-                        m = pygame.mask.Mask(size=self.sprite.rect.size)
-                        m.draw(p.sprite.mask, pos)
-                        sp = m.to_surface(surface=None, setsurface=self.sprite.image,
-                                          unsetcolor=(0, 0, 0, 0))
-                        c["masked_image"] = sp
-                        c["pos"] = pos
-                        c["image"] = self.sprite.image
-                        c["mask"] = p.sprite.mask
-
-            dest.blit(sp, self.sprite.rect)  # , special_flags=pygame.BLEND_ALPHA_SDL2
+            dest.blit(self.sprite.image, self.sprite.rect)  # , special_flags=pygame.BLEND_ALPHA_SDL2
 
     def draw_overlay(self, dest: pygame.Surface):
         super().draw_overlay(dest)

@@ -12,11 +12,9 @@ class Bag(Item):
 
     def on_object_attached(self, dz,obj):
         super().on_object_attached(dz,obj)
-        print("atach")
         obj.use_parent_mask = True
 
     def on_object_detached(self, dz, obj):
         super().on_object_detached(dz,obj)
-        print("detach")
         obj.use_parent_mask = False
 

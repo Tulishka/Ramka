@@ -13,7 +13,7 @@ class BaseAnimator:
         self.duration = duration
 
         def f(x):
-            return self.start_val + self.spd * x
+            return self.spd * x
 
         self.interp_func = interp_func if interp_func else f
 
@@ -29,7 +29,7 @@ class BaseAnimator:
         self.spd = self.new_val - self.start_val
 
         def do(ti: TimeLineProgressInfo):
-            self.apply_value(self.interp_func(ti.entire_progress))
+            self.apply_value(self.start_val+self.interp_func(ti.entire_progress))
 
         self.tl.do(do, self.duration, continuous=True).do(finish)
 

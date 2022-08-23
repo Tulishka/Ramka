@@ -101,8 +101,8 @@ class Transform(TransformBase):
             target = target.transform
 
         if isinstance(target, TransformBase):
-            if target.gameObject.transform.parent == parent:
-                local_target = True
+            local_target=target.gameObject.transform.parent == parent
+            if local_target:
                 target = target._pos
             else:
                 target = target.gameObject.transform.get_world_transform()._pos

@@ -7,7 +7,6 @@ import pygame
 from ramka import *
 from ramka.effects import Effects
 from ramka.gameobject_animators import *
-from ramka.timeline import Timeline, TimeLineProgressInfo
 from ramka.trigger import Trigger
 
 Game.init('Пчелка')
@@ -572,6 +571,6 @@ Game.add_object(cam)
 # cam.set_focus(d, lock_y=True)
 
 Game.add_object(
-    Trigger("triger 1", parent=qwin_bee, color=(255, 0, 0)).set_n_poly(5, 180).set_watch_for(ObjectFilter(clas=Flower)))
+    Trigger("triger 1", parent=qwin_bee, radius=50, color=(255, 0, 0)).set_n_poly(5, 180).set_watch_for(ObjectFilter(clas=Flower)))
 
 Game.run()

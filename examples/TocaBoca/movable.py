@@ -15,11 +15,18 @@ class Movable(Draggable, BaseItem):
         self.last_vert_spd = 0
         self.eff = Effects(self)
 
+        self.args=a
+        self.kwargs=b
+
         self.__restore_parent = None
 
     def on_drag_start(self):
         self.detach()
         self.eff.pulse(1.1, 0.5)
+        # a=type(self)(*self.args,**self.kwargs)
+        # a.transform.pos=self.transform.pos
+        # Game.add_object(a)
+        # return a
 
     def is_attachable(self):
         return True

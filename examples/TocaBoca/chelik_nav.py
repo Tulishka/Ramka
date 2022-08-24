@@ -3,7 +3,7 @@ from typing import Callable, Union, Dict
 
 import pygame
 
-from Components.DragAndDrop import DragAndDropController
+from examples.Components.DragAndDrop import DragAndDropController
 from base_item import BaseItem
 from camera_pos import CameraPos
 from ramka import Sprite, Game, Camera, GameObject, Vector, Input, Animation, Cooldown

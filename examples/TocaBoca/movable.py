@@ -1,4 +1,4 @@
-from Components.DragAndDrop import Draggable
+from examples.Components.DragAndDrop import Draggable
 from base_item import BaseItem, DropZone
 from base_item_components import FallingDown
 from ramka import Input, Game, Vector

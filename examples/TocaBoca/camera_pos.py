@@ -1,7 +1,7 @@
 from math import copysign
 from typing import Callable
 
-from Components.DragAndDrop import Draggable, DragAndDropController
+from examples.Components.DragAndDrop import Draggable, DragAndDropController
 from ramka import GameObject, Game, Input, Vector, Transform, Camera, interp_mid_spd
 from ramka.gameobject_animators import PosAnimator
 from ramka.timeline import Timeline

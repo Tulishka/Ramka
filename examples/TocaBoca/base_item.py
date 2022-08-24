@@ -2,7 +2,7 @@ import glob
 from typing import Union, Dict
 
 import pygame
-from Components.DragAndDrop import DragAndDropController, Draggable
+from examples.Components.DragAndDrop import DragAndDropController, Draggable
 from Iconable import Iconable
 from base_item_components import Blink
 from ramka import GameObject

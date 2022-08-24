@@ -1,4 +1,4 @@
-from Components.DragAndDrop import DragAndDropController
+from examples.Components.DragAndDrop import DragAndDropController
 from background import Background
 from bag import Bag
 from camera_pos import CameraPos
@@ -45,7 +45,7 @@ Game.add_object(
     Interier("mebel|bed1", (1850, 545)).drop_zone_add("Sleep", Vector(0, -50), radius=90, accept_class=[Chelik, Pet]))
 Game.add_object(
     Interier("mebel|bed3", (2750, 540)).drop_zone_add("Sleep", Vector(-70, -85), radius=90, accept_class=[Chelik, Pet])
-    .drop_zone_add("Sleep", Vector(70, -85), radius=90, accept_class=[Chelik, Pet]))
+        .drop_zone_add("Sleep", Vector(70, -85), radius=90, accept_class=[Chelik, Pet]))
 
 Game.add_object(Pet("pets|oblachko", (700, 100)))
 Game.add_object(Pet("pets|kohka", (800, 100)))

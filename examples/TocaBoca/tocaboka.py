@@ -81,7 +81,7 @@ Game.add_object(camera)
 
 nav = NavBar()
 
-for i in Game.get_objects(clas=[Creature,Item,Iconable]):
+for i in Game.get_objects(clas=Creature):
     nav.add_btn(i, "0" if isinstance(i,Chelik) else "1")
 
 Game.run()

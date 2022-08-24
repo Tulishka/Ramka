@@ -1,6 +1,8 @@
+import pygame
+
 from examples.TocaBoca.base_item import DropZone
 from examples.TocaBoca.item import Item
-from ramka import Sprite
+from ramka import Sprite, Vector
 
 
 class Chelik(Item):
@@ -10,7 +12,7 @@ class Chelik(Item):
 
     def can_accept_dropzone_object(self, dropzone: DropZone, obj: Sprite):
         return super().can_accept_dropzone_object(dropzone, obj) and (
-                    not self.im_sleep or dropzone.trigger_name == "Head")
+                not self.im_sleep or dropzone.trigger_name == "Head")
 
     def on_attach(self, dz):
         super().on_attach(dz)
@@ -25,3 +27,7 @@ class Chelik(Item):
         super().update(deltaTime)
         if self.im_sleep:
             self.state.animation = "blink" + str(self.state.id)
+
+    def create_item_icon(self):
+        return self._create_icon(offset=(0,0.1),border_radius=60)
+

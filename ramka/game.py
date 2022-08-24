@@ -237,7 +237,7 @@ class Game:
                     obj.update(deltaTime)
                     obj.update_components(deltaTime)
 
-            mouse_capture=None
+            mouse_capture = None
             for obj in reversed(gobs):
                 if obj.enabled:
                     for ev in obj.event_listeners:
@@ -251,39 +251,51 @@ class Game:
                                         ev()
                                     else:
                                         ev(ks)
+                        elif ev.type == "hover":
+                            if (mouse_capture is None or mouse_capture == obj) and obj.visible and obj.opacity and obj.touch_test(
+                                    Input.mouse_pos):
+                                if mouse_capture is None:
+                                    mouse_capture = obj
+                                cap = ev()
+                                if isinstance(cap, GameObject):
+                                    mouse_capture = cap
+
                         elif ev.type == "mouse_down":
                             bs = mbtn if ev.continuos else Game.mouse_pressed
                             if bs:
                                 if ev.hover:
-                                    r = (mouse_capture is None or mouse_capture==obj) and obj.visible and obj.opacity and obj.touch_test(Input.mouse_pos)
+                                    r = (
+                                                mouse_capture is None or mouse_capture == obj) and obj.visible and obj.opacity and obj.touch_test(
+                                        Input.mouse_pos)
                                     if r and mouse_capture is None:
                                         mouse_capture = obj
                                 else:
                                     r = True
                                 if r and (ev.button is None or ev.button in bs):
                                     if ev.button is not None:
-                                        cap=ev()
+                                        cap = ev()
                                     else:
-                                        cap=ev(bs)
-                                    if ev.hover and isinstance(cap,GameObject):
-                                        mouse_capture=cap
+                                        cap = ev(bs)
+                                    if ev.hover and isinstance(cap, GameObject):
+                                        mouse_capture = cap
 
                         elif ev.type == "mouse_up":
                             if Game.mouse_released:
                                 if ev.hover:
-                                    r = (mouse_capture is None or mouse_capture==obj) and obj.visible and obj.opacity and obj.touch_test(Input.mouse_pos)
+                                    r = (
+                                                mouse_capture is None or mouse_capture == obj) and obj.visible and obj.opacity and obj.touch_test(
+                                        Input.mouse_pos)
                                     if r and mouse_capture is None:
                                         mouse_capture = obj
                                 else:
                                     r = True
                                 if r and (ev.button is None or ev.button in Game.mouse_released):
                                     if ev.button is not None:
-                                        cap=ev()
+                                        cap = ev()
                                     else:
-                                        cap=ev(Game.mouse_released)
-                                    if ev.hover and isinstance(cap,GameObject):
-                                        mouse_capture=cap
-
+                                        cap = ev(Game.mouse_released)
+                                    if ev.hover and isinstance(cap, GameObject):
+                                        mouse_capture = cap
 
             for ul in Game.after_update_listeners:
                 ul(deltaTime)
@@ -409,6 +421,12 @@ class Game:
             return func
 
         return wrapper if func is None else wrapper(func)
+
+    @staticmethod
+    def on_hover(func):
+        func.event_descriptor = 1
+        func.type = "hover"
+        return func
 
     @staticmethod
     def on_mouse_up(func=None, *, button=None, hover=True):

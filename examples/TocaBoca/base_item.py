@@ -29,7 +29,7 @@ class DropZone(Trigger):
         object.transform.set_parent(self, True)
         self.layer.sort_object_children(self.get_parent())
         PosAnimator(object, Vector(0, 0), 0.2)().kill()
-        self.get_parent().on_object_attached(self,object)
+        self.get_parent().on_object_attached(self, object)
         return True
 
     def detach_object(self, object: GameObject):
@@ -169,3 +169,44 @@ class BaseItem(Sprite):
         if self.mass < 1:
             self.mass = 1
         return self.mass
+
+    def create_item_icon(self):
+        return self._create_icon()
+
+    def _create_icon(self, width=55, offset=(0, 0), background=(0, 220, 220), border=(200, 200, 0),
+                     animation_name: str = None, border_radius=16):
+        if animation_name:
+            ani = self.curr_animation()
+        else:
+            ani = self.animations.get(animation_name)
+            if not ani:
+                ani = self.curr_animation()
+
+        img = ani.get_image(0)
+
+        sz = img.get_size()
+        pw = width - width // 7
+        k = pw / sz[0]
+        x = (width - pw) / 2
+        y = (width - int(k * sz[1])) / 2
+        res = pygame.Surface((width, width), flags=pygame.SRCALPHA)
+        res.fill(background)
+        # .subsurface(pygame.Rect(Vector(offset[0], offset[1]*k), Vector(pw, pw+y*k+8*k)))
+        res.blit(
+            pygame.transform.smoothscale(img, (pw, int(k * sz[1]))),
+            (x + offset[0] * k * sz[0], y + offset[1] * k * sz[1])
+        )
+        # if round:
+        #     ms = pygame.Surface((width, width), flags=pygame.SRCALPHA)
+        #     pygame.draw.circle(ms, (255, 255, 255), (width / 2, width / 2), width / 2)
+        #     mask = pygame.mask.from_surface(ms)
+        #     mask.to_surface(res, res, unsetcolor=(0, 0, 0, 0))
+        #     pygame.draw.circle(res, border, (width / 2, width / 2), width / 2, 3)
+
+        ms = pygame.Surface((width, width), flags=pygame.SRCALPHA)
+        pygame.draw.rect(ms, (255, 255, 255), pygame.Rect(0, 0, width, width), border_radius=border_radius)
+        mask = pygame.mask.from_surface(ms)
+        mask.to_surface(res, res, unsetcolor=(0, 0, 0, 0))
+        pygame.draw.rect(res, border, pygame.Rect(0,0, width, width ), 3, border_radius=border_radius)
+
+        return res

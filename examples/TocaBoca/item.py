@@ -20,4 +20,4 @@ class Item(Movable):
             dest.blit(icn, dest=pygame.Rect(pos, Vector(0)))
 
     def create_item_icon(self):
-        return self._create_icon(background=(120,205,255))
+        return self._create_icon(background=(100,100,180),border=(70,70,100))

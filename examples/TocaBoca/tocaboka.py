@@ -1,3 +1,4 @@
+from creature import Creature
 from camera_pos import CameraPos
 
 from Components.DragAndDrop import Draggable, DragAndDropController
@@ -79,7 +80,7 @@ Game.add_object(camera)
 
 nav = NavBar()
 
-for i in Game.get_objects(clas=[Chelik,Pet]):
+for i in Game.get_objects(clas=[Creature,Item]):
     nav.add_btn(i, "0" if isinstance(i,Chelik) else "1")
 
 Game.run()

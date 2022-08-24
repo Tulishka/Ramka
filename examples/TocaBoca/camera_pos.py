@@ -28,16 +28,20 @@ class CameraPos(Draggable, GameObject):
     def move_me_top(self):
         return False
 
+    def use_limits(self,pos: Vector):
+
+        if pos.x > self.max_x:
+            pos.x = self.max_x
+            self.last_spd.x *= -0.1
+
+        if pos.x < self.min_x:
+            pos.x = self.min_x
+            self.last_spd.x *= -0.1
+
+        return pos
+
     def drag_set_new_position(self, pos: Vector):
-        self.transform.pos = pos
-
-        if self.transform.pos.x > self.max_x:
-            self.transform.x = self.max_x
-            self.last_spd.x *= -0.1
-
-        if self.transform.pos.x < self.min_x:
-            self.transform.x = self.min_x
-            self.last_spd.x *= -0.1
+        self.transform.pos = self.use_limits(pos)
 
     def touch_test(self, point: Vector, func: Callable = None):
         return True
@@ -65,7 +69,7 @@ class CameraPos(Draggable, GameObject):
 
     def animate_to(self, gameobject, on_finish) -> Timeline:
 
-        pos = Transform.to_local_coord(Camera.main.transform, gameobject.transform)
+        pos = self.use_limits(Transform.to_local_coord(Camera.main.transform, gameobject.transform))
 
         f = interp_mid_spd((1, pos - self.transform.pos), (0, Vector(0)))
 

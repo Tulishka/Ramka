@@ -252,8 +252,9 @@ class Game:
                                     else:
                                         ev(ks)
                         elif ev.type == "hover":
-                            if (mouse_capture is None or mouse_capture == obj) and obj.visible and obj.opacity and obj.touch_test(
-                                    Input.mouse_pos):
+                            if (
+                                    mouse_capture is None or mouse_capture == obj) and obj.visible and obj.opacity and obj.touch_test(
+                                Input.mouse_pos):
                                 if mouse_capture is None:
                                     mouse_capture = obj
                                 cap = ev()
@@ -337,7 +338,8 @@ class Game:
                     return c
         else:
             for c in Game.gameObjects:
-                if (not clas or type(c) in clas) and (layer is None or c.layer == layer) and filter(c):
+                if (not clas or any(
+                        isinstance(c, t) for t in clas)) and (layer is None or c.layer == layer) and filter(c):
                     return c
 
     @staticmethod
@@ -351,7 +353,8 @@ class Game:
                     yield c
         else:
             for c in Game.gameObjects:
-                if (not clas or type(c) in clas) and (layer is None or c.layer == layer) and filter(c):
+                if (not clas or any(
+                        isinstance(c, t) for t in clas)) and (layer is None or c.layer == layer) and filter(c):
                     yield c
 
     @staticmethod

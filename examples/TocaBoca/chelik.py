@@ -1,11 +1,11 @@
 import pygame
 
+from creature import Creature
 from base_item import DropZone
-from item import Item
 from ramka import Sprite, Vector
 
 
-class Chelik(Item):
+class Chelik(Creature):
     def __init__(self, name, *a, **b):
         super().__init__(name, *a, **b)
         self.im_sleep = False

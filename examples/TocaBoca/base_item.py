@@ -173,7 +173,7 @@ class BaseItem(Sprite):
     def create_item_icon(self):
         return self._create_icon()
 
-    def _create_icon(self, size=55, offset=(0, 0), background=(0, 220, 220), border=(250, 250, 0),
+    def _create_icon(self, size=55, offset=(0, 0), background=(0, 220, 220), border=(200, 200, 0),
                      animation_name: str = "state1", border_radius=16):
         if not animation_name:
             ani = self.curr_animation()

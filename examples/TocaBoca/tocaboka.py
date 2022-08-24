@@ -23,6 +23,8 @@ Game.add_object(DragAndDropController())
 cam_pos = CameraPos(min_x=-Game.ширинаЭкрана * 0.5, max_x=Game.ширинаЭкрана * (len(rooms) - 1.5))
 Game.add_object(cam_pos)
 
+nav = NavBar("creature_select")
+
 for i, kom in enumerate(rooms):
     room = Background(kom)
     ks = Game.ширинаЭкрана / room.get_size().x, Game.ширинаЭкрана / room.get_size().x
@@ -79,9 +81,9 @@ Game.add_object(camera)
 
 Game.add_object(Lighting(), layer=Game.uiLayer)
 
-nav = NavBar("creature_select")
 
-for i in Game.get_objects(clas=Creature):
-    nav.add_btn(i, "0" if isinstance(i, Chelik) else "1")
+
+# for i in Game.get_objects(clas=Creature):
+#     nav.add_btn(i, "0" if isinstance(i, Chelik) else "1")
 
 Game.run()

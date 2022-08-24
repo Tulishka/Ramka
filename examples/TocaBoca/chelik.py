@@ -9,6 +9,7 @@ class Chelik(Creature):
     def __init__(self, name, *a, **b):
         super().__init__(name, *a, **b)
         self.im_sleep = False
+        self.creature_bar_order="0"
 
     def can_accept_dropzone_object(self, dropzone: DropZone, obj: Sprite):
         return super().can_accept_dropzone_object(dropzone, obj) and (

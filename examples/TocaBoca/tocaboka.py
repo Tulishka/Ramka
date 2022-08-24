@@ -1,18 +1,16 @@
-from Iconable import Iconable
-from creature import Creature
-from camera_pos import CameraPos
-
-from Components.DragAndDrop import Draggable, DragAndDropController
+from Components.DragAndDrop import DragAndDropController
 from background import Background
 from bag import Bag
-
+from camera_pos import CameraPos
 from chelik import Chelik
-from chelik_nav import NavBtn, NavBar
+from chelik_nav import NavBar
+from creature import Creature
 from handable_item import HandableItem
 from interier import Interier
 from item import Item
+from lighting import Lighting, LightItem
 from pet import Pet
-from ramka import Game, Camera, Vector, Sprite
+from ramka import Game, Camera, Vector
 
 Game.init('TocaBoca')
 Game.цветФона = 250, 250, 250
@@ -39,7 +37,7 @@ for i, kom in enumerate(rooms):
     wall.transform.pos = Game.ширинаЭкрана * (i), Game.высотаЭкрана * 0.5
     Game.add_object(wall)
 
-Game.add_object(Interier("mebel|window", (693, 278)))
+Game.add_object(LightItem("mebel|window", (693, 278)))
 
 Game.add_object(
     Interier("mebel|bed2", (160, 545)).drop_zone_add("Sleep", Vector(0, -50), radius=90, accept_class=[Chelik, Pet]))
@@ -47,7 +45,7 @@ Game.add_object(
     Interier("mebel|bed1", (1850, 545)).drop_zone_add("Sleep", Vector(0, -50), radius=90, accept_class=[Chelik, Pet]))
 Game.add_object(
     Interier("mebel|bed3", (2750, 540)).drop_zone_add("Sleep", Vector(-70, -85), radius=90, accept_class=[Chelik, Pet])
-        .drop_zone_add("Sleep", Vector(70, -85), radius=90, accept_class=[Chelik, Pet]))
+    .drop_zone_add("Sleep", Vector(70, -85), radius=90, accept_class=[Chelik, Pet]))
 
 Game.add_object(Pet("pets|oblachko", (700, 100)))
 Game.add_object(Pet("pets|kohka", (800, 100)))
@@ -79,9 +77,11 @@ Game.add_object(Item("predmet|kormushka", (700, 100)))
 camera = Camera(lock_y=True, target=cam_pos)
 Game.add_object(camera)
 
-nav = NavBar()
+Game.add_object(Lighting(), layer=Game.uiLayer)
+
+nav = NavBar("creature_select")
 
 for i in Game.get_objects(clas=Creature):
-    nav.add_btn(i, "0" if isinstance(i,Chelik) else "1")
+    nav.add_btn(i, "0" if isinstance(i, Chelik) else "1")
 
 Game.run()

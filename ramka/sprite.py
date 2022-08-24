@@ -55,6 +55,14 @@ class Sprite(GameObject):
         self.use_parent_mask = False
         self.__use_parent_mask_cache = {"masked_image": None, "pos": None, "mask": None, "image": None}
 
+    def set_sprite_animations(self,animations):
+        self.animations = animations
+        self.last_animation = None
+        self.cache = {}
+        self.sprite.image = None
+        self.sprite.mask = None
+        self.collider_cache_image = None
+
     def curr_animation(self):
         ani = self.animations.get(self.state.animation)
         if ani is None:

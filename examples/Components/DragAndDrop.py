@@ -23,6 +23,9 @@ class Draggable:
     def move_me_top(self):
         return True
 
+    def drag_now(self, object: GameObject):
+        pass
+
     def use_world_drag(self):
         return False
 
@@ -52,6 +55,14 @@ class DragAndDropController(DragAndDropControllerInterface, GameObject):
         else:
             return Camera.main.mouse_world_pos() if Camera.main else Input.mouse_pos
 
+    def drag_now(self, object):
+        if not self.obj:
+            if object.move_me_top():
+                Game.defaultLayer.change_order_last(object)
+            self.drag_start_pos = self.get_mouse(object)
+            self.obj_start_pos = object.transform.pos
+            self.obj = object
+
     @Game.on_mouse_down(button=1, hover=False)
     def drag_start(self):
         sel = list(Game.get_objects(clas=Draggable, filter=lambda x: x.visible and x.opacity))
@@ -61,11 +72,7 @@ class DragAndDropController(DragAndDropControllerInterface, GameObject):
                 ds = s.on_drag_start()
                 if ds != False:
                     s = s if not isinstance(ds, GameObject) else ds
-                    if s.move_me_top():
-                        Game.defaultLayer.change_order_last(s)
-                    self.drag_start_pos = self.get_mouse(s)
-                    self.obj_start_pos = s.transform.pos
-                    self.obj = s
+                    self.drag_now(s)
                     break
 
     def __get_delta(self):

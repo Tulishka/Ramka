@@ -57,8 +57,10 @@ class CameraPos(Draggable, GameObject):
         else:
             self.last_spd *= 0.94
 
-            if self.last_spd.length_squared() > 1:
+            if self.last_spd.length_squared() > 2:
                 self.drag_set_new_position(self.transform.pos + self.last_spd * deltaTime)
+            else:
+                self.last_spd=Vector(0)
 
             obj = DragAndDropController.controller.get_dragged_object()
             if obj:

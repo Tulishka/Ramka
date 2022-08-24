@@ -9,8 +9,9 @@ class Iconable:
         return self._get_icon()
 
     @staticmethod
-    def create_icon_image(image: pygame.Surface, size=55, offset=(0, 0), background=(100, 150, 100), border=(50, 110, 50),
-                    border_radius=16):
+    def create_icon_image(image: pygame.Surface, size=55, offset=(0, 0), background=(100, 150, 100),
+                          border=(50, 110, 50),
+                          border_radius=16):
 
         sz = image.get_size()
         pw = size - size // 7
@@ -33,9 +34,12 @@ class Iconable:
         return res
 
     def _get_icon(self, size=55, offset=(0, 0), background=(100, 150, 100), border=(50, 110, 50),
-                  animation_name: str = "state1", border_radius=16):
+                  animation_name: str = None, border_radius=16):
 
         if isinstance(self, Sprite):
+            if animation_name is None:
+                animation_name = self.state.animation
+
             if not animation_name:
                 ani = self.curr_animation()
             else:
@@ -43,7 +47,7 @@ class Iconable:
                 if not ani:
                     ani = self.curr_animation()
 
-            return Iconable.create_icon_image(ani.get_image(0), size, offset, background,border, border_radius)
+            return Iconable.create_icon_image(ani.get_image(0), size, offset, background, border, border_radius)
 
         else:
             raise Exception("use Iconable as mixin for Sprite class only")

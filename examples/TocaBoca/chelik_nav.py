@@ -1,6 +1,7 @@
-from ramka import Sprite, Game, Camera, Transform, interp_pulse, Vector, interp_mid_spd
+from base_item import BaseItem
+from camera_pos import CameraPos
+from ramka import Sprite, Game, Camera, GameObject, Vector
 from ramka.effects import Effects
-from ramka.gameobject_animators import PosAnimator
 
 
 class NavBtn(Sprite):
@@ -14,10 +15,39 @@ class NavBtn(Sprite):
         self.eff.pulse(duration=0.2)
 
         def tap(t):
-            self.chelik.eff.pulse(duration=0.5,koef=1.05)
+            self.chelik.eff.pulse(duration=0.5, koef=1.05)
 
-        pos = Transform.to_local_coord(Camera.main.transform, self.chelik.transform)
+        if isinstance(Camera.main.target, CameraPos):
+            Camera.main.target.animate_to(self.chelik, tap)
 
-        f = interp_mid_spd((1, pos - Camera.main.target.transform.pos), (0, Vector(0)))
 
-        PosAnimator(Camera.main.target, pos, 0.5, interp_func=f)().do(tap,0.5).kill()
+class NavBar(GameObject):
+
+    def __init__(self):
+        super().__init__()
+        self.transform.pos = Vector(50, 50)
+        self.btns_gap = 10
+        Game.add_object(self, Game.uiLayer)
+
+    def add_btn(self, object: BaseItem, prefix:str=""):
+        for i in self.get_children(filter=lambda x: x.chelik == object):
+            return
+        nb = NavBtn(object.create_item_icon(), object)
+        nb.parent_sort_me_by=str(prefix)+nb.parent_sort_me_by
+        nb.transform.set_parent(self)
+        Game.add_object(nb, self.layer)
+        self.rearrange()
+
+    def remove_btn(self, object: BaseItem):
+        for i in self.get_children(filter=lambda x: x.chelik == object):
+            i.transform.set_parent(None)
+            Game.remove_object(i)
+            self.rearrange()
+            return
+
+    def rearrange(self):
+        self.layer.sort_object_children(self)
+        pos = Vector(0)
+        for i in self.get_children():
+            i.transform.pos = pos
+            pos.x += i.get_computed_size().x + self.btns_gap

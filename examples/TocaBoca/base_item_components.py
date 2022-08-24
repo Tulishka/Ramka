@@ -1,6 +1,6 @@
 from random import randint
 
-from examples.Components.DragAndDrop import Draggable
+from Components.DragAndDrop import Draggable
 from ramka import Component, Sprite, Game, Cooldown
 
 

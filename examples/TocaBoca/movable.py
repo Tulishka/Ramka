@@ -1,6 +1,6 @@
-from examples.Components.DragAndDrop import Draggable
-from examples.TocaBoca.base_item import BaseItem, DropZone
-from examples.TocaBoca.base_item_components import FallingDown
+from Components.DragAndDrop import Draggable
+from base_item import BaseItem, DropZone
+from base_item_components import FallingDown
 from ramka import Input, Game, Vector
 from ramka.effects import Effects
 from ramka.gameobject_animators import PosAnimator

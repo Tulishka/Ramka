@@ -1,4 +1,4 @@
-from examples.TocaBoca.item import Item
+from item import Item
 
 
 class Pet(Item):

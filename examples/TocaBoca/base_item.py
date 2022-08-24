@@ -2,8 +2,8 @@ import glob
 from typing import Union, Dict
 
 import pygame
-from examples.Components.DragAndDrop import DragAndDropController, Draggable
-from examples.TocaBoca.base_item_components import Blink
+from Components.DragAndDrop import DragAndDropController, Draggable
+from base_item_components import Blink
 from ramka import GameObject
 from ramka import Sprite, Game, Animation, Vector, Input
 from ramka.gameobject_animators import PosAnimator
@@ -173,9 +173,9 @@ class BaseItem(Sprite):
     def create_item_icon(self):
         return self._create_icon()
 
-    def _create_icon(self, size=55, offset=(0, 0), background=(0, 220, 220), border=(200, 200, 0),
-                     animation_name: str = None, border_radius=16):
-        if animation_name:
+    def _create_icon(self, size=55, offset=(0, 0), background=(0, 220, 220), border=(250, 250, 0),
+                     animation_name: str = "state1", border_radius=16):
+        if not animation_name:
             ani = self.curr_animation()
         else:
             ani = self.animations.get(animation_name)

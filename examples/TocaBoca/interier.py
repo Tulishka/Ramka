@@ -1,4 +1,4 @@
-from examples.TocaBoca.base_item import BaseItem
+from base_item import BaseItem
 
 
 class Interier(BaseItem):

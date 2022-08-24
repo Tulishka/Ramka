@@ -2,7 +2,7 @@ import math
 
 import pygame
 
-from examples.TocaBoca.movable import Movable
+from movable import Movable
 from ramka import Vector, Input
 
 

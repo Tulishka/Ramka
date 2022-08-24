@@ -1,5 +1,5 @@
-from examples.TocaBoca.base_item import DropZone
-from examples.TocaBoca.item import Item
+from base_item import DropZone
+from item import Item
 from ramka import Sprite
 
 

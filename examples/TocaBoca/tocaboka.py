@@ -1,13 +1,15 @@
-from examples.Components.DragAndDrop import Draggable, DragAndDropController
-from examples.TocaBoca.background import Background
-from examples.TocaBoca.bag import Bag
-from examples.TocaBoca.camera_pos import CameraPos
-from examples.TocaBoca.chelik import Chelik
-from examples.TocaBoca.chelik_nav import NavBtn
-from examples.TocaBoca.handable_item import HandableItem
-from examples.TocaBoca.interier import Interier
-from examples.TocaBoca.item import Item
-from examples.TocaBoca.pet import Pet
+from camera_pos import CameraPos
+
+from Components.DragAndDrop import Draggable, DragAndDropController
+from background import Background
+from bag import Bag
+
+from chelik import Chelik
+from chelik_nav import NavBtn, NavBar
+from handable_item import HandableItem
+from interier import Interier
+from item import Item
+from pet import Pet
 from ramka import Game, Camera, Vector, Sprite
 
 Game.init('TocaBoca')
@@ -75,8 +77,9 @@ Game.add_object(Item("predmet|kormushka", (700, 100)))
 camera = Camera(lock_y=True, target=cam_pos)
 Game.add_object(camera)
 
-navBtn = NavBtn("img/pers/pusya_nav.png", pusya)
-navBtn.transform.pos = 57, 48
-Game.add_object(navBtn,Game.uiLayer)
+nav = NavBar()
+
+for i in Game.get_objects(clas=[Chelik,Pet]):
+    nav.add_btn(i, "0" if isinstance(i,Chelik) else "1")
 
 Game.run()

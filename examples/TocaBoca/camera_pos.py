@@ -1,10 +1,10 @@
 from math import copysign
 from typing import Callable
 
-import pygame
-
-from examples.Components.DragAndDrop import Draggable, DragAndDropController
-from ramka import GameObject, Game, Input, Vector
+from Components.DragAndDrop import Draggable, DragAndDropController
+from ramka import GameObject, Game, Input, Vector, Transform, Camera, interp_mid_spd
+from ramka.gameobject_animators import PosAnimator
+from ramka.timeline import Timeline
 
 
 class CameraPos(Draggable, GameObject):
@@ -15,7 +15,7 @@ class CameraPos(Draggable, GameObject):
         self.parent_sort_me_by = "..."
         self.last_position = self.transform.pos
         self.last_spd = Vector(0)
-        self.auto_limits=auto_limits
+        self.auto_limits = auto_limits
         self.min_x = min_x
         self.max_x = max_x
 
@@ -47,8 +47,8 @@ class CameraPos(Draggable, GameObject):
 
         if self.is_dragged() and deltaTime > 0:
             self.last_spd = (self.transform.pos - self.last_position) / deltaTime * 0.5
-            self.last_spd[0] = copysign(min(abs(self.last_spd[0]),500),self.last_spd[0])
-            self.last_spd[1] = copysign(min(abs(self.last_spd[1]),500),self.last_spd[1])
+            self.last_spd[0] = copysign(min(abs(self.last_spd[0]), 500), self.last_spd[0])
+            self.last_spd[1] = copysign(min(abs(self.last_spd[1]), 500), self.last_spd[1])
             self.last_position = self.transform.pos
         else:
             self.last_spd *= 0.94
@@ -59,6 +59,19 @@ class CameraPos(Draggable, GameObject):
             obj = DragAndDropController.controller.get_dragged_object()
             if obj:
                 if obj.screen_pos().x < Game.ширинаЭкрана * 0.05:
-                    self.last_spd.x = - min(500,max(4*abs(self.transform.pos.x - self.min_x),100))
-                elif obj.screen_pos().x > Game.ширинаЭкрана - Game.ширинаЭкрана * 0.05 :
-                    self.last_spd.x = min(500,max(4*abs(self.transform.pos.x - self.max_x), 100))
+                    self.last_spd.x = - min(500, max(4 * abs(self.transform.pos.x - self.min_x), 100))
+                elif obj.screen_pos().x > Game.ширинаЭкрана - Game.ширинаЭкрана * 0.05:
+                    self.last_spd.x = min(500, max(4 * abs(self.transform.pos.x - self.max_x), 100))
+
+    def animate_to(self, gameobject, on_finish) -> Timeline:
+
+        pos = Transform.to_local_coord(Camera.main.transform, gameobject.transform)
+
+        f = interp_mid_spd((1, pos - self.transform.pos), (0, Vector(0)))
+
+        tl = PosAnimator(Camera.main.target, pos, 0.5, interp_func=f)()
+        if on_finish:
+            tl.do(on_finish, 0.5)
+        tl.kill()
+
+        return tl

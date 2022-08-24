@@ -15,9 +15,9 @@ class Item(Movable):
         super().draw(dest)
 
         if pygame.key.get_mods() & pygame.KMOD_LSHIFT:
-            icn=self.create_item_icon()
+            icn=self.get_icon()
             pos = self.screen_pos() - (icn.get_size()[0]/2, icn.get_size()[1] + self.get_size()[1]/2 ) - self.image_offset + Vector(0,3*math.sin(self.time*8))
             dest.blit(icn, dest=pygame.Rect(pos, Vector(0)))
 
-    def create_item_icon(self):
-        return self._create_icon(background=(100,100,180),border=(70,70,100))
+    def get_icon(self):
+        return self._get_icon(background=(100, 100, 180), border=(70, 70, 100))

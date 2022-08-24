@@ -28,6 +28,6 @@ class Chelik(Creature):
         if self.im_sleep:
             self.state.animation = "blink" + str(self.state.id)
 
-    def create_item_icon(self):
-        return self._create_icon(offset=(0,0.1),border_radius=60)
+    def get_icon(self):
+        return self._get_icon(offset=(0, 0.1), border_radius=60,background=(0, 220, 220), border=(150, 150, 0))
 

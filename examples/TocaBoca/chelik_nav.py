@@ -1,3 +1,5 @@
+from typing import Callable
+
 from base_item import BaseItem
 from camera_pos import CameraPos
 from ramka import Sprite, Game, Camera, GameObject, Vector
@@ -5,9 +7,10 @@ from ramka.effects import Effects
 
 
 class NavBtn(Sprite):
-    def __init__(self, anim, chelik):
+    def __init__(self, anim, chelik, action: Callable = None):
         super().__init__(anim)
         self.chelik = chelik
+        self.action = action
         self.eff = Effects(self)
 
     @Game.on_mouse_down(button=1)
@@ -15,10 +18,17 @@ class NavBtn(Sprite):
         self.eff.pulse(duration=0.2)
 
         def tap(t):
-            self.chelik.eff.pulse(duration=0.5, koef=1.05)
+            if hasattr(self.chelik,"eff"):
+                self.chelik.eff.pulse(duration=0.5, koef=1.05)
 
-        if isinstance(Camera.main.target, CameraPos):
-            Camera.main.target.animate_to(self.chelik, tap)
+        if self.action:
+            self.action(self.chelik)
+        else:
+            if callable(self.chelik):
+                self.chelik()
+            else:
+                if isinstance(Camera.main.target, CameraPos):
+                    Camera.main.target.animate_to(self.chelik, tap)
 
 
 class NavBar(GameObject):
@@ -29,11 +39,11 @@ class NavBar(GameObject):
         self.btns_gap = 10
         Game.add_object(self, Game.uiLayer)
 
-    def add_btn(self, object: BaseItem, prefix:str=""):
+    def add_btn(self, object: BaseItem, prefix: str = ""):
         for i in self.get_children(filter=lambda x: x.chelik == object):
             return
-        nb = NavBtn(object.create_item_icon(), object)
-        nb.parent_sort_me_by=str(prefix)+nb.parent_sort_me_by
+        nb = NavBtn(object.get_icon(), object)
+        nb.parent_sort_me_by = str(prefix) + nb.parent_sort_me_by
         nb.transform.set_parent(self)
         Game.add_object(nb, self.layer)
         self.rearrange()

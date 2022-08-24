@@ -173,7 +173,7 @@ class BaseItem(Sprite):
     def create_item_icon(self):
         return self._create_icon()
 
-    def _create_icon(self, width=55, offset=(0, 0), background=(0, 220, 220), border=(200, 200, 0),
+    def _create_icon(self, size=55, offset=(0, 0), background=(0, 220, 220), border=(200, 200, 0),
                      animation_name: str = None, border_radius=16):
         if animation_name:
             ani = self.curr_animation()
@@ -185,11 +185,11 @@ class BaseItem(Sprite):
         img = ani.get_image(0)
 
         sz = img.get_size()
-        pw = width - width // 7
+        pw = size - size // 7
         k = pw / sz[0]
-        x = (width - pw) / 2
-        y = (width - int(k * sz[1])) / 2
-        res = pygame.Surface((width, width), flags=pygame.SRCALPHA)
+        x = (size - pw) / 2
+        y = (size - int(k * sz[1])) / 2
+        res = pygame.Surface((size, size), flags=pygame.SRCALPHA)
         res.fill(background)
         # .subsurface(pygame.Rect(Vector(offset[0], offset[1]*k), Vector(pw, pw+y*k+8*k)))
         res.blit(
@@ -203,10 +203,10 @@ class BaseItem(Sprite):
         #     mask.to_surface(res, res, unsetcolor=(0, 0, 0, 0))
         #     pygame.draw.circle(res, border, (width / 2, width / 2), width / 2, 3)
 
-        ms = pygame.Surface((width, width), flags=pygame.SRCALPHA)
-        pygame.draw.rect(ms, (255, 255, 255), pygame.Rect(0, 0, width, width), border_radius=border_radius)
+        ms = pygame.Surface((size, size), flags=pygame.SRCALPHA)
+        pygame.draw.rect(ms, (255, 255, 255), pygame.Rect(0, 0, size, size), border_radius=border_radius)
         mask = pygame.mask.from_surface(ms)
         mask.to_surface(res, res, unsetcolor=(0, 0, 0, 0))
-        pygame.draw.rect(res, border, pygame.Rect(0,0, width, width ), 3, border_radius=border_radius)
+        pygame.draw.rect(res, border, pygame.Rect(0, 0, size, size), 3, border_radius=border_radius)
 
         return res

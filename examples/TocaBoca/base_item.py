@@ -1,14 +1,14 @@
 import glob
 
-from typing import Union, Dict
-
 import pygame
-from examples.Components.DragAndDrop import DragAndDropController, Draggable
-from Iconable import Iconable
+
+from examples.Components.DragAndDrop import Draggable, DragAndDropController
+from game_classes import GameClasses
 from base_item_components import Blink
-from Savable import Savable
-from ramka import GameObject
-from ramka import Sprite, Game, Animation, Vector, Input
+from iconable import Iconable
+from savable import Savable
+from typing import Dict, Union
+from ramka import GameObject, Sprite, Game, Animation, Vector, Input
 from ramka.gameobject_animators import PosAnimator
 from ramka.trigger import Trigger
 
@@ -17,11 +17,18 @@ class BaseItem(Sprite):
     ...
 
 
-class DropZone(Savable,Trigger):
+class DropZone(Savable, Trigger):
     def __init__(self, parent: BaseItem, name, pos: Vector = None, radius=None, max_items=1, accept_class=[]):
         super().__init__(name, pos, radius, parent)
         self.max_items = max_items
         self.accept_class = accept_class
+
+    @staticmethod
+    def get_creation_params(dict):
+        return [], {
+            "parent": dict["parent"],
+            "name": dict["trigger_name"],
+        }
 
     def can_attach_object(self, object: GameObject):
         return self.max_items > len(
@@ -39,6 +46,23 @@ class DropZone(Savable,Trigger):
         object.transform.detach(True)
         self.get_parent().on_object_detached(self, object)
         return True
+
+    def init_from_dict(self, opts):
+        super().init_from_dict(opts)
+        self.max_items = opts['max_items']
+        # from game_manager import GameManager
+        self.accept_class = [GameClasses.get_class(t) for t in opts['accept_class']]
+        self.radius = opts['radius']
+
+    def get_init_dict(self):
+        res = super().get_init_dict()
+        res.update({
+            "max_items": self.max_items,
+            "accept_class": [t.__name__ for t in self.accept_class],
+            "radius": self.radius,
+            "trigger_name": self.trigger_name,
+        })
+        return res
 
 
 class FrontPart(Draggable, Sprite):
@@ -64,18 +88,16 @@ class FrontPart(Draggable, Sprite):
             return False
 
 
-class BaseItem(Savable,Iconable, Sprite):
+class BaseItem(Savable, Iconable, Sprite):
     dd_manager: DragAndDropController = None
 
-
     def __init__(self, anim: str, pos, mass=None):
-
-
 
         if isinstance(anim, str):
             self.name = anim.split("|")[-1]
             animations = BaseItem.create_animation(anim)
         else:
+            print(anim, pos)
             raise Exception("Анимация BaseItem может быть создана только из строки! Неверный тип anim! ")
 
         self.anim_path = anim
@@ -104,31 +126,25 @@ class BaseItem(Savable,Iconable, Sprite):
                 self.front_object = FrontPart(front_anim, self)
 
     def get_init_dict(self):
-
-        p = self.get_parent()
-        p = self.get_parent().uuid if p and hasattr(p, "uuid") else None
-
-        res = {
-            "class_name": type(self).__name__,
-            "uuid": self.get_uuid(),
+        res = super().get_init_dict()
+        res.update({
             "anim_path": self.anim_path,
-            "transform": self.transform.to_dict(),
-            "parent": p,
-            "mass": self.mass,
             "state.id": self.state.id,
-            "parent_sort_me_by": self.parent_sort_me_by,
-            "image_rotate_offset": self.image_rotate_offset,
-            "image_offset.x": self.image_offset.x,
-            "image_offset.y": self.image_offset.y,
-        }
-
-        childs = []
-        for ch in self.get_children(clas=Savable):
-            childs.append(ch.get_init_dict())
-
-        res["children"] = childs
-
+            "mass": self.mass,
+        })
         return res
+
+    def init_from_dict(self, opts):
+        super().init_from_dict(opts)
+        self.state.id = opts["state.id"]
+        self.mass = opts["mass"]
+
+    @staticmethod
+    def get_creation_params(dict):
+        return [], {
+            "anim": dict["anim_path"],
+            "pos": Vector(dict["transform"]["x"], dict["transform"]["y"]),
+        }
 
     def can_accept_dropzone_object(self, dropzone: DropZone, obj: Sprite):
         return obj.get_size().x < self.get_size().x

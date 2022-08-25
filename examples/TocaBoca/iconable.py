@@ -51,3 +51,7 @@ class Iconable:
 
         else:
             raise Exception("use Iconable as mixin for Sprite class only")
+
+
+class IconableSprite(Iconable,Sprite):
+    pass

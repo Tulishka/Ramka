@@ -17,8 +17,8 @@ class Camera(CameraInterface, GameObject):
         self._focus = target
         self.lock_x = lock_x
         self.lock_y = lock_y
-        if Camera.main is None:
-            Camera.main = self
+
+        Camera.main = self
 
     @property
     def target(self) -> GameObject:

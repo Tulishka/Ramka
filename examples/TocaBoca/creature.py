@@ -1,4 +1,4 @@
-from chelik_nav import NavBar
+from nav_bar import NavBar
 from movable import Movable
 from ramka import Game
 

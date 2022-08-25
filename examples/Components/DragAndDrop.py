@@ -9,7 +9,7 @@ class DragAndDropControllerInterface:
 class Draggable:
 
     def is_dragged(self):
-        return DragAndDropController.controller.get_dragged_object() == self
+        return DragAndDropController.controller and DragAndDropController.controller.get_dragged_object() == self
 
     def on_drag_start(self):
         return True
@@ -42,8 +42,7 @@ class DragAndDropController(DragAndDropControllerInterface, GameObject):
         self.drag_start_pos = None
         self.obj = None
 
-        if not DragAndDropController.controller:
-            DragAndDropController.controller = self
+        DragAndDropController.controller = self
 
     def get_dragged_object(self):
         return self.obj

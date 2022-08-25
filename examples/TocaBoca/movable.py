@@ -3,7 +3,6 @@ from base_item import BaseItem, DropZone
 from base_item_components import FallingDown
 from ramka import Input, Game, Vector
 from ramka.effects import Effects
-from ramka.gameobject_animators import PosAnimator
 
 
 class Movable(Draggable, BaseItem):
@@ -15,18 +14,11 @@ class Movable(Draggable, BaseItem):
         self.last_vert_spd = 0
         self.eff = Effects(self)
 
-        self.args=a
-        self.kwargs=b
-
         self.__restore_parent = None
 
     def on_drag_start(self):
         self.detach()
         self.eff.pulse(1.1, 0.5)
-        # a=type(self)(*self.args,**self.kwargs)
-        # a.transform.pos=self.transform.pos
-        # Game.add_object(a)
-        # return a
 
     def is_attachable(self):
         return True
@@ -74,7 +66,6 @@ class Movable(Draggable, BaseItem):
                         self.attach_to(dz)
                         return
 
-
         if self.last_vert_spd < 0:
             self.__fallcomp.spd = max(self.last_vert_spd / self.mass, -600)
 
@@ -87,3 +78,20 @@ class Movable(Draggable, BaseItem):
             self.last_vert_spd = 0
 
         self.last_position = self.transform.pos
+
+    def get_init_dict(self):
+        res = super().get_init_dict()
+        res.update({
+            "__fallcomp.enabled": self.__fallcomp.enabled,
+            "__restore_parent": self.__restore_parent.uuid if self.__restore_parent and hasattr(self.__restore_parent,
+                                                                                                "uuid") else None,
+        })
+        return res
+
+    def init_from_dict(self, opts):
+        super().init_from_dict(opts)
+        self.__fallcomp.enabled = opts.get("__fallcomp.enabled", False)
+        n = opts.get("__restore_parent", False)
+        if n and n != "null":
+            par = Game.get_object(filter=lambda x: getattr(x, "uuid", False) == n)
+            self.__restore_parent = par

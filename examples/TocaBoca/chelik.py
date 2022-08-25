@@ -6,8 +6,8 @@ from ramka import Sprite, Vector
 
 
 class Chelik(Creature):
-    def __init__(self, name, *a, **b):
-        super().__init__(name, *a, **b)
+    def __init__(self, *a, **b):
+        super().__init__(*a, **b)
         self.im_sleep = False
         self.creature_bar_order="0"
 
@@ -32,3 +32,11 @@ class Chelik(Creature):
     def get_icon(self):
         return self._get_icon(offset=(0, 0.1), border_radius=60,background=(0, 220, 220), border=(150, 150, 0))
 
+    def get_init_dict(self):
+        res = super().get_init_dict()
+        res.update({"im_sleep": self.im_sleep})
+        return res
+
+    def init_from_dict(self, opts):
+        super().init_from_dict(opts)
+        self.im_sleep = opts.get("im_sleep", False)

@@ -151,19 +151,12 @@ class Game:
     @staticmethod
     def remove_object(game_object: GameObject):
 
+        if game_object not in Game.gameObjects:
+            return
+
         to_rem = []
 
         def remove(obj):
-
-            tr = obj.transform
-            if tr:
-                rem = []
-                for o in Game.gameObjects:
-                    if o.transform.parent == tr:
-                        rem.append(o)
-                for o in rem:
-                    remove(obj)
-
             obj.on_leave_game()
             obj.set_layer(None)
             to_rem.append(obj)

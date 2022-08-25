@@ -3,6 +3,7 @@ from typing import Callable, Union, Dict
 
 import pygame
 
+from iconable import Iconable
 from examples.Components.DragAndDrop import DragAndDropController
 from base_item import BaseItem
 from camera_pos import CameraPos
@@ -14,26 +15,43 @@ from ramka.gameobject_animators import ScaleAnimator, PosAnimator
 class NavBtn(Sprite):
     def __init__(self, anim, chelik,
                  action: Union[Callable[[Sprite, int], None], Dict[int, Callable[[Sprite], None]]] = None,
-                 update_func: Callable[[], pygame.Surface] = None):
+                 update_func: Callable[[], pygame.Surface] = None, action_on_mb_up=False):
         super().__init__(anim)
         self.chelik = chelik
         self.action = action
         self.update_func = update_func
         self.eff = Effects(self)
         self.updated_anim = chelik.state.animation
-        self.update_cd = Cooldown(0.5+random())
+        self.update_cd = Cooldown(0.5 + random())
+
+        self.start_point = None
+
+        self.on_mup_process:Callable[[int],None] = self.process_button if action_on_mb_up else None
+        self.on_mdn_process:Callable[[int],None] = None if action_on_mb_up else self.process_button
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
         if self.update_cd.ready:
             self.update_cd.start()
             if self.chelik.state.animation != self.updated_anim and callable(self.update_func):
-                self.set_sprite_animations({"default": Animation([self.update_func()],5,True)})
+                self.set_sprite_animations({"default": Animation([self.update_func()], 5, True)})
                 self.updated_anim = self.chelik.state.animation
+
+    @Game.on_mouse_up
+    def on_mouse_up(self, button):
+        if self.on_mup_process and (Input.mouse_pos-self.start_point).length_squared()<30:
+            self.on_mup_process(button)
 
     @Game.on_mouse_down
     def on_mouse_down(self, button):
         self.eff.pulse(duration=0.2)
+        self.start_point = Input.mouse_pos
+        if self.on_mdn_process:
+            self.on_mdn_process(button)
+        return self
+
+    def process_button(self, button):
+
 
         def tap(t):
             if hasattr(self.chelik, "eff"):
@@ -63,17 +81,19 @@ class NavBtn(Sprite):
 
 class NavBar(GameObject):
 
-    def __init__(self, name):
+    def __init__(self, name, pos=Vector(40, 40), row_direction=Vector(1, 0)):
         super().__init__()
         self.name = name
-        self.transform.pos = Vector(40, 30)
-        self.btns_gap = 10
+        self.row_direction = row_direction
+        self.btns_gap = 5
+        self.transform.pos = pos
+
         Game.add_object(self, Game.uiLayer)
 
-    def add_btn(self, object: BaseItem, prefix: str = ""):
+    def add_btn(self, object: Iconable, prefix: str = "",action_on_mb_up=False, **kwargs):
         for i in self.get_children(filter=lambda x: x.chelik == object):
             return
-        nb = NavBtn(object.get_icon(), object, update_func=object.get_icon)
+        nb = NavBtn(object.get_icon(), object, update_func=object.get_icon, action_on_mb_up=action_on_mb_up, **kwargs)
         nb.parent_sort_me_by = str(prefix) + nb.parent_sort_me_by
         nb.transform.set_parent(self)
         Game.add_object(nb, self.layer)
@@ -91,4 +111,5 @@ class NavBar(GameObject):
         pos = Vector(0)
         for i in self.get_children():
             i.transform.pos = pos
-            pos.x += i.get_computed_size().x + self.btns_gap
+            pos += Vector(i.get_computed_size().x + self.btns_gap,
+                          i.get_computed_size().y + self.btns_gap) * self.row_direction.elementwise()

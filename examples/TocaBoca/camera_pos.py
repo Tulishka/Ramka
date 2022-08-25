@@ -64,10 +64,12 @@ class CameraPos(Draggable, GameObject):
 
             obj = DragAndDropController.controller and DragAndDropController.controller.get_dragged_object()
             if obj:
-                if obj.screen_pos().x < Game.ширинаЭкрана * 0.05:
-                    self.last_spd.x = - min(500, max(4 * abs(self.transform.pos.x - self.min_x), 100))
-                elif obj.screen_pos().x > Game.ширинаЭкрана - Game.ширинаЭкрана * 0.05:
-                    self.last_spd.x = min(500, max(4 * abs(self.transform.pos.x - self.max_x), 100))
+                scp=obj.screen_pos()
+                if Game.высотаЭкрана * 0.15 < scp.y < Game.высотаЭкрана * 0.85:
+                    if scp.x < Game.ширинаЭкрана * 0.05:
+                        self.last_spd.x = - min(500, max(4 * abs(self.transform.pos.x - self.min_x), 100))
+                    elif scp.x > Game.ширинаЭкрана - Game.ширинаЭкрана * 0.05:
+                        self.last_spd.x = min(500, max(4 * abs(self.transform.pos.x - self.max_x), 100))
 
     def animate_to(self, gameobject, on_finish) -> Timeline:
 

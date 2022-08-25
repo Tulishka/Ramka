@@ -86,7 +86,8 @@ class NavBar(GameObject):
         self.name = name
         self.row_direction = row_direction
         self.btns_gap = 5
-        self.transform.pos = pos
+        self.transform.pos = pos - row_direction.rotate(90)*150
+        PosAnimator(self,pos,0.5)().kill()
 
         Game.add_object(self, Game.uiLayer)
 

@@ -3,6 +3,7 @@ from typing import Union
 
 from .component import Component
 from .shared import Vector
+import json
 
 
 class TransformBase(Component):
@@ -17,8 +18,14 @@ class TransformBase(Component):
         self._scale: Vector = scale if scale is not None else Vector(1.0)
         self._angle = rotate
 
+    def to_string(self):
+        return f'{{"x":{self._pos.x},"y":{self._pos.y},"scale_x":{self._scale.x},"scale_y":{self._scale.y},"angle":{self.angle}}}'
 
-
+    def from_string(self, text):
+        a = json.loads(text)
+        self._pos.xy = a['x'], a['y']
+        self._scale.xy = a['scale_x'], a['scale_y']
+        self._angle = a['angle']
 
     def on_change(self):
         pass

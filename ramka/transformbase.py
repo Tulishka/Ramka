@@ -18,14 +18,25 @@ class TransformBase(Component):
         self._scale: Vector = scale if scale is not None else Vector(1.0)
         self._angle = rotate
 
-    def to_string(self):
-        return f'{{"x":{self._pos.x},"y":{self._pos.y},"scale_x":{self._scale.x},"scale_y":{self._scale.y},"angle":{self.angle}}}'
+    def to_dict(self):
+        return {
+            "x":self._pos.x,
+            "y":self._pos.y,
+            "scale_x":self._scale.x,
+            "scale_y":self._scale.y,
+            "angle": self.angle,
+        }
 
-    def from_string(self, text):
-        a = json.loads(text)
+    def from_dict(self, a):
         self._pos.xy = a['x'], a['y']
         self._scale.xy = a['scale_x'], a['scale_y']
         self._angle = a['angle']
+
+    def to_string(self):
+        return json.dumps(self.to_dict())
+
+    def from_string(self, text):
+        self.from_dict(json.loads(text))
 
     def on_change(self):
         pass

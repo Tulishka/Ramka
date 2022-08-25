@@ -79,16 +79,11 @@ Game.add_object(Item("predmet|kormushka", (700, 100)))
 camera = Camera(lock_y=True, target=cam_pos)
 Game.add_object(camera)
 
-Game.add_object(Lighting(), layer=Game.uiLayer)
+light=Lighting()
+Game.add_object(light, layer=Game.uiLayer)
 
-nav.layer.change_order_last(nav)
+light.layer.change_order_first(light)
 
-a={"test":1,"pole":2}
-
-with open("test.json","w") as f:
-    json.dump(a,f)
-
-# for i in Game.get_objects(clas=Creature):
-#     nav.add_btn(i, "0" if isinstance(i, Chelik) else "1")
+print(json.dumps(pusya.get_init_dict(),indent=4))
 
 Game.run()

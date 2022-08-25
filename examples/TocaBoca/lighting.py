@@ -18,7 +18,7 @@ class Lighting(GameObject):
     def __init__(self):
         super().__init__()
 
-        self.parent_sort_me_by = "  "
+        self.parent_sort_me_by = "     "
 
         self.light_map = pygame.Surface(Game.размерЭкрана, flags=pygame.SRCALPHA)
         self.light_map.fill((0, 0, 0, 200))

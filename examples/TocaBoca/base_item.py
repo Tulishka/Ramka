@@ -1,10 +1,12 @@
 import glob
+
 from typing import Union, Dict
 
 import pygame
 from examples.Components.DragAndDrop import DragAndDropController, Draggable
 from Iconable import Iconable
 from base_item_components import Blink
+from Savable import Savable
 from ramka import GameObject
 from ramka import Sprite, Game, Animation, Vector, Input
 from ramka.gameobject_animators import PosAnimator
@@ -15,7 +17,7 @@ class BaseItem(Sprite):
     ...
 
 
-class DropZone(Trigger):
+class DropZone(Savable,Trigger):
     def __init__(self, parent: BaseItem, name, pos: Vector = None, radius=None, max_items=1, accept_class=[]):
         super().__init__(name, pos, radius, parent)
         self.max_items = max_items
@@ -62,16 +64,21 @@ class FrontPart(Draggable, Sprite):
             return False
 
 
-class BaseItem(Iconable,Sprite):
+class BaseItem(Savable,Iconable, Sprite):
     dd_manager: DragAndDropController = None
 
-    def __init__(self, anim: Union[str, Dict], pos, mass=None):
+
+    def __init__(self, anim: str, pos, mass=None):
+
+
+
         if isinstance(anim, str):
             self.name = anim.split("|")[-1]
             animations = BaseItem.create_animation(anim)
         else:
-            animations = anim
-            self.name = "no name"
+            raise Exception("Анимация BaseItem может быть создана только из строки! Неверный тип anim! ")
+
+        self.anim_path = anim
 
         super().__init__(animations)
         self.drop_zones = []
@@ -95,6 +102,33 @@ class BaseItem(Iconable,Sprite):
             front_anim = BaseItem.create_animation(anim, "_f")
             if front_anim:
                 self.front_object = FrontPart(front_anim, self)
+
+    def get_init_dict(self):
+
+        p = self.get_parent()
+        p = self.get_parent().uuid if p and hasattr(p, "uuid") else None
+
+        res = {
+            "class_name": type(self).__name__,
+            "uuid": self.get_uuid(),
+            "anim_path": self.anim_path,
+            "transform": self.transform.to_dict(),
+            "parent": p,
+            "mass": self.mass,
+            "state.id": self.state.id,
+            "parent_sort_me_by": self.parent_sort_me_by,
+            "image_rotate_offset": self.image_rotate_offset,
+            "image_offset.x": self.image_offset.x,
+            "image_offset.y": self.image_offset.y,
+        }
+
+        childs = []
+        for ch in self.get_children(clas=Savable):
+            childs.append(ch.get_init_dict())
+
+        res["children"] = childs
+
+        return res
 
     def can_accept_dropzone_object(self, dropzone: DropZone, obj: Sprite):
         return obj.get_size().x < self.get_size().x
@@ -170,4 +204,3 @@ class BaseItem(Iconable,Sprite):
         if self.mass < 1:
             self.mass = 1
         return self.mass
-

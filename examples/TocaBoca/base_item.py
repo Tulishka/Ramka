@@ -17,9 +17,9 @@ class BaseItem(Sprite):
     ...
 
 
-class DropZone(Savable, Trigger):
+class DropZone(Draggable,Savable, Trigger):
     def __init__(self, parent: BaseItem, name, pos: Vector = None, radius=None, max_items=1, accept_class=[]):
-        super().__init__(name, pos, radius, parent)
+        super().__init__(name, pos, radius, parent,color=(255,0,0))
         self.max_items = max_items
         self.accept_class = accept_class
 
@@ -67,6 +67,12 @@ class DropZone(Savable, Trigger):
         })
         return res
 
+    def update(self, deltaTime: float):
+        super().update(deltaTime)
+
+        self.visible = pygame.key.get_mods() & pygame.KMOD_LSHIFT
+
+
 
 class FrontPart(Draggable, Sprite):
     def __init__(self, animations: Union[Animation, pygame.Surface, str, Dict[str, Animation]], parent: BaseItem):
@@ -85,8 +91,8 @@ class FrontPart(Draggable, Sprite):
     def on_drag_start(self):
         p = self.get_parent()
         if isinstance(p, Draggable):
-            p.on_drag_start()
-            return self.get_parent()
+            bs=p.on_drag_start()
+            return bs if isinstance(bs,GameObject) else self.get_parent() if bs!=False else False
         else:
             return False
 

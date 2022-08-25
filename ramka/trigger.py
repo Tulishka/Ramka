@@ -77,6 +77,9 @@ class Trigger(GameObject):
         tr = self.w_transform()
         return self.radius * (abs(tr.scale.x) + abs(tr.scale.y)) * 0.5
 
+    def touch_test(self, point: Vector, func: Callable = None):
+        return self.is_collided(point,func)
+
     def is_collided(self, other: Union[GameObject, Vector], func: Callable = None) -> Union[bool, Tuple[int, int]]:
 
         r = self.w_radius()

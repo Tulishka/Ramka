@@ -1,3 +1,5 @@
+import gc
+
 from examples.Components.DragAndDrop import DragAndDropController
 from game_classes import GameClasses
 from iconable import IconableSprite
@@ -33,6 +35,7 @@ class GameManager:
         for l in lst:
             Game.remove_object(l)
 
+        gc.collect()
         Game.add_object(DragAndDropController())
         Game.add_object(Camera(lock_y=True))
         Camera.main.uuid = "main_camera"

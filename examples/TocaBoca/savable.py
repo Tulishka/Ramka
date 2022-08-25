@@ -19,6 +19,7 @@ class Savable:
         if isinstance(self, GameObject):
             self.uuid = dict['uuid']
             self.transform.from_dict(dict['transform'])
+            self.visible=dict.get('transform',True)
             self._parent_sort_me_by = dict['parent_sort_me_by']
 
             if isinstance(self, Sprite):
@@ -41,6 +42,7 @@ class Savable:
                 "transform": self.transform.to_dict(),
                 "parent_sort_me_by": self.parent_sort_me_by,
                 "layer": self.layer.name,
+                "visible": self.visible,
             }
 
             if isinstance(self, Sprite):

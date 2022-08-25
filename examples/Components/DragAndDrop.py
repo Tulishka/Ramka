@@ -5,6 +5,11 @@ class DragAndDropControllerInterface:
     def get_dragged_object(self):
         pass
 
+    def get_just_dragged_object(self, dt=0):
+        pass
+
+    def cancel_drag(self):
+        pass
 
 class Draggable:
 
@@ -42,10 +47,19 @@ class DragAndDropController(DragAndDropControllerInterface, GameObject):
         self.drag_start_pos = None
         self.obj = None
 
+        self.last_object = None
+        self.last_object_drop_time = 0
+
         DragAndDropController.controller = self
 
     def get_dragged_object(self):
         return self.obj
+
+    def get_just_dragged_object(self, dt=0):
+        obj = self.obj
+        if not obj and Game.time - self.last_object_drop_time <= dt:
+            obj = self.last_object
+        return obj
 
     @staticmethod
     def get_mouse(obj):
@@ -61,6 +75,7 @@ class DragAndDropController(DragAndDropControllerInterface, GameObject):
             self.drag_start_pos = self.get_mouse(object)
             self.obj_start_pos = object.transform.pos
             self.obj = object
+            self.last_object = self.obj
 
     @Game.on_mouse_down(button=1, hover=False)
     def drag_start(self):
@@ -84,10 +99,22 @@ class DragAndDropController(DragAndDropControllerInterface, GameObject):
 
         return delta
 
+    def cancel_drag(self):
+        if self.obj:
+            self.obj_start_pos = None
+            self.drag_start_pos = None
+            self.last_object = self.obj
+            self.last_object_drop_time = Game.time
+            self.obj = None
+
     def update(self, deltaTime: float):
         super().update(deltaTime)
         if self.obj:
             self.obj.drag_set_new_position(self.obj_start_pos + self.__get_delta())
+        else:
+            if self.last_object_drop_time and Game.time - self.last_object_drop_time > 1:
+                self.last_object_drop_time = 0
+                self.last_object = None
 
     @Game.on_mouse_up(button=1, hover=False)
     def release_mi(self):
@@ -96,4 +123,6 @@ class DragAndDropController(DragAndDropControllerInterface, GameObject):
             self.obj.on_drag_end()
             self.obj_start_pos = None
             self.drag_start_pos = None
+            self.last_object = self.obj
+            self.last_object_drop_time = Game.time
             self.obj = None

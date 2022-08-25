@@ -3,11 +3,12 @@ from typing import Callable, Union, Dict
 
 import pygame
 
+from movable import Movable
 from iconable import Iconable
 from examples.Components.DragAndDrop import DragAndDropController
-from base_item import BaseItem
+from base_item import BaseItem, DropZone
 from camera_pos import CameraPos
-from ramka import Sprite, Game, Camera, GameObject, Vector, Input, Animation, Cooldown
+from ramka import Sprite, Game, Camera, GameObject, Vector, Input, Animation, Cooldown, Transform
 from ramka.effects import Effects
 from ramka.gameobject_animators import ScaleAnimator, PosAnimator
 
@@ -26,8 +27,8 @@ class NavBtn(Sprite):
 
         self.start_point = None
 
-        self.on_mup_process:Callable[[int],None] = self.process_button if action_on_mb_up else None
-        self.on_mdn_process:Callable[[int],None] = None if action_on_mb_up else self.process_button
+        self.on_mup_process: Callable[[int], None] = self.process_button if action_on_mb_up else None
+        self.on_mdn_process: Callable[[int], None] = None if action_on_mb_up else self.process_button
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
@@ -39,7 +40,21 @@ class NavBtn(Sprite):
 
     @Game.on_mouse_up
     def on_mouse_up(self, button):
-        if self.on_mup_process and (Input.mouse_pos-self.start_point).length_squared()<30:
+        if DragAndDropController.controller and isinstance(self.chelik, BaseItem):
+
+            obj = DragAndDropController.controller.get_just_dragged_object()
+            if isinstance(obj, Movable):
+                dzs = self.chelik.get_children(clas=DropZone, filter=lambda x: obj.can_attach_to(x))
+                for dz in dzs:
+                    obj.attach_to(dz)
+                    DragAndDropController.controller.cancel_drag()
+                    return
+
+                obj.on_drag_end()
+                DragAndDropController.controller.cancel_drag()
+                obj.transform.pos=obj.transform.to_parent_local_coord(self.chelik)
+
+        if self.on_mup_process and (Input.mouse_pos - self.start_point).length_squared() < 30:
             self.on_mup_process(button)
 
     @Game.on_mouse_down
@@ -51,7 +66,6 @@ class NavBtn(Sprite):
         return self
 
     def process_button(self, button):
-
 
         def tap(t):
             if hasattr(self.chelik, "eff"):
@@ -86,12 +100,12 @@ class NavBar(GameObject):
         self.name = name
         self.row_direction = row_direction
         self.btns_gap = 5
-        self.transform.pos = pos - row_direction.rotate(90)*150
-        PosAnimator(self,pos,0.5)().kill()
+        self.transform.pos = pos - row_direction.rotate(90) * 150
+        PosAnimator(self, pos, 0.5)().kill()
 
         Game.add_object(self, Game.uiLayer)
 
-    def add_btn(self, object: Iconable, prefix: str = "",action_on_mb_up=False, **kwargs):
+    def add_btn(self, object: Iconable, prefix: str = "", action_on_mb_up=False, **kwargs):
         for i in self.get_children(filter=lambda x: x.chelik == object):
             return
         nb = NavBtn(object.get_icon(), object, update_func=object.get_icon, action_on_mb_up=action_on_mb_up, **kwargs)

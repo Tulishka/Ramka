@@ -24,7 +24,7 @@ class Movable(Draggable, BaseItem):
         return True
 
     def can_attach_to(self, dz: DropZone):
-        return dz.can_attach_object(self)
+        return self.is_attachable() and dz.can_attach_object(self)
 
     def is_attached(self):
         return isinstance(self.get_parent(), DropZone)
@@ -58,7 +58,7 @@ class Movable(Draggable, BaseItem):
         self.__fallcomp.enabled = True
 
     def on_drag_end(self):
-        if self.is_attachable():
+        if not self.is_attached() and self.is_attachable():
             ll = list(Game.get_objects(clas=DropZone, filter=lambda x: self not in x.get_all_parents()))
             for dz in reversed(ll):
                 if dz.is_collided(self) or dz.is_collided(Input.mouse_pos):

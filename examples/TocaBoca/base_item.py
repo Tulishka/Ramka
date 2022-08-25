@@ -38,7 +38,12 @@ class DropZone(Savable, Trigger):
     def attach_object(self, object: GameObject):
         object.transform.set_parent(self, True)
         self.layer.sort_object_children(self.get_parent())
-        PosAnimator(object, Vector(0, 0), 0.2)().kill()
+        pos = Vector(0, 0)
+        print("aaa")
+        if object.transform.pos.length() > Game.ширинаЭкрана:
+            object.transform.pos = pos
+        else:
+            PosAnimator(object, pos, 0.2)().kill()
         self.get_parent().on_object_attached(self, object)
         return True
 
@@ -50,7 +55,6 @@ class DropZone(Savable, Trigger):
     def init_from_dict(self, opts):
         super().init_from_dict(opts)
         self.max_items = opts['max_items']
-        # from game_manager import GameManager
         self.accept_class = [GameClasses.get_class(t) for t in opts['accept_class']]
         self.radius = opts['radius']
 

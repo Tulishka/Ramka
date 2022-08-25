@@ -1,6 +1,8 @@
 import math
 from typing import Dict, Callable, Union, Tuple
 
+from pygame import PixelArray
+
 from . import Game
 from .gameobject import GameObject
 
@@ -54,6 +56,11 @@ class Sprite(GameObject):
 
         self.use_parent_mask = False
         self.__use_parent_mask_cache = {"masked_image": None, "pos": None, "mask": None, "image": None}
+
+    def replace_color(self,from_color,to_color,distance=0):
+        pixels = PixelArray(self.sprite.image)
+        pixels.replace(from_color,to_color,distance=distance)
+        del pixels
 
     def set_sprite_animations(self,animations):
         self.animations = animations
@@ -183,6 +190,7 @@ class Sprite(GameObject):
         if img != self.sprite.image:
             self.sprite.image = img
             self.prepare_mask()
+            # self.replace_color((61,52,53),(10,0,10),0.08)
 
     def draw(self, dest: pygame.Surface):
         self.prepare_image()

@@ -66,7 +66,7 @@ class NavBar(GameObject):
     def __init__(self, name):
         super().__init__()
         self.name = name
-        self.transform.pos = Vector(50, 50)
+        self.transform.pos = Vector(40, 30)
         self.btns_gap = 10
         Game.add_object(self, Game.uiLayer)
 

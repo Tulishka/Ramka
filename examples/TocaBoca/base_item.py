@@ -39,7 +39,6 @@ class DropZone(Savable, Trigger):
         object.transform.set_parent(self, True)
         self.layer.sort_object_children(self.get_parent())
         pos = Vector(0, 0)
-        print("aaa")
         if object.transform.pos.length() > Game.ширинаЭкрана:
             object.transform.pos = pos
         else:

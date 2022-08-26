@@ -5,11 +5,12 @@ class DragAndDropControllerInterface:
     def get_dragged_object(self):
         pass
 
-    def get_just_dragged_object(self, dt=0):
+    def get_just_dragged_object(self, dt=0, clas=None):
         pass
 
     def cancel_drag(self):
         pass
+
 
 class Draggable:
 
@@ -55,10 +56,17 @@ class DragAndDropController(DragAndDropControllerInterface, GameObject):
     def get_dragged_object(self):
         return self.obj
 
-    def get_just_dragged_object(self, dt=0):
+    def get_just_dragged_object(self, dt=0, clas=None):
         obj = self.obj
-        if not obj and Game.time - self.last_object_drop_time <= dt:
+        if obj and self.__get_delta().length_squared() < 6:
+            obj = None
+
+        if not obj and self.last_object_drop_time and Game.time - self.last_object_drop_time <= dt:
             obj = self.last_object
+
+        if obj and not (clas is None or isinstance(obj,clas)):
+            obj=None
+
         return obj
 
     @staticmethod

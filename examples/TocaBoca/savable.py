@@ -2,6 +2,7 @@ import uuid
 from typing import Dict
 from ramka import Sprite, GameObject, Game
 
+
 class Savable:
 
     def get_uuid(self):
@@ -11,16 +12,17 @@ class Savable:
         return self.uuid
 
     @staticmethod
-    def get_creation_params(dict) -> Dict:
-        return [],{}
+    def get_creation_params(dict,parent) -> Dict:
+        return [], {}
 
     def init_from_dict(self, dict: Dict[str, any]):
 
         if isinstance(self, GameObject):
             self.uuid = dict['uuid']
             self.transform.from_dict(dict['transform'])
-            self.visible=dict.get('transform',True)
+            self.visible = dict.get('transform', True)
             self._parent_sort_me_by = dict['parent_sort_me_by']
+            self.requested_layer_name = dict['layer']
 
             if isinstance(self, Sprite):
                 self.image_rotate_offset = dict['image_rotate_offset']
@@ -41,7 +43,7 @@ class Savable:
                 "class_name": type(self).__name__,
                 "transform": self.transform.to_dict(),
                 "parent_sort_me_by": self.parent_sort_me_by,
-                "layer": self.layer.name,
+                "layer": self.layer.name if self.layer else self.requested_layer_name,
                 "visible": self.visible,
             }
 
@@ -61,5 +63,3 @@ class Savable:
             res = {}
 
         return res
-
-

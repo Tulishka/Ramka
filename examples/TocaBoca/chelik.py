@@ -9,7 +9,7 @@ class Chelik(Creature):
     def __init__(self, *a, **b):
         super().__init__(*a, **b)
         self.im_sleep = False
-        self.creature_bar_order="0"
+        self.creature_bar_order = "0"
 
     def can_accept_dropzone_object(self, dropzone: DropZone, obj: Sprite):
         return super().can_accept_dropzone_object(dropzone, obj) and (
@@ -30,7 +30,7 @@ class Chelik(Creature):
             self.state.animation = "blink" + str(self.state.id)
 
     def get_icon(self):
-        return self._get_icon(offset=(0, 0.1), border_radius=60,background=(0, 220, 220), border=(150, 150, 0))
+        return self._get_icon(offset=(0, 0.1), border_radius=60, background=(0, 220, 220), border=(150, 150, 0))
 
     def get_init_dict(self):
         res = super().get_init_dict()
@@ -39,4 +39,7 @@ class Chelik(Creature):
 
     def init_from_dict(self, opts):
         super().init_from_dict(opts)
-        self.im_sleep = opts.get("im_sleep", False)
+
+        sleep = self.get_parent(clas=DropZone, filter=lambda x: x.trigger_name == "Sleep")
+
+        self.im_sleep = sleep is not None

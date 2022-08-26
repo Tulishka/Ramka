@@ -24,9 +24,9 @@ class DropZone(Draggable,Savable, Trigger):
         self.accept_class = accept_class
 
     @staticmethod
-    def get_creation_params(dict):
+    def get_creation_params(dict,parent):
         return [], {
-            "parent": dict["parent"],
+            "parent": parent,
             "name": dict["trigger_name"],
         }
 
@@ -70,7 +70,7 @@ class DropZone(Draggable,Savable, Trigger):
     def update(self, deltaTime: float):
         super().update(deltaTime)
 
-        self.visible = pygame.key.get_mods() & pygame.KMOD_LSHIFT
+        self.visible = pygame.key.get_mods() & pygame.KMOD_LCTRL
 
 
 
@@ -102,18 +102,19 @@ class BaseItem(Savable, Iconable, Sprite):
 
     def __init__(self, anim: str, pos, mass=None):
 
-        if isinstance(anim, str):
-            self.name = anim.split("|")[-1]
-            animations = BaseItem.create_animation(anim)
-        else:
+        if not isinstance(anim, str):
             print(anim, pos)
             raise Exception("Анимация BaseItem может быть создана только из строки! Неверный тип anim! ")
+
+        self.name = anim.split("|")[-1]
+        animations = BaseItem.create_animation(anim)
 
         self.anim_path = anim
 
         super().__init__(animations)
         self.drop_zones = []
         self.state.id = 1
+        self.origin=""
         self.transform.pos = pos
         self.mouse_start_point = None
 
@@ -140,6 +141,7 @@ class BaseItem(Savable, Iconable, Sprite):
             "anim_path": self.anim_path,
             "state.id": self.state.id,
             "mass": self.mass,
+            "name": self.name,
         })
         return res
 
@@ -147,9 +149,10 @@ class BaseItem(Savable, Iconable, Sprite):
         super().init_from_dict(opts)
         self.state.id = opts["state.id"]
         self.mass = opts["mass"]
+        self.name = opts.get("name",self.name)
 
     @staticmethod
-    def get_creation_params(dict):
+    def get_creation_params(dict,parent):
         return [], {
             "anim": dict["anim_path"],
             "pos": Vector(dict["transform"]["x"], dict["transform"]["y"]),
@@ -158,9 +161,6 @@ class BaseItem(Savable, Iconable, Sprite):
     def can_accept_dropzone_object(self, dropzone: DropZone, obj: Sprite):
         return obj.get_size().x < self.get_size().x
 
-    def on_enter_game(self):
-        if self.front_object:
-            Game.add_object(self.front_object)
 
     def on_object_attached(self, dz: DropZone, object: Sprite):
         pass
@@ -188,9 +188,7 @@ class BaseItem(Savable, Iconable, Sprite):
         return obj
 
     def drop_zone_add(self, name, pos: Vector = None, radius=35, max_items=1, accept_class=[]) -> BaseItem:
-
-        Game.add_object(DropZone(self, name, pos, radius, max_items, accept_class))
-
+        DropZone(self, name, pos, radius, max_items, accept_class)
         return self
 
     def state_next(self):

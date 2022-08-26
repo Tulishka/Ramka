@@ -134,18 +134,20 @@ class Game:
 
     @staticmethod
     def add_object(game_object: GameObject, layer: Union[str, Layer, None] = None):
-        if layer is None:
-            layer = Game.defaultLayer
-        if type(layer) == str:
-            layer = Game.get_layer(layer)
-        game_object.set_layer(layer)
-
         if game_object not in Game.gameObjects:
+
+            if not layer:
+                layer = game_object.requested_layer_name
+
+            if type(layer) == str and layer:
+                layer = Game.get_layer(layer)
+
+            if not layer:
+                layer = Game.defaultLayer
+
+            game_object.set_layer(layer)
             Game._notify_event_listeners(game_object, "other_enter_game")
-
-            # Game.gameObjects.append(game_object)
             Game.rearrange_gobjects()
-
             game_object.on_enter_game()
 
     @staticmethod
@@ -154,22 +156,14 @@ class Game:
         if game_object not in Game.gameObjects:
             return
 
-        to_rem = []
+        for c in game_object.transform.children.copy():
+            Game.remove_object(c.gameObject)
 
-        def remove(obj):
-            obj.on_leave_game()
-            obj.set_layer(None)
-            to_rem.append(obj)
-            Game._notify_event_listeners(obj, "other_leave_game")
+        game_object.on_leave_game()
+        game_object.set_layer(None)
+        Game._notify_event_listeners(game_object, "other_leave_game")
 
-        if game_object in Game.gameObjects:
-            for c in game_object.transform.children:
-                if c in Game.gameObjects:
-                    remove(c)
-            remove(game_object)
-
-        for c in to_rem:
-            Game.gameObjects.remove(c)
+        Game.gameObjects.remove(game_object)
 
     @staticmethod
     def deltaTime():

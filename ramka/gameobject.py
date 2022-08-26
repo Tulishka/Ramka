@@ -27,6 +27,8 @@ class GameObject:
 
         self.transform: Transform = Transform(self)
 
+        self.requested_layer_name = ""
+
         self.state = State(self)
         self.time = 0
 
@@ -174,8 +176,16 @@ class GameObject:
                 yield c
 
     def on_enter_game(self):
+        for dz in self.get_children():
+            from ramka import Game
+            Game.add_object(dz)
+
+        self.layer.sort_object_children(self)
+
         for c in self.components:
             c.on_enter_game()
+
+
 
     def on_leave_game(self):
         for c in self.components:

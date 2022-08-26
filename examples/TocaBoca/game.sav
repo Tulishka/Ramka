@@ -1,7 +1,7 @@
 [
     {
         "uuid": "e1385224-2d57-4357-ac24-257bb14ace75",
-        "parent": null,
+        "parent": "main_camera",
         "class_name": "LightItem",
         "transform": {
             "x": 664.0,
@@ -26,11 +26,12 @@
         "children": [],
         "anim_path": "mebel|window",
         "state.id": 1,
-        "mass": 11.4215
+        "mass": 11.4215,
+        "name": "window"
     },
     {
         "uuid": "30c78cd6-a0e1-474e-a5b0-62a5c8319127",
-        "parent": null,
+        "parent": "main_camera",
         "class_name": "Interier",
         "transform": {
             "x": 230.81386964523983,
@@ -196,6 +197,7 @@
                                                         "anim_path": "predmet|telefon",
                                                         "state.id": 1,
                                                         "mass": 1.397,
+                                                        "name": "telefon",
                                                         "__fallcomp.enabled": false,
                                                         "__restore_parent": "main_camera"
                                                     },
@@ -227,6 +229,7 @@
                                                         "anim_path": "predmet|kormushka",
                                                         "state.id": 1,
                                                         "mass": 1,
+                                                        "name": "kormushka",
                                                         "__fallcomp.enabled": false,
                                                         "__restore_parent": "main_camera"
                                                     }
@@ -240,6 +243,7 @@
                                         "anim_path": "predmet|rykzak",
                                         "state.id": 1,
                                         "mass": 1.4364,
+                                        "name": "rykzak",
                                         "__fallcomp.enabled": false,
                                         "__restore_parent": "main_camera"
                                     }
@@ -292,6 +296,7 @@
                                         "anim_path": "pets|kohka",
                                         "state.id": 1,
                                         "mass": 1,
+                                        "name": "kohka",
                                         "__fallcomp.enabled": false,
                                         "__restore_parent": "main_camera"
                                     }
@@ -305,6 +310,7 @@
                         "anim_path": "pers|pusya",
                         "state.id": 1,
                         "mass": 6.6717,
+                        "name": "pusya",
                         "__fallcomp.enabled": false,
                         "__restore_parent": "main_camera",
                         "im_sleep": true
@@ -321,11 +327,12 @@
         ],
         "anim_path": "mebel|bed2",
         "state.id": 1,
-        "mass": 15.197
+        "mass": 15.197,
+        "name": "bed2"
     },
     {
         "uuid": "84c7c8c8-0a1d-4bc0-9fc1-3e19e02765d1",
-        "parent": null,
+        "parent": "main_camera",
         "class_name": "Interier",
         "transform": {
             "x": 1854.517312513705,
@@ -452,6 +459,7 @@
                         "anim_path": "pers|reb1",
                         "state.id": 1,
                         "mass": 3.0351,
+                        "name": "reb1",
                         "__fallcomp.enabled": false,
                         "__restore_parent": "main_camera",
                         "im_sleep": true
@@ -468,11 +476,12 @@
         ],
         "anim_path": "mebel|bed1",
         "state.id": 1,
-        "mass": 14.9612
+        "mass": 14.9612,
+        "name": "bed1"
     },
     {
         "uuid": "f9568deb-631c-41be-8516-94e50b7017a2",
-        "parent": null,
+        "parent": "main_camera",
         "class_name": "Interier",
         "transform": {
             "x": 2750.0,
@@ -599,6 +608,7 @@
                         "anim_path": "pers|p9",
                         "state.id": 1,
                         "mass": 6.8736,
+                        "name": "p9",
                         "__fallcomp.enabled": false,
                         "__restore_parent": "main_camera",
                         "im_sleep": true
@@ -626,7 +636,40 @@
                 "parent_sort_me_by": "000025",
                 "layer": "default",
                 "visible": 0,
-                "children": [],
+                "children": [
+                    {
+                        "uuid": "33086680-2614-433e-9a71-fffda14c90d1",
+                        "parent": "6445ec5d-bc92-4097-a2e8-08f5b7c4424b",
+                        "class_name": "Pet",
+                        "transform": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "scale_x": 1.0,
+                            "scale_y": 1.0,
+                            "angle": 0
+                        },
+                        "parent_sort_me_by": "000026",
+                        "layer": "default",
+                        "visible": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "scale_x": 1.0,
+                            "scale_y": 1.0,
+                            "angle": 0
+                        },
+                        "image_rotate_offset": 0,
+                        "image_offset.x": 0.0,
+                        "image_offset.y": 0.0,
+                        "use_parent_mask": false,
+                        "children": [],
+                        "anim_path": "pets|oblachko",
+                        "state.id": 2,
+                        "mass": 4.7672,
+                        "name": "oblachko",
+                        "__fallcomp.enabled": false,
+                        "__restore_parent": "main_camera"
+                    }
+                ],
                 "max_items": 1,
                 "accept_class": [
                     "Chelik",
@@ -638,37 +681,7 @@
         ],
         "anim_path": "mebel|bed3",
         "state.id": 1,
-        "mass": 23.9475
-    },
-    {
-        "uuid": "33086680-2614-433e-9a71-fffda14c90d1",
-        "parent": null,
-        "class_name": "Pet",
-        "transform": {
-            "x": 1591.1764410890162,
-            "y": 470.3372701121266,
-            "scale_x": 1.0,
-            "scale_y": 1.0,
-            "angle": 0
-        },
-        "parent_sort_me_by": "000026",
-        "layer": "default",
-        "visible": {
-            "x": 1591.1764410890162,
-            "y": 470.3372701121266,
-            "scale_x": 1.0,
-            "scale_y": 1.0,
-            "angle": 0
-        },
-        "image_rotate_offset": 0,
-        "image_offset.x": 0.0,
-        "image_offset.y": 0.0,
-        "use_parent_mask": false,
-        "children": [],
-        "anim_path": "pets|oblachko",
-        "state.id": 2,
-        "mass": 4.7672,
-        "__fallcomp.enabled": true,
-        "__restore_parent": null
+        "mass": 23.9475,
+        "name": "bed3"
     }
 ]

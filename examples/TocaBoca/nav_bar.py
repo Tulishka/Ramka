@@ -16,7 +16,7 @@ from ramka.gameobject_animators import ScaleAnimator, PosAnimator
 class NavBtn(Sprite):
     def __init__(self, anim, chelik,
                  action: Union[Callable[[Sprite, int], None], Dict[int, Callable[[Sprite], None]]] = None,
-                 update_func: Callable[[], pygame.Surface] = None, action_on_mb_up=False):
+                 update_func: Callable[[], pygame.Surface] = None, action_on_mb_up=False, visible_func:Callable[[],bool]=None):
         super().__init__(anim)
         self.chelik = chelik
         self.action = action
@@ -24,6 +24,8 @@ class NavBtn(Sprite):
         self.eff = Effects(self)
         self.updated_anim = chelik.state.animation
         self.update_cd = Cooldown(0.5 + random())
+
+        self.visible_func=visible_func
 
         self.start_point = None
 
@@ -37,6 +39,15 @@ class NavBtn(Sprite):
             if self.chelik.state.animation != self.updated_anim and callable(self.update_func):
                 self.set_sprite_animations({"default": Animation([self.update_func()], 5, True)})
                 self.updated_anim = self.chelik.state.animation
+
+        if self.visible_func:
+            w=self.visible_func()
+            if w!=self.visible:
+                self.visible=w
+                p=self.get_parent(clas=NavBar)
+                if p:
+                    p.rearrange()
+
 
     @Game.on_mouse_up
     def on_mouse_up(self, button):
@@ -52,20 +63,26 @@ class NavBtn(Sprite):
 
                 obj.on_drag_end()
                 DragAndDropController.controller.cancel_drag()
-                obj.transform.pos=obj.transform.to_parent_local_coord(self.chelik)
+                obj.transform.pos = obj.transform.to_parent_local_coord(self.chelik)
+
+        if not self.start_point:
+            self.start_point = Input.mouse_pos
 
         if self.on_mup_process and (Input.mouse_pos - self.start_point).length_squared() < 30:
             self.on_mup_process(button)
 
+        self.start_point = None
+
     @Game.on_mouse_down
     def on_mouse_down(self, button):
-        self.eff.pulse(duration=0.2)
+
         self.start_point = Input.mouse_pos
         if self.on_mdn_process:
             self.on_mdn_process(button)
         return self
 
     def process_button(self, button):
+        self.eff.pulse(duration=0.2)
 
         def tap(t):
             if hasattr(self.chelik, "eff"):
@@ -116,15 +133,19 @@ class NavBar(GameObject):
 
     def remove_btn(self, object: BaseItem):
         for i in self.get_children(filter=lambda x: x.chelik == object):
-            i.transform.set_parent(None)
+            i.transform.detach()
             Game.remove_object(i)
             self.rearrange()
             return
 
-    def rearrange(self):
-        self.layer.sort_object_children(self)
+    def update_btns_positions(self):
         pos = Vector(0)
         for i in self.get_children():
-            i.transform.pos = pos
-            pos += Vector(i.get_computed_size().x + self.btns_gap,
-                          i.get_computed_size().y + self.btns_gap) * self.row_direction.elementwise()
+            if i.visible:
+                i.transform.pos = pos
+                pos += Vector(i.get_computed_size().x + self.btns_gap,
+                              i.get_computed_size().y + self.btns_gap) * self.row_direction.elementwise()
+
+    def rearrange(self):
+        self.layer.sort_object_children(self)
+        self.update_btns_positions()

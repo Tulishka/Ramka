@@ -1,4 +1,5 @@
 import gc
+from typing import Callable
 
 from examples.Components.DragAndDrop import DragAndDropController
 from game_classes import GameClasses
@@ -24,9 +25,16 @@ from base_item import *
 # savables ===========================
 
 class GameManager:
+    prefabs = {}
 
     @staticmethod
     def init():
+
+        GameManager.prefabs = {}
+        GameManager.add_autogen_prefabs()
+        GameManager.add_manual_prefabs()
+        GameManager.add_saved_prefabs()
+
         GameManager.reset()
 
     @staticmethod
@@ -35,27 +43,55 @@ class GameManager:
         for l in lst:
             Game.remove_object(l)
 
+        # for l in Game.layers:
+        #     l.gameObjects = []
+
         gc.collect()
         Game.add_object(DragAndDropController())
         Game.add_object(Camera(lock_y=True))
         Camera.main.uuid = "main_camera"
+        Camera.main.get_uuid = lambda: Camera.main.uuid
 
     @staticmethod
     def prepare_scene(scene_name):
 
-        def save(*a, **b):
-            GameManager.save()
+        def save_all(*a, **b):
+            GameManager.save_scene()
+
+        def trash(*a, **b):
+            obj = DragAndDropController.controller.get_just_dragged_object(clas=BaseItem)
+            if obj:
+                Game.remove_object(obj)
+
+        def save_prefab(*a, **b):
+            obj = DragAndDropController.controller.get_just_dragged_object(clas=BaseItem)
+            if obj:
+                GameManager.save_as_prefab(obj)
+                Game.remove_object(obj)
 
         def load(*a, **b):
             GameManager.reset()
             GameManager.prepare_scene(scene_name)
 
-        NavBar("creature_select",row_direction=Vector(1,0))
+        def vis_if_drag():
+            return DragAndDropController.controller.get_just_dragged_object(clas=BaseItem)
 
-        nav = NavBar("game_menu",pos=Vector(Game.ширинаЭкрана-40,40), row_direction=Vector(0, 1))
+        def vis_not_drag():
+            return not DragAndDropController.controller.get_just_dragged_object(clas=BaseItem)
 
-        nav.add_btn(IconableSprite("img/ui/save.png"),  action=save, action_on_mb_up=True)
-        nav.add_btn(IconableSprite("img/ui/load.png"),  action=load, action_on_mb_up=True)
+        def vis_not_drag_shift():
+            return pygame.key.get_mods() & pygame.KMOD_LSHIFT and not DragAndDropController.controller.get_just_dragged_object(clas=BaseItem)
+
+        nav=NavBar("creature_select", row_direction=Vector(1, 0))
+        nav.add_btn(IconableSprite("img/ui/plus.png").set_icon_args(size=40,border=(220,220,220),background=(150,150,150,200),border_radius=100), action_on_mb_up=True, prefix="___")
+
+        nav = NavBar("game_menu", pos=Vector(Game.ширинаЭкрана - 40, 40), row_direction=Vector(-1, 0))
+
+        nav.add_btn(IconableSprite("img/ui/save.png"), action=save_all, action_on_mb_up=True, visible_func=vis_not_drag)
+        nav.add_btn(IconableSprite("img/ui/load.png").set_icon_args(border=(255,0,0),background=(255,100,100)), action=load, action_on_mb_up=True, visible_func=vis_not_drag_shift)
+        nav.add_btn(IconableSprite("img/ui/return.png"), action=save_prefab,  action_on_mb_up=True, visible_func=vis_if_drag)
+        nav.add_btn(IconableSprite("img/ui/trash.png").set_icon_args(border=(255,0,0),background=(255,100,100)),  action_on_mb_up=True, action=trash, visible_func=vis_if_drag)
+
 
         rooms = [f"img/komnata{i if i > 1 else ''}.png" for i in [4, 2, 1, 3]]
 
@@ -79,7 +115,8 @@ class GameManager:
 
         # ======== load
 
-        GameManager.load_scene(scene_name)
+        if not GameManager.load_scene(scene_name):
+            GameManager.generate_manual()
 
         # ================ end load
 
@@ -88,7 +125,7 @@ class GameManager:
         light.layer.change_order_first(light)
 
     @staticmethod
-    def save(filename="game.sav"):
+    def save_scene(filename="game.sav"):
         output = []
         for o in Camera.main.get_children(clas=Savable):
             output.append(o.get_init_dict())
@@ -98,28 +135,42 @@ class GameManager:
             print("World saved!")
 
     @staticmethod
-    def create_object_from_dict(opts, parent=None):
+    def save_as_prefab(object: BaseItem):
+
+        init = object.get_init_dict()
+
+        pid = GameManager.add_prefab(lambda: GameManager.create_object_from_dict(init, add_to_game=False),
+                                     origin="saved")
+
+        with open(f".\\saved_prefabs\\{pid}.sav", "w") as file:
+            json.dump(init, file, indent=4)
+            print(f"prefab {pid} saved!")
+
+    @staticmethod
+    def create_object_from_dict(opts, parent=None, add_to_game=True) -> BaseItem:
         cls = GameManager.get_class(opts['class_name'])
-        prm = cls.get_creation_params(opts)
+        prm = cls.get_creation_params(opts, parent)
         obj = cls(*prm[0], **prm[1])
-        obj.init_from_dict(opts)
 
         if obj.transform.parent is None and parent:
             obj.transform.set_parent(parent, False)
 
-        Game.add_object(obj, Game.get_layer(opts['layer']))
+        obj.init_from_dict(opts)
+
+        if add_to_game:
+            Game.add_object(obj)
 
         for ch in opts['children']:
-            ch['parent'] = obj
-            GameManager.create_object_from_dict(ch, obj)
+            GameManager.create_object_from_dict(ch, parent=obj, add_to_game=add_to_game)
 
-        if opts['children']:
+        if opts['children'] and add_to_game:
             obj.layer.sort_object_children(obj)
 
         return obj
 
     @staticmethod
-    def load(filename="game.sav"):
+    def load_scene(scene):
+        filename = scene + ".sav"
         try:
             with open(filename, "r") as file:
                 objects = json.load(file)
@@ -132,54 +183,120 @@ class GameManager:
             return False
 
     @classmethod
-    def load_scene(cls, scene_name):
+    def generate_manual(cls):
 
-        if GameManager.load():
-            return
+        for f in GameManager.prefabs.values():
+            p = GameManager.create_object_from_prefab(f, add_to_game=False)
 
-        Game.add_object(LightItem("mebel|window", (693, 278)))
-
-        Game.add_object(
-            Interier("mebel|bed2", (160, 545)).drop_zone_add("Sleep", Vector(0, -50), radius=90,
-                                                             accept_class=[Chelik, Pet]))
-        Game.add_object(
-            Interier("mebel|bed1", (1850, 545)).drop_zone_add("Sleep", Vector(0, -50), radius=90,
-                                                              accept_class=[Chelik, Pet]))
-        Game.add_object(
-            Interier("mebel|bed3", (2750, 540)).drop_zone_add("Sleep", Vector(-70, -85), radius=90,
-                                                              accept_class=[Chelik, Pet])
-            .drop_zone_add("Sleep", Vector(70, -85), radius=90, accept_class=[Chelik, Pet]))
-
-        Game.add_object(Pet("pets|oblachko", (700, 100)))
-        Game.add_object(Pet("pets|kohka", (800, 100)))
-
-        p9 = Chelik("pers|p9", (500, 100))
-        p9.drop_zone_add("LeftArm", Vector(-56, 107))
-        p9.drop_zone_add("RightArm", Vector(60, 107))
-        p9.drop_zone_add("Head", Vector(0, -130), radius=50)
-
-        p9.image_offset = Vector(0, -30)
-        Game.add_object(p9)
-
-        Game.add_object(Chelik("pers|reb1", (500, 100))
-                        .drop_zone_add("LeftArm", Vector(-56, 107))
-                        .drop_zone_add("RightArm", Vector(60, 107))
-                        .drop_zone_add("Head", Vector(0, -130), radius=50)
-                        )
-        pusya = Chelik("pers|pusya", (600, 100)) \
-            .drop_zone_add("LeftArm", Vector(-56, 107)) \
-            .drop_zone_add("RightArm", Vector(60, 107)) \
-            .drop_zone_add("Head", Vector(0, -130), radius=50)
-
-        Game.add_object(pusya)
-
-        Game.add_object(Bag("predmet|rykzak", (600, 100)).drop_zone_add("Bag", Vector(0, 0), max_items=100))
-        Game.add_object(HandableItem("predmet|telefon", (650, 100)))
-        Game.add_object(Item("predmet|kormushka", (700, 100)))
+            if p.transform.parent or p.transform.pos.length_squared() > 0:
+                Game.add_object(p)
 
     @staticmethod
     def get_class(t):
         return eval(t)
+
+    @staticmethod
+    def add_prefab(prefab_factory: Callable[[], BaseItem], origin="manual"):
+
+        def factory():
+            obj = prefab_factory()
+            obj.origin = origin
+            return obj
+
+        prefab_s = {
+            "factory": prefab_factory,
+            "origin": origin,
+            "object": factory()
+        }
+
+        prefab = prefab_s["object"]
+
+        obj_id = type(prefab).__name__ + "|" + prefab.anim_path if isinstance(prefab.anim_path, str) else \
+            ("other|" if "|" not in prefab.name else "") + prefab.name
+
+        obj_id = obj_id.replace("|", "@")
+        prefab_s["id"] = obj_id
+
+        GameManager.prefabs[obj_id] = prefab_s
+
+        return obj_id
+
+    @classmethod
+    def add_manual_prefabs(cls):
+
+        ap = GameManager.add_prefab
+
+        ap(lambda: LightItem("mebel|window", (693, 278)))
+
+        ap(lambda: Interier("mebel|bed2", (160, 545)).drop_zone_add("Sleep", Vector(0, -50), radius=90,
+                                                                    accept_class=[Chelik, Pet]))
+
+        ap(lambda: Interier("mebel|bed1", (1850, 545)).drop_zone_add("Sleep", Vector(0, -50), radius=90,
+                                                                     accept_class=[Chelik, Pet]))
+
+        ap(lambda: Interier("mebel|bed3", (2750, 540))
+           .drop_zone_add("Sleep", Vector(-70, -85), radius=90, accept_class=[Chelik, Pet])
+           .drop_zone_add("Sleep", Vector(70, -85), radius=90, accept_class=[Chelik, Pet]))
+
+        ap(lambda: Pet("pets|oblachko", (700, 100)))
+
+        ap(lambda: Pet("pets|kohka", (800, 100)))
+
+        def t():
+            p9 = Chelik("pers|p9", (500, 100))
+            p9.drop_zone_add("LeftArm", Vector(-56, 107))
+            p9.drop_zone_add("RightArm", Vector(60, 107))
+            p9.drop_zone_add("Head", Vector(0, -130), radius=50)
+            p9.image_offset = Vector(0, -30)
+            return p9
+
+        ap(t)
+
+        ap(lambda: Chelik("pers|reb1", (500, 100))
+           .drop_zone_add("LeftArm", Vector(-56, 107))
+           .drop_zone_add("RightArm", Vector(60, 107))
+           .drop_zone_add("Head", Vector(0, -130), radius=50)
+           )
+
+        ap(lambda: Chelik("pers|pusya", (600, 100)) \
+           .drop_zone_add("LeftArm", Vector(-56, 107)) \
+           .drop_zone_add("RightArm", Vector(60, 107)) \
+           .drop_zone_add("Head", Vector(0, -130), radius=50)
+           )
+
+        ap(lambda: Bag("predmet|rykzak", (600, 100)).drop_zone_add("Bag", Vector(0, 0), max_items=100))
+        ap(lambda: HandableItem("predmet|telefon", (650, 100)))
+        ap(lambda: Item("predmet|kormushka", (700, 100)))
+
+    @classmethod
+    def add_autogen_prefabs(cls):
+        pass
+
+    @classmethod
+    def create_object_from_prefab(cls, prefab, add_to_game=True, pos=None, start_drag=False):
+        p = prefab["factory"]()
+        if pos:
+            p.transform.pos = pos
+
+        if start_drag:
+            pass
+
+        if add_to_game:
+            Game.add_object(p)
+
+        return p
+
+    @classmethod
+    def add_saved_prefabs(cls):
+        files = list(glob.glob(f".\\saved_prefabs\\*.sav"))
+
+        def fac(op) -> Callable:
+            return lambda: GameManager.create_object_from_dict(op, add_to_game=False)
+
+        for f in files:
+            with open(f, "r") as file:
+                opts = json.load(file)
+                GameManager.add_prefab(fac(opts), origin="saved")
 
 
 GameClasses.get_class = GameManager.get_class

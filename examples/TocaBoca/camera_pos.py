@@ -65,7 +65,7 @@ class CameraPos(Draggable, GameObject):
             obj = DragAndDropController.controller and DragAndDropController.controller.get_dragged_object()
             if obj:
                 scp=obj.screen_pos()
-                if Game.высотаЭкрана * 0.15 < scp.y < Game.высотаЭкрана * 0.85:
+                if Game.высотаЭкрана * 0.20 < scp.y < Game.высотаЭкрана * 0.80:
                     if scp.x < Game.ширинаЭкрана * 0.05:
                         self.last_spd.x = - min(500, max(4 * abs(self.transform.pos.x - self.min_x), 100))
                     elif scp.x > Game.ширинаЭкрана - Game.ширинаЭкрана * 0.05:

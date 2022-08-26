@@ -5,8 +5,15 @@ from ramka import Sprite
 
 class Iconable:
 
+    def set_icon_args(self, **args):
+        self._icon_args = args
+        return self
+
+    def _get_icon_args(self):
+        return getattr(self, "_icon_args", {})
+
     def get_icon(self):
-        return self._get_icon()
+        return self._get_icon(**self._get_icon_args())
 
     @staticmethod
     def create_icon_image(image: pygame.Surface, size=55, offset=(0, 0), background=(100, 150, 100),
@@ -53,5 +60,13 @@ class Iconable:
             raise Exception("use Iconable as mixin for Sprite class only")
 
 
-class IconableSprite(Iconable,Sprite):
-    pass
+class IconableSprite(Iconable, Sprite):
+    def _get_icon_args(self):
+        res = super()._get_icon_args()
+        if not res:
+            res = {
+                "border": (200, 200, 255),
+                "background": (180, 180, 220)
+            }
+
+        return res

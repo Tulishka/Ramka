@@ -13,3 +13,9 @@ class Creature(Movable):
         nav = Game.get_object(clas=NavBar, filter=lambda n: n.name == "creature_select")
         if nav:
             nav.add_btn(self, self.creature_bar_order)
+
+    def on_leave_game(self):
+        super().on_leave_game()
+        nav = Game.get_object(clas=NavBar, filter=lambda n: n.name == "creature_select")
+        if nav:
+            nav.remove_btn(self)

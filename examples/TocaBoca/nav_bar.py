@@ -16,7 +16,8 @@ from ramka.gameobject_animators import ScaleAnimator, PosAnimator
 class NavBtn(Sprite):
     def __init__(self, anim, chelik,
                  action: Union[Callable[[Sprite, int], None], Dict[int, Callable[[Sprite], None]]] = None,
-                 update_func: Callable[[], pygame.Surface] = None, action_on_mb_up=False, visible_func:Callable[[],bool]=None):
+                 update_func: Callable[[], pygame.Surface] = None, action_on_mb_up=False,
+                 visible_func: Callable[[], bool] = None):
         super().__init__(anim)
         self.chelik = chelik
         self.action = action
@@ -25,7 +26,7 @@ class NavBtn(Sprite):
         self.updated_anim = chelik.state.animation
         self.update_cd = Cooldown(0.5 + random())
 
-        self.visible_func=visible_func
+        self.visible_func = visible_func
 
         self.start_point = None
 
@@ -41,13 +42,12 @@ class NavBtn(Sprite):
                 self.updated_anim = self.chelik.state.animation
 
         if self.visible_func:
-            w=self.visible_func()
-            if w!=self.visible:
-                self.visible=w
-                p=self.get_parent(clas=NavBar)
+            w = self.visible_func()
+            if w != self.visible:
+                self.visible = w
+                p = self.get_parent(clas=NavBar)
                 if p:
                     p.rearrange()
-
 
     @Game.on_mouse_up
     def on_mouse_up(self, button):
@@ -112,7 +112,8 @@ class NavBtn(Sprite):
 
 class NavBar(GameObject):
 
-    def __init__(self, name, pos=Vector(40, 40), row_direction=Vector(1, 0) ,parent=None, max_size = 700):
+    def __init__(self, name, pos=Vector(40, 40), row_direction=Vector(1, 0), parent=None,
+                 max_size=Game.высотаЭкрана * 0.9):
         super().__init__()
         self.name = name
         self.row_direction = row_direction
@@ -144,18 +145,23 @@ class NavBar(GameObject):
 
     def update_btns_positions(self):
         pos = Vector(0)
-        row=1
+        row = 1
+        second_dir = self.row_direction.rotate(90)
+        pp = second_dir * Game.высотаЭкрана / 2
+        if pp.x > Game.ширинаЭкрана or pp.x < 0 or pp.y > Game.высотаЭкрана or pp.y < 0:
+            second_dir = -1 * second_dir
+
         for i in self.get_children():
             if i.visible:
                 i.transform.pos = pos
                 pos += Vector(i.get_computed_size().x + self.btns_gap,
                               i.get_computed_size().y + self.btns_gap) * self.row_direction.elementwise()
 
-                gr = Vector(self.max_size) * self.row_direction.elementwise()
-                if (gr.x and gr.x<pos.x) or (gr.y and gr.y<pos.y):
-                    pos=Vector(i.get_computed_size().x + self.btns_gap,
-                              i.get_computed_size().y + self.btns_gap) * row * self.row_direction.rotate(90).elementwise()
-                    row+=1
+                gr = (Vector(self.max_size) * self.row_direction.elementwise()).length()
+                if gr < (pos * self.row_direction.elementwise()).length():
+                    pos = Vector(i.get_computed_size().x + self.btns_gap,
+                                 i.get_computed_size().y + self.btns_gap) * row * second_dir.elementwise()
+                    row += 1
 
     def rearrange(self):
         self.layer.sort_object_children(self)

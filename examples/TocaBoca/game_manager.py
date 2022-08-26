@@ -43,9 +43,6 @@ class GameManager:
         for l in lst:
             Game.remove_object(l)
 
-        # for l in Game.layers:
-        #     l.gameObjects = []
-
         gc.collect()
         Game.add_object(DragAndDropController())
         Game.add_object(Camera(lock_y=True))

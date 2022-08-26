@@ -1,6 +1,8 @@
 import gc
 from typing import Callable
 
+from creature import Creature
+from items_menu import ItemMenu
 from examples.Components.DragAndDrop import DragAndDropController
 from game_classes import GameClasses
 from iconable import IconableSprite
@@ -49,6 +51,7 @@ class GameManager:
         Camera.main.uuid = "main_camera"
         Camera.main.get_uuid = lambda: Camera.main.uuid
 
+
     @staticmethod
     def prepare_scene(scene_name):
 
@@ -79,8 +82,16 @@ class GameManager:
         def vis_not_drag_shift():
             return pygame.key.get_mods() & pygame.KMOD_LSHIFT and not DragAndDropController.controller.get_just_dragged_object(clas=BaseItem)
 
+        def items_menu(*a, **b):
+
+            def create(prefab):
+                GameManager.create_object_from_prefab(prefab,pos=Camera.main.mouse_world_pos()+Vector(0,prefab["object"].get_size().y/4),start_drag=True)
+
+            menu=ItemMenu(GameManager.get_prefabs(),on_item_down=create)
+            Game.add_object(menu,layer=Game.uiLayer)
+
         nav=NavBar("creature_select", row_direction=Vector(1, 0))
-        nav.add_btn(IconableSprite("img/ui/plus.png").set_icon_args(size=40,border=(220,220,220),background=(150,150,150,200),border_radius=100), action_on_mb_up=True, prefix="___")
+        nav.add_btn(IconableSprite("img/ui/plus.png").set_icon_args(size=40,border=(220,220,220), background=(150,150,150,200),border_radius=100),action=items_menu, action_on_mb_up=True, prefix="___")
 
         nav = NavBar("game_menu", pos=Vector(Game.ширинаЭкрана - 40, 40), row_direction=Vector(-1, 0))
 
@@ -272,14 +283,15 @@ class GameManager:
     @classmethod
     def create_object_from_prefab(cls, prefab, add_to_game=True, pos=None, start_drag=False):
         p = prefab["factory"]()
-        if pos:
-            p.transform.pos = pos
-
-        if start_drag:
-            pass
 
         if add_to_game:
             Game.add_object(p)
+
+        if pos:
+            p.transform.pos = pos # p.transform.to_parent_local_coord(pos)
+
+        if start_drag:
+            DragAndDropController.controller.drag_now(p)
 
         return p
 
@@ -294,6 +306,13 @@ class GameManager:
             with open(f, "r") as file:
                 opts = json.load(file)
                 GameManager.add_prefab(fac(opts), origin="saved")
+
+    @classmethod
+    def get_prefabs(cls, clas=None):
+        for c in GameManager.prefabs.values():
+            obj=c['object']
+            if clas is None or isinstance(obj,clas):
+                yield c
 
 
 GameClasses.get_class = GameManager.get_class

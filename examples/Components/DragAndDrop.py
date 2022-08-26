@@ -11,6 +11,9 @@ class DragAndDropControllerInterface:
     def cancel_drag(self):
         pass
 
+    def drag_now(self, object: GameObject):
+        pass
+
 
 class Draggable:
 
@@ -29,8 +32,6 @@ class Draggable:
     def move_me_top(self):
         return True
 
-    def drag_now(self, object: GameObject):
-        pass
 
     def use_world_drag(self):
         return False
@@ -64,8 +65,8 @@ class DragAndDropController(DragAndDropControllerInterface, GameObject):
         if not obj and self.last_object_drop_time and Game.time - self.last_object_drop_time <= dt:
             obj = self.last_object
 
-        if obj and not (clas is None or isinstance(obj,clas)):
-            obj=None
+        if obj and not (clas is None or isinstance(obj, clas)):
+            obj = None
 
         return obj
 

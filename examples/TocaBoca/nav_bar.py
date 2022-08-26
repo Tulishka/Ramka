@@ -112,13 +112,17 @@ class NavBtn(Sprite):
 
 class NavBar(GameObject):
 
-    def __init__(self, name, pos=Vector(40, 40), row_direction=Vector(1, 0)):
+    def __init__(self, name, pos=Vector(40, 40), row_direction=Vector(1, 0) ,parent=None, max_size = 700):
         super().__init__()
         self.name = name
         self.row_direction = row_direction
         self.btns_gap = 5
+        self.max_size = max_size
         self.transform.pos = pos - row_direction.rotate(90) * 150
         PosAnimator(self, pos, 0.5)().kill()
+
+        if parent:
+            self.transform.set_parent(parent)
 
         Game.add_object(self, Game.uiLayer)
 
@@ -140,11 +144,18 @@ class NavBar(GameObject):
 
     def update_btns_positions(self):
         pos = Vector(0)
+        row=1
         for i in self.get_children():
             if i.visible:
                 i.transform.pos = pos
                 pos += Vector(i.get_computed_size().x + self.btns_gap,
                               i.get_computed_size().y + self.btns_gap) * self.row_direction.elementwise()
+
+                gr = Vector(self.max_size) * self.row_direction.elementwise()
+                if (gr.x and gr.x<pos.x) or (gr.y and gr.y<pos.y):
+                    pos=Vector(i.get_computed_size().x + self.btns_gap,
+                              i.get_computed_size().y + self.btns_gap) * row * self.row_direction.rotate(90).elementwise()
+                    row+=1
 
     def rearrange(self):
         self.layer.sort_object_children(self)

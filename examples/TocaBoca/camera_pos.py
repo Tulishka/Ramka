@@ -12,7 +12,7 @@ class CameraPos(Draggable, GameObject):
     def __init__(self, min_x=0, max_x=0, auto_limits=True):
         super().__init__()
         self.transform.pos = Game.screen_size * 0.5
-        self.spd = 300
+        self.spd = 400
         self.parent_sort_me_by = "..."
         self.last_position = self.transform.pos
         self.last_spd = Vector(0)

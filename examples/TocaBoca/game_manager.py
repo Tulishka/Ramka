@@ -86,7 +86,8 @@ class GameManager:
         def items_menu(*a, **b):
 
             def create(prefab):
-                GameManager.create_object_from_prefab(prefab,pos=Camera.main.mouse_world_pos()+Vector(0,prefab["object"].get_size().y/4),start_drag=True)
+                o=GameManager.create_object_from_prefab(prefab,pos=Camera.main.mouse_world_pos()+Vector(0,prefab["object"].get_size().y/4),start_drag=True)
+                Game.mouse_capture = o
 
             menu=ItemMenu(GameManager.get_prefabs(clas=GameObject),on_item_down=create)
             Game.add_object(menu,layer=Game.uiLayer)

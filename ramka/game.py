@@ -58,6 +58,8 @@ class Game:
 
     time = 0
 
+    mouse_capture = None
+
     timers = Timers()
 
     @staticmethod
@@ -224,7 +226,7 @@ class Game:
                     obj.update(deltaTime)
                     obj.update_components(deltaTime)
 
-            mouse_capture = None
+            Game.mouse_capture = None
             for obj in reversed(gobs):
                 if obj.enabled:
                     for ev in obj.event_listeners:
@@ -240,23 +242,23 @@ class Game:
                                         ev(ks)
                         elif ev.type == "hover":
                             if (
-                                    mouse_capture is None or mouse_capture == obj) and obj.is_visible() and obj.opacity and obj.touch_test(
+                                    Game.mouse_capture is None or Game.mouse_capture == obj) and obj.is_visible() and obj.opacity and obj.touch_test(
                                 Input.mouse_pos):
-                                if mouse_capture is None:
-                                    mouse_capture = obj
+                                if Game.mouse_capture is None:
+                                    Game.mouse_capture = obj
                                 cap = ev()
                                 if isinstance(cap, GameObject):
-                                    mouse_capture = cap
+                                    Game.mouse_capture = cap
 
                         elif ev.type == "mouse_down":
                             bs = mbtn if ev.continuos else Game.mouse_pressed
                             if bs:
                                 if ev.hover:
                                     r = (
-                                                mouse_capture is None or mouse_capture == obj) and obj.is_visible() and obj.opacity and obj.touch_test(
+                                                Game.mouse_capture is None or Game.mouse_capture == obj) and obj.is_visible() and obj.opacity and obj.touch_test(
                                         Input.mouse_pos)
-                                    if r and mouse_capture is None:
-                                        mouse_capture = obj
+                                    if r and Game.mouse_capture is None:
+                                        Game.mouse_capture = obj
                                 else:
                                     r = True
                                 if r and (ev.button is None or ev.button in bs):
@@ -265,16 +267,16 @@ class Game:
                                     else:
                                         cap = ev(bs)
                                     if ev.hover and isinstance(cap, GameObject):
-                                        mouse_capture = cap
+                                        Game.mouse_capture = cap
 
                         elif ev.type == "mouse_up":
                             if Game.mouse_released:
                                 if ev.hover:
                                     r = (
-                                                mouse_capture is None or mouse_capture == obj) and obj.is_visible() and obj.opacity and obj.touch_test(
+                                                Game.mouse_capture is None or Game.mouse_capture == obj) and obj.is_visible() and obj.opacity and obj.touch_test(
                                         Input.mouse_pos)
-                                    if r and mouse_capture is None:
-                                        mouse_capture = obj
+                                    if r and Game.mouse_capture is None:
+                                        Game.mouse_capture = obj
                                 else:
                                     r = True
                                 if r and (ev.button is None or ev.button in Game.mouse_released):
@@ -283,7 +285,7 @@ class Game:
                                     else:
                                         cap = ev(Game.mouse_released)
                                     if ev.hover and isinstance(cap, GameObject):
-                                        mouse_capture = cap
+                                        Game.mouse_capture = cap
 
             for ul in Game.after_update_listeners:
                 ul(deltaTime)

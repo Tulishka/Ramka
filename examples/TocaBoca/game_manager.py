@@ -53,7 +53,6 @@ class GameManager:
         Camera.main.uuid = "main_camera"
         Camera.main.get_uuid = lambda: Camera.main.uuid
 
-
     @staticmethod
     def prepare_scene(scene_name):
 
@@ -82,52 +81,56 @@ class GameManager:
             return not DragAndDropController.controller.get_just_dragged_object(clas=BaseItem)
 
         def vis_not_drag_shift():
-            return pygame.key.get_mods() & pygame.KMOD_LSHIFT and not DragAndDropController.controller.get_just_dragged_object(clas=BaseItem)
+            return pygame.key.get_mods() & pygame.KMOD_LSHIFT and not DragAndDropController.controller.get_just_dragged_object(
+                clas=BaseItem)
 
         def items_menu(*a, **b):
 
             def create(prefab):
-                o=GameManager.create_object_from_prefab(prefab,pos=Camera.main.mouse_world_pos()+Vector(0,prefab["object"].get_size().y/4),start_drag=True)
+                o = GameManager.create_object_from_prefab(prefab, pos=Camera.main.mouse_world_pos() + Vector(0, prefab[
+                    "object"].get_size().y / 4), start_drag=True)
                 Game.mouse_capture = o
 
-            menu=ItemMenu(GameManager.get_prefabs(clas=GameObject),on_item_down=create)
-            Game.add_object(menu,layer=Game.uiLayer)
+            menu = ItemMenu(GameManager.get_prefabs(clas=GameObject), on_item_down=create)
+            Game.add_object(menu, layer=Game.uiLayer)
 
-        nav=NavBar("creature_select", row_direction=Vector(1, 0))
-        nav.add_btn(IconableSprite("img/ui/plus.png").update_icon_args(size=40,border=(220,220,220), background=(150,150,150,200),border_radius=100),action=items_menu, action_on_mb_up=True, prefix="___")
+        nav = NavBar("creature_select", row_direction=Vector(1, 0))
+        nav.add_btn(IconableSprite("img/ui/plus.png").update_icon_args(size=40, border=(220, 220, 220),
+                                                                       background=(150, 150, 150, 200),
+                                                                       border_radius=100), action=items_menu,
+                    action_on_mb_up=True, prefix="___")
 
         nav = NavBar("game_menu", pos=Vector(Game.ширинаЭкрана - 40, 40), row_direction=Vector(-1, 0))
 
         nav.add_btn(IconableSprite("img/ui/save.png"), action=save_all, action_on_mb_up=True, visible_func=vis_not_drag)
-        nav.add_btn(IconableSprite("img/ui/load.png").update_icon_args(border=(255,0,0),background=(255,100,100)), action=load, action_on_mb_up=True, visible_func=vis_not_drag_shift)
-        nav.add_btn(IconableSprite("img/ui/return.png"), action=save_prefab,  action_on_mb_up=True, visible_func=vis_if_drag)
-        nav.add_btn(IconableSprite("img/ui/trash.png").update_icon_args(border=(255,0,0),background=(255,100,100)),  action_on_mb_up=True, action=trash, visible_func=vis_if_drag)
-
+        nav.add_btn(IconableSprite("img/ui/load.png").update_icon_args(border=(255, 0, 0), background=(255, 100, 100)),
+                    action=load, action_on_mb_up=True, visible_func=vis_not_drag_shift)
+        nav.add_btn(IconableSprite("img/ui/return.png"), action=save_prefab, action_on_mb_up=True,
+                    visible_func=vis_if_drag)
+        nav.add_btn(IconableSprite("img/ui/trash.png").update_icon_args(border=(255, 0, 0), background=(255, 100, 100)),
+                    action_on_mb_up=True, action=trash, visible_func=vis_if_drag)
 
         rooms = [f"img/komnata{i if i > 1 else ''}.png" for i in [4, 2, 1, 3]]
 
-
-
         for i, kom in enumerate(rooms):
             room = Background(kom)
-            ks = Game.высотаЭкрана / room.get_size().y, Game.высотаЭкрана / room.get_size().y
-            room.transform.scale = ks
-            rs=room.get_computed_size()
-            rs[0]=round(rs[0])-1
-            rs[1]=round(rs[1])
+            ks = Game.высотаЭкрана / room.get_size().y
+            room.transform.scale = ks, ks
+            rs = room.get_computed_size()
+            rs[0] = round(rs[0]) - 1
+            rs[1] = round(rs[1])
             room.transform.pos = rs.x * ((i - 1) + 0.5), Game.высотаЭкрана * 0.5
             Game.add_object(room)
 
         for i, kom in enumerate(rooms):
             wall = Background("img/wall.png")
-            ks = Game.высотаЭкрана / room.get_size().y, Game.высотаЭкрана / room.get_size().y
-            wall.transform.scale = ks
+            wall.transform.scale = ks, ks
             wall.transform.pos = rs.x * i, Game.высотаЭкрана * 0.5
             Game.add_object(wall)
 
-        FallingDown.floor_y = 600 * ks[1]
+        FallingDown.floor_y = 600 * ks
 
-        cam_pos = CameraPos(min_x=-rs.x * 0.5, max_x=rs.x * (len(rooms) - 1.5))
+        cam_pos = CameraPos(min_x=-rs.x + abs(Game.ширинаЭкрана - rs.x)*0.5 * ks , max_x=rs.x * (len(rooms)-1) - Game.ширинаЭкрана*0.5 - rs.x*0.5 +33)
         Game.add_object(cam_pos)
         Camera.main.set_focus(cam_pos, lock_y=True)
 
@@ -144,7 +147,6 @@ class GameManager:
 
     @staticmethod
     def save_scene(filename="game.sav"):
-
 
         # print("game objects")
         # for z in Game.get_objects(clas=BaseItem):
@@ -163,7 +165,6 @@ class GameManager:
         for o in Camera.main.get_children(clas=Savable):
             output.append(o.get_init_dict())
             # print(o.type_uid, o, o.origin)
-
 
         with open(filename, "w") as file:
             json.dump(output, file, indent=4)
@@ -349,7 +350,7 @@ class GameManager:
             Game.add_object(p)
 
         if pos:
-            p.transform.pos = pos # p.transform.to_parent_local_coord(pos)
+            p.transform.pos = pos  # p.transform.to_parent_local_coord(pos)
 
         if start_drag:
             DragAndDropController.controller.drag_now(p)
@@ -371,8 +372,8 @@ class GameManager:
     @classmethod
     def get_prefabs(cls, clas=None):
         for c in GameManager.prefabs.values():
-            obj=c['object']
-            if clas is None or isinstance(obj,clas):
+            obj = c['object']
+            if clas is None or isinstance(obj, clas):
                 yield c
 
 

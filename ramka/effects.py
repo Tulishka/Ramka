@@ -1,3 +1,5 @@
+from math import copysign
+
 from ramka import Component, interp_pulse
 from ramka.timeline import Timeline, TimeLineProgressInfo
 
@@ -11,14 +13,14 @@ class Effects(Component):
         for i in t: return
         interp = interp_pulse((1, koef), (0, 1))
 
-        initial_scale = abs(self.gameObject.transform.scale.elementwise())
+        initial_scale = self.gameObject.transform.scale
 
         def scaling(pi: TimeLineProgressInfo):
             sc = interp(pi.section_progress)
-            self.gameObject.transform.scale_xy = initial_scale.x * sc, initial_scale.y * sc
+            self.gameObject.transform.scale_xy = copysign(initial_scale.x * sc,self.gameObject.transform.scale_x), copysign(initial_scale.y * sc,self.gameObject.transform.scale_y)
 
         def reset(pi: TimeLineProgressInfo):
-            self.gameObject.transform.scale_xy = initial_scale
+            self.gameObject.transform.scale_xy = copysign(initial_scale.x,self.gameObject.transform.scale_x), copysign(initial_scale.y,self.gameObject.transform.scale_y)
 
         tl = Timeline(self.gameObject, self.pulse.__name__)
         tl.do(scaling, duration=duration, continuous=True).do(reset).kill()

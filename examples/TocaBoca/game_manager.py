@@ -1,6 +1,7 @@
 import gc
 from typing import Callable
 
+from base_item_components import FallingDown
 from creature import Creature
 from transport import Transport
 from items_menu import ItemMenu
@@ -123,6 +124,8 @@ class GameManager:
             wall.transform.scale = ks
             wall.transform.pos = rs.x * i, Game.высотаЭкрана * 0.5
             Game.add_object(wall)
+
+        FallingDown.floor_y = 600 * ks[1]
 
         cam_pos = CameraPos(min_x=-rs.x * 0.5, max_x=rs.x * (len(rooms) - 1.5))
         Game.add_object(cam_pos)

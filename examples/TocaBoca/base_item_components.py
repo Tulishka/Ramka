@@ -5,9 +5,11 @@ from ramka import Component, Sprite, Game, Cooldown
 
 
 class FallingDown(Component):
+    floor_y = 900
+
     def __init__(self, game_obj: Sprite):
         super().__init__(game_obj)
-        self.floor_y = 735
+
 
         self.spd = 0
         self.g = 900

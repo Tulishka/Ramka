@@ -86,6 +86,7 @@ class DragAndDropController(DragAndDropControllerInterface, GameObject):
             self.obj = object
             self.last_object = self.obj
 
+
     @Game.on_mouse_down(button=1, hover=False)
     def drag_start(self):
         # print("drag: mouse down")

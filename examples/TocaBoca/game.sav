@@ -1,16 +1,16 @@
 [
     {
-        "uuid": "3a54ef1b-2cea-4348-8536-ead69e5e7575",
+        "uuid": "b9a1af5f-b4a3-47dc-9c27-f4dae85ffc24",
         "parent": "main_camera",
         "class_name": "LightItem",
         "transform": {
-            "x": 1455.306064851974,
-            "y": 218.25,
+            "x": 725.886133057221,
+            "y": 260.25,
             "scale_x": 1.0,
             "scale_y": 1.0,
             "angle": 0.0
         },
-        "parent_sort_me_by": "000487",
+        "parent_sort_me_by": "000076",
         "layer": "default",
         "visible": true,
         "image_rotate_offset": 0,

@@ -2,6 +2,7 @@ import gc
 from typing import Callable
 
 from creature import Creature
+from transport import Transport
 from items_menu import ItemMenu
 from examples.Components.DragAndDrop import DragAndDropController
 from game_classes import GameClasses
@@ -103,23 +104,28 @@ class GameManager:
 
         rooms = [f"img/komnata{i if i > 1 else ''}.png" for i in [4, 2, 1, 3]]
 
-        cam_pos = CameraPos(min_x=-Game.ширинаЭкрана * 0.5, max_x=Game.ширинаЭкрана * (len(rooms) - 1.5))
-        Game.add_object(cam_pos)
-        Camera.main.set_focus(cam_pos, lock_y=True)
+
 
         for i, kom in enumerate(rooms):
             room = Background(kom)
-            ks = Game.ширинаЭкрана / room.get_size().x, Game.ширинаЭкрана / room.get_size().x
+            ks = Game.высотаЭкрана / room.get_size().y, Game.высотаЭкрана / room.get_size().y
             room.transform.scale = ks
-            room.transform.pos = Game.ширинаЭкрана * ((i - 1) + 0.5), Game.высотаЭкрана * 0.5
+            rs=room.get_computed_size()
+            rs[0]=round(rs[0])-1
+            rs[1]=round(rs[1])
+            room.transform.pos = rs.x * ((i - 1) + 0.5), Game.высотаЭкрана * 0.5
             Game.add_object(room)
 
         for i, kom in enumerate(rooms):
             wall = Background("img/wall.png")
-            ks = Game.ширинаЭкрана / room.get_size().x, Game.ширинаЭкрана / room.get_size().x
+            ks = Game.высотаЭкрана / room.get_size().y, Game.высотаЭкрана / room.get_size().y
             wall.transform.scale = ks
-            wall.transform.pos = Game.ширинаЭкрана * (i), Game.высотаЭкрана * 0.5
+            wall.transform.pos = rs.x * i, Game.высотаЭкрана * 0.5
             Game.add_object(wall)
+
+        cam_pos = CameraPos(min_x=-rs.x * 0.5, max_x=rs.x * (len(rooms) - 1.5))
+        Game.add_object(cam_pos)
+        Camera.main.set_focus(cam_pos, lock_y=True)
 
         # ======== load
 
@@ -285,6 +291,7 @@ class GameManager:
            )
 
         ap(lambda: Bag("predmet|rykzak", (600, 100)).drop_zone_add("Bag", Vector(0, 0), max_items=100))
+        ap(lambda: Transport("transport|Hors1", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150))
         ap(lambda: HandableItem("predmet|telefon", (650, 100)))
         ap(lambda: Item("predmet|kormushka", (700, 100)))
 

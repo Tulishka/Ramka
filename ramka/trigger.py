@@ -35,6 +35,10 @@ class Trigger(GameObject):
 
         self.__watch_for = []
 
+    @property
+    def _poly(self):
+        return self.__poly
+
     def set_squared_poly(self, size):
         w = size[0] / 2
         h = size[1] / 2

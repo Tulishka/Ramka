@@ -33,7 +33,8 @@ class GameObject:
         self.time = 0
 
         self.enabled: bool = True
-        self.visible: bool = True
+        self._visible: bool = True
+        self._parent_visible = None
 
         self.props = {}
         self.opacity = 1.0
@@ -46,6 +47,24 @@ class GameObject:
         self.__add_event_listers(self)
 
     @property
+    def visible(self):
+        return self._visible
+
+    @visible.setter
+    def visible(self, value):
+        self._visible = value
+        for c in self.get_children(recursive=True):
+            c._parent_visible = None
+
+    def is_visible(self):
+        if self._visible and self.transform.parent:
+            if self._parent_visible is None:
+                self._parent_visible = self.transform.parent.gameObject.is_visible()
+
+            return self._parent_visible
+        return self._visible
+
+    @property
     def parent_sort_me_by(self):
         return self._parent_sort_me_by
 
@@ -55,7 +74,8 @@ class GameObject:
         # if self.transform.parent:
         #     self.layer.sort_object_children(self.transform.parent.gameObject)
 
-    def get_children(self, recursive=False, clas=None, filter: Callable[[GameObject], bool]=None) -> Iterable[GameObject]:
+    def get_children(self, recursive=False, clas=None, filter: Callable[[GameObject], bool] = None) -> Iterable[
+        GameObject]:
         for c in self.transform.children:
             if (clas is None or isinstance(c.gameObject, clas)) and (not callable(filter) or filter(c.gameObject)):
                 yield c.gameObject
@@ -185,11 +205,12 @@ class GameObject:
         for c in self.components:
             c.on_enter_game()
 
-
-
     def on_leave_game(self):
         for c in self.components:
             c.on_leave_game()
+
+        if self.transform.parent:
+            self.transform.detach()
 
     def get_rect(self):
         return Rect(self.transform.pos.x - 1, self.transform.pos.y - 1, 2, 2)
@@ -201,7 +222,7 @@ class GameObject:
         return self.get_rect().colliderect(pygame.Rect(point.x, point.y, 1, 1)) is not None
 
     def is_collided(self, other: GameObject, func: Callable = None) -> Union[bool, Tuple[int, int]]:
-        return other.visible and self.get_rect().colliderect(other.get_rect())
+        return other.is_visible() and self.get_rect().colliderect(other.get_rect())
 
     def get_flip(self) -> FlipStyle:
         return (False, False)

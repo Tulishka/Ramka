@@ -240,7 +240,7 @@ class Game:
                                         ev(ks)
                         elif ev.type == "hover":
                             if (
-                                    mouse_capture is None or mouse_capture == obj) and obj.visible and obj.opacity and obj.touch_test(
+                                    mouse_capture is None or mouse_capture == obj) and obj.is_visible() and obj.opacity and obj.touch_test(
                                 Input.mouse_pos):
                                 if mouse_capture is None:
                                     mouse_capture = obj
@@ -253,7 +253,7 @@ class Game:
                             if bs:
                                 if ev.hover:
                                     r = (
-                                                mouse_capture is None or mouse_capture == obj) and obj.visible and obj.opacity and obj.touch_test(
+                                                mouse_capture is None or mouse_capture == obj) and obj.is_visible() and obj.opacity and obj.touch_test(
                                         Input.mouse_pos)
                                     if r and mouse_capture is None:
                                         mouse_capture = obj
@@ -271,7 +271,7 @@ class Game:
                             if Game.mouse_released:
                                 if ev.hover:
                                     r = (
-                                                mouse_capture is None or mouse_capture == obj) and obj.visible and obj.opacity and obj.touch_test(
+                                                mouse_capture is None or mouse_capture == obj) and obj.is_visible() and obj.opacity and obj.touch_test(
                                         Input.mouse_pos)
                                     if r and mouse_capture is None:
                                         mouse_capture = obj
@@ -292,7 +292,7 @@ class Game:
                 dl(Game.экран)
 
             for obj in gobs:
-                if obj.visible:
+                if obj.is_visible():
                     obj.draw(Game.экран)
                     obj.draw_components(Game.экран)
 

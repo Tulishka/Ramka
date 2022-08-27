@@ -31,6 +31,7 @@ from .approacher import *
 
 from .cooldown import *
 from .timers import *
+from .shape import *
 
 
 

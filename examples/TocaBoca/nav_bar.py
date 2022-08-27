@@ -13,6 +13,8 @@ from ramka.effects import Effects
 from ramka.gameobject_animators import ScaleAnimator, PosAnimator
 
 
+
+
 class NavBtn(Sprite):
     def __init__(self, anim, chelik,
                  action: Union[Callable[[Sprite, int], None], Dict[int, Callable[[Sprite], None]]] = None,
@@ -127,13 +129,18 @@ class NavBar(GameObject):
 
         Game.add_object(self, Game.uiLayer)
 
-    def add_btn(self, object: Iconable, prefix: str = "", action_on_mb_up=False, **kwargs):
+    def add_btn(self, object: Iconable, prefix: str = "", action_on_mb_up=False, sub_obj: GameObject = None, **kwargs):
         for i in self.get_children(filter=lambda x: x.chelik == object):
             return
         nb = NavBtn(object.get_icon(), object, update_func=object.get_icon, action_on_mb_up=action_on_mb_up, **kwargs)
         nb.parent_sort_me_by = str(prefix) + nb.parent_sort_me_by
         nb.transform.set_parent(self)
         Game.add_object(nb, self.layer)
+        if sub_obj:
+            sub_obj.transform.set_parent(nb, False)
+            sub_obj.transform.pos = 0.4*Vector(nb.get_size())
+            Game.add_object(sub_obj, self.layer)
+
         self.rearrange()
         return nb
 

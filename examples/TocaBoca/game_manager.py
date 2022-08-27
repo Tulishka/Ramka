@@ -134,9 +134,26 @@ class GameManager:
 
     @staticmethod
     def save_scene(filename="game.sav"):
+
+
+        # print("game objects")
+        # for z in Game.get_objects(clas=BaseItem):
+        #     print(z.type_uid, z, z.origin)
+        # print("====")
+        # print("ui layer")
+        # for z in Game.uiLayer.gameObjects:
+        #     print(z)
+        # print("====")
+        # print("default layer")
+        # for z in Game.defaultLayer.gameObjects:
+        #     print(z)
+        # print("====")
+
         output = []
         for o in Camera.main.get_children(clas=Savable):
             output.append(o.get_init_dict())
+            # print(o.type_uid, o, o.origin)
+
 
         with open(filename, "w") as file:
             json.dump(output, file, indent=4)
@@ -186,6 +203,8 @@ class GameManager:
                     GameManager.create_object_from_dict(o)
 
                 print("World loaded!")
+                # for z in Game.get_objects(clas=BaseItem):
+                #     print(z.type_uid,z,z.origin)
                 return True
         except FileNotFoundError:
             return False

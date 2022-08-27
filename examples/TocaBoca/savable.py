@@ -20,7 +20,7 @@ class Savable:
         if isinstance(self, GameObject):
             self.uuid = dict['uuid']
             self.transform.from_dict(dict['transform'])
-            self.visible = dict.get('transform', True)
+            self.visible = dict.get('visible', True)
             self._parent_sort_me_by = dict['parent_sort_me_by']
             self.requested_layer_name = dict['layer']
 

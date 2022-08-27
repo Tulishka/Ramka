@@ -30,7 +30,7 @@ class Lighting(GameObject):
         if self.update_cd.ready:
             self.update_cd.start()
             lights = 0
-            for l in Game.get_objects(clas=LightEmitter, filter=lambda l: l.visible and (l.state.id == 1)):
+            for l in Game.get_objects(clas=LightEmitter, filter=lambda l: l.is_visible() and (l.state.id == 1)):
                 lights += 1
                 break
 

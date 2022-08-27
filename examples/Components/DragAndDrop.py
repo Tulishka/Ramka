@@ -88,12 +88,15 @@ class DragAndDropController(DragAndDropControllerInterface, GameObject):
 
     @Game.on_mouse_down(button=1, hover=False)
     def drag_start(self):
-        sel = list(Game.get_objects(clas=Draggable, filter=lambda x: x.visible and x.opacity))
+        # print("drag: mouse down")
+        sel = list(Game.get_objects(clas=Draggable, filter=lambda x: x.is_visible() and x.opacity))
         sel.reverse()
         for s in sel:
             if s.touch_test(Input.mouse_pos):
+                # print("drag: touched ",s)
                 ds = s.on_drag_start()
                 if ds != False:
+                    # print("drag: start drag ", s)
                     s = s if not isinstance(ds, GameObject) else ds
                     self.drag_now(s)
                     break

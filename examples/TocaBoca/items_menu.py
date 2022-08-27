@@ -4,10 +4,11 @@ from typing import Callable, Union, Tuple, Iterable
 
 import pygame
 
+from base_item import BaseItem
 from lighting import Lighting
 from examples.Components.DragAndDrop import DragAndDropController
 from nav_bar import NavBar
-from ramka import Sprite, GameObject, Vector, Game, interp_func_cubic, interp_func_spring
+from ramka import Sprite, GameObject, Vector, Game, interp_func_cubic, interp_func_spring, Circle
 from ramka.gameobject_animators import ScaleAnimator, AngleAnimator
 
 
@@ -52,7 +53,11 @@ class ItemMenu(GameObject):
 
         for i, p in enumerate(self.prefabs):
             p["object"].update_icon_args(size=80)
-            nb = self.navbar.add_btn(p["object"], action=fac(p))
+            pid=p["object"].type_uid
+            nb = self.navbar.add_btn(
+                p["object"], action=fac(p),
+                sub_obj=Circle(radius=4, color=(0, 255, 0) if Game.get_object(clas=BaseItem, filter=lambda x: x.type_uid==pid) else (200, 0, 0))
+            )
             nb.transform.scale = 0.05, 0.05
             t = 0.05 + 0.25 * random()
             if random() > 0.7:

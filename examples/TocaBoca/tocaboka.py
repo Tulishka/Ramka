@@ -5,6 +5,6 @@ Game.init('TocaBoca')
 Game.цветФона = 250, 250, 250
 
 GameManager.init()
-GameManager.prepare_scene("game1")
+GameManager.prepare_scene("game")
 
 Game.run()

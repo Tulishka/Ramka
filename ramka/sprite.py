@@ -223,7 +223,7 @@ class Sprite(GameObject):
     def is_collided(self, other: GameObject, func: Callable = None) -> Union[bool, Tuple[int, int]]:
         if func is None:
             func = pygame.sprite.collide_mask
-        if other.visible and isinstance(other,
+        if other.is_visible() and isinstance(other,
                                         Sprite) and self.sprite.image is not None and other.sprite.image is not None:
             return func(self.sprite, other.sprite)
         else:

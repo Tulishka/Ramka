@@ -56,6 +56,9 @@ class DropZone(Draggable, Savable, Trigger):
         self.max_items = opts['max_items']
         self.accept_class = [GameClasses.get_class(t) for t in opts['accept_class']]
         self.radius = opts['radius']
+        if 'poly' in opts:
+            if opts['poly']:
+                self.set_poly([Vector(t) for t in opts['poly']])
 
     def get_init_dict(self):
         res = super().get_init_dict()
@@ -64,13 +67,16 @@ class DropZone(Draggable, Savable, Trigger):
             "accept_class": [t.__name__ for t in self.accept_class],
             "radius": self.radius,
             "trigger_name": self.trigger_name,
+            "poly": [tuple(t) for t in self._poly] if self._poly else None
         })
         return res
 
-    def update(self, deltaTime: float):
-        super().update(deltaTime)
+    def on_drag_start(self):
+        return pygame.key.get_mods() & pygame.KMOD_LCTRL
 
-        self.visible = pygame.key.get_mods() & pygame.KMOD_LCTRL
+    def draw(self, dest: pygame.Surface):
+        if pygame.key.get_mods() & pygame.KMOD_LCTRL:
+            super().draw(dest)
 
 
 class FrontPart(Draggable, Sprite):
@@ -228,3 +234,7 @@ class BaseItem(Savable, Iconable, Sprite):
         if self.mass < 1:
             self.mass = 1
         return self.mass
+
+    def on_enter_game(self):
+        super().on_enter_game()
+        print(self.type_uid, self)

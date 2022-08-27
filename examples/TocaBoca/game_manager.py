@@ -288,7 +288,43 @@ class GameManager:
            .drop_zone_add("Head", Vector(0, -130), radius=50)
            )
 
+        ap(lambda: Chelik("pers|reb2", (500, 100))
+           .drop_zone_add("LeftArm", Vector(-56, 107))
+           .drop_zone_add("RightArm", Vector(60, 107))
+           .drop_zone_add("Head", Vector(0, -130), radius=50)
+           )
+
+        ap(lambda: Chelik("pers|reb3", (500, 100))
+           .drop_zone_add("LeftArm", Vector(-56, 107))
+           .drop_zone_add("RightArm", Vector(60, 107))
+           .drop_zone_add("Head", Vector(0, -130), radius=50)
+           )
+
         ap(lambda: Chelik("pers|pusya", (600, 100)) \
+           .drop_zone_add("LeftArm", Vector(-56, 107)) \
+           .drop_zone_add("RightArm", Vector(60, 107)) \
+           .drop_zone_add("Head", Vector(0, -130), radius=50)
+           )
+
+        ap(lambda: Chelik("pers|p6", (600, 100)) \
+           .drop_zone_add("LeftArm", Vector(-56, 107)) \
+           .drop_zone_add("RightArm", Vector(60, 107)) \
+           .drop_zone_add("Head", Vector(0, -130), radius=50)
+           )
+
+        ap(lambda: Chelik("pers|p3", (600, 100)) \
+           .drop_zone_add("LeftArm", Vector(-56, 107)) \
+           .drop_zone_add("RightArm", Vector(60, 107)) \
+           .drop_zone_add("Head", Vector(0, -130), radius=50)
+           )
+
+        ap(lambda: Chelik("pers|p1", (600, 100)) \
+           .drop_zone_add("LeftArm", Vector(-56, 107)) \
+           .drop_zone_add("RightArm", Vector(60, 107)) \
+           .drop_zone_add("Head", Vector(0, -130), radius=50)
+           )
+
+        ap(lambda: Chelik("pers|p2", (600, 100)) \
            .drop_zone_add("LeftArm", Vector(-56, 107)) \
            .drop_zone_add("RightArm", Vector(60, 107)) \
            .drop_zone_add("Head", Vector(0, -130), radius=50)
@@ -296,6 +332,8 @@ class GameManager:
 
         ap(lambda: Bag("predmet|rykzak", (600, 100)).drop_zone_add("Bag", Vector(0, 0), max_items=100))
         ap(lambda: Transport("transport|Hors1", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150))
+        ap(lambda: Transport("transport|Hors2", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150))
+        ap(lambda: Transport("transport|Hors3", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150))
         ap(lambda: HandableItem("predmet|telefon", (650, 100)))
         ap(lambda: Item("predmet|kormushka", (700, 100)))
 

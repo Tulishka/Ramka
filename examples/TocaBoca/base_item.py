@@ -235,6 +235,3 @@ class BaseItem(Savable, Iconable, Sprite):
             self.mass = 1
         return self.mass
 
-    def on_enter_game(self):
-        super().on_enter_game()
-        print(self.type_uid, self)

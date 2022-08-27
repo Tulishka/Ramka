@@ -56,7 +56,126 @@
                 "parent_sort_me_by": "000057",
                 "layer": "default",
                 "visible": true,
-                "children": [],
+                "children": [
+                    {
+                        "uuid": "417fc0da-0b15-44fd-9568-fd6ffb2c027d",
+                        "parent": "1d59cab5-90a1-4823-b45f-b27df5862a37",
+                        "class_name": "Chelik",
+                        "transform": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "scale_x": 1.0,
+                            "scale_y": 1.0,
+                            "angle": 0
+                        },
+                        "parent_sort_me_by": "000096",
+                        "layer": "default",
+                        "visible": true,
+                        "image_rotate_offset": 0,
+                        "image_offset.x": 0.0,
+                        "image_offset.y": 0.0,
+                        "use_parent_mask": false,
+                        "children": [
+                            {
+                                "uuid": "293ee3cb-9eff-4d5c-b6e0-ebb68c91435e",
+                                "parent": "417fc0da-0b15-44fd-9568-fd6ffb2c027d",
+                                "class_name": "DropZone",
+                                "transform": {
+                                    "x": -56.0,
+                                    "y": 107.0,
+                                    "scale_x": 1.0,
+                                    "scale_y": 1.0,
+                                    "angle": 0.0
+                                },
+                                "parent_sort_me_by": "000097",
+                                "layer": "default",
+                                "visible": true,
+                                "children": [],
+                                "max_items": 1,
+                                "accept_class": [],
+                                "radius": 35,
+                                "trigger_name": "LeftArm",
+                                "poly": null
+                            },
+                            {
+                                "uuid": "60c592fe-c5ed-4df4-a58f-5e796623997d",
+                                "parent": "417fc0da-0b15-44fd-9568-fd6ffb2c027d",
+                                "class_name": "DropZone",
+                                "transform": {
+                                    "x": 60.0,
+                                    "y": 107.0,
+                                    "scale_x": 1.0,
+                                    "scale_y": 1.0,
+                                    "angle": 0.0
+                                },
+                                "parent_sort_me_by": "000098",
+                                "layer": "default",
+                                "visible": true,
+                                "children": [
+                                    {
+                                        "uuid": "62e4d7f7-59ca-44bd-9321-1d7eff4f84f2",
+                                        "parent": "60c592fe-c5ed-4df4-a58f-5e796623997d",
+                                        "class_name": "Item",
+                                        "transform": {
+                                            "x": 0.0,
+                                            "y": 0.0,
+                                            "scale_x": 1.0,
+                                            "scale_y": 1.0,
+                                            "angle": 0
+                                        },
+                                        "parent_sort_me_by": "000101",
+                                        "layer": "default",
+                                        "visible": true,
+                                        "image_rotate_offset": 0,
+                                        "image_offset.x": 0.0,
+                                        "image_offset.y": 0.0,
+                                        "use_parent_mask": false,
+                                        "children": [],
+                                        "anim_path": "predmet|kormushka",
+                                        "state.id": 1,
+                                        "mass": 1,
+                                        "name": "kormushka",
+                                        "__fallcomp.enabled": false,
+                                        "__restore_parent": "main_camera"
+                                    }
+                                ],
+                                "max_items": 1,
+                                "accept_class": [],
+                                "radius": 35,
+                                "trigger_name": "RightArm",
+                                "poly": null
+                            },
+                            {
+                                "uuid": "f4ef83ce-6561-4918-a838-0ef5724e7307",
+                                "parent": "417fc0da-0b15-44fd-9568-fd6ffb2c027d",
+                                "class_name": "DropZone",
+                                "transform": {
+                                    "x": 0.0,
+                                    "y": -130.0,
+                                    "scale_x": 1.0,
+                                    "scale_y": 1.0,
+                                    "angle": 0.0
+                                },
+                                "parent_sort_me_by": "000099",
+                                "layer": "default",
+                                "visible": true,
+                                "children": [],
+                                "max_items": 1,
+                                "accept_class": [],
+                                "radius": 50,
+                                "trigger_name": "Head",
+                                "poly": null
+                            }
+                        ],
+                        "anim_path": "pers|pusya",
+                        "state.id": 1,
+                        "mass": 6.6717,
+                        "name": "pusya",
+                        "__fallcomp.enabled": false,
+                        "__restore_parent": "main_camera",
+                        "im_sleep": true
+                    }
+                ],
                 "max_items": 1,
                 "accept_class": [
                     "Chelik",

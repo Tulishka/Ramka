@@ -18,7 +18,7 @@ class ItemMenu(GameObject):
     def __init__(self, prefabs: Iterable, on_item_down: Callable):
         super().__init__()
 
-        self.back = pygame.Surface(Game.screen_size, pygame.SRCALPHA)
+        self.back = pygame.Surface(Game.размерЭкрана, pygame.SRCALPHA)
         self.back.fill((0, 0, 0, 200))
 
         self.prefabs = list(prefabs)

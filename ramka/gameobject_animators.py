@@ -6,14 +6,15 @@ from ramka.timeline import TimeLineProgressInfo, Timeline
 
 class BaseAnimator:
 
-    def __init__(self, game_object: GameObject, new_val, duration, interp_func=None):
+    def __init__(self, game_object: GameObject, new_val, duration, interp_func=None, delay=0):
         self.gameObject = game_object
         self.tl = Timeline(self.gameObject)
         self.new_val = new_val
         self.duration = duration
+        self.delay = delay
 
         def f(x):
-            return self.spd * x
+            return x
 
         self.interp_func = interp_func if interp_func else f
 
@@ -25,11 +26,14 @@ class BaseAnimator:
             finish()
             self.tl.reset()
 
+        if self.delay:
+            self.tl.wait(self.delay)
+
         self.start_val = self.get_start_value()
         self.spd = self.new_val - self.start_val
 
         def do(ti: TimeLineProgressInfo):
-            self.apply_value(self.start_val+self.interp_func(ti.section_progress))
+            self.apply_value(self.start_val+self.spd*self.interp_func(ti.section_progress))
 
         self.tl.do(do, self.duration, continuous=True).do(finish)
 
@@ -72,5 +76,4 @@ class AngleAnimator(BaseAnimator):
         return self.gameObject.transform.angle
 
     def apply_value(self, value):
-        print("apply val")
         self.gameObject.transform.angle = value

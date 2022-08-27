@@ -1,24 +1,18 @@
 [
     {
-        "uuid": "e1385224-2d57-4357-ac24-257bb14ace75",
+        "uuid": "4235a599-a370-4387-a246-36bee0ea2591",
         "parent": "main_camera",
         "class_name": "LightItem",
         "transform": {
-            "x": 664.0,
-            "y": 242.0,
+            "x": 2293.5458459563724,
+            "y": 279.0,
             "scale_x": 1.0,
             "scale_y": 1.0,
             "angle": 0.0
         },
-        "parent_sort_me_by": "000015",
+        "parent_sort_me_by": "000068",
         "layer": "default",
-        "visible": {
-            "x": 664.0,
-            "y": 242.0,
-            "scale_x": 1.0,
-            "scale_y": 1.0,
-            "angle": 0.0
-        },
+        "visible": true,
         "image_rotate_offset": 0,
         "image_offset.x": 0.0,
         "image_offset.y": 0.0,
@@ -30,33 +24,27 @@
         "name": "window"
     },
     {
-        "uuid": "30c78cd6-a0e1-474e-a5b0-62a5c8319127",
+        "uuid": "cd41d21a-ddd0-4e21-87ad-de21a10ec2a3",
         "parent": "main_camera",
         "class_name": "Interier",
         "transform": {
-            "x": 230.81386964523983,
-            "y": 531.0,
+            "x": 160.0,
+            "y": 545.0,
             "scale_x": 1.0,
             "scale_y": 1.0,
             "angle": 0.0
         },
-        "parent_sort_me_by": "000016",
+        "parent_sort_me_by": "000069",
         "layer": "default",
-        "visible": {
-            "x": 230.81386964523983,
-            "y": 531.0,
-            "scale_x": 1.0,
-            "scale_y": 1.0,
-            "angle": 0.0
-        },
+        "visible": true,
         "image_rotate_offset": 0,
         "image_offset.x": 0.0,
         "image_offset.y": 0.0,
         "use_parent_mask": false,
         "children": [
             {
-                "uuid": "6f91f925-13dd-465b-8220-d7ab9de3e049",
-                "parent": "30c78cd6-a0e1-474e-a5b0-62a5c8319127",
+                "uuid": "e9770827-1f30-430f-b6d9-653942cb61f4",
+                "parent": "cd41d21a-ddd0-4e21-87ad-de21a10ec2a3",
                 "class_name": "DropZone",
                 "transform": {
                     "x": 0.0,
@@ -65,13 +53,13 @@
                     "scale_y": 1.0,
                     "angle": 0.0
                 },
-                "parent_sort_me_by": "000018",
+                "parent_sort_me_by": "000071",
                 "layer": "default",
                 "visible": 0,
                 "children": [
                     {
-                        "uuid": "c7748da4-ded2-4e64-83ba-bbbd91cf5b6a",
-                        "parent": "6f91f925-13dd-465b-8220-d7ab9de3e049",
+                        "uuid": "5b8b7cea-6a4e-480c-b379-37de28dd0bf0",
+                        "parent": "e9770827-1f30-430f-b6d9-653942cb61f4",
                         "class_name": "Chelik",
                         "transform": {
                             "x": 0.0,
@@ -80,23 +68,17 @@
                             "scale_y": 1.0,
                             "angle": 0
                         },
-                        "parent_sort_me_by": "000040",
+                        "parent_sort_me_by": "000088",
                         "layer": "default",
-                        "visible": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "scale_x": 1.0,
-                            "scale_y": 1.0,
-                            "angle": 0
-                        },
+                        "visible": true,
                         "image_rotate_offset": 0,
                         "image_offset.x": 0.0,
                         "image_offset.y": 0.0,
                         "use_parent_mask": false,
                         "children": [
                             {
-                                "uuid": "9dedf7f8-3cbf-4514-90c9-9778dd726acc",
-                                "parent": "c7748da4-ded2-4e64-83ba-bbbd91cf5b6a",
+                                "uuid": "78a19cd5-f582-4a85-bf30-b4c729261ef9",
+                                "parent": "5b8b7cea-6a4e-480c-b379-37de28dd0bf0",
                                 "class_name": "DropZone",
                                 "transform": {
                                     "x": -56.0,
@@ -105,7 +87,7 @@
                                     "scale_y": 1.0,
                                     "angle": 0.0
                                 },
-                                "parent_sort_me_by": "000041",
+                                "parent_sort_me_by": "000089",
                                 "layer": "default",
                                 "visible": 0,
                                 "children": [],
@@ -115,8 +97,8 @@
                                 "trigger_name": "LeftArm"
                             },
                             {
-                                "uuid": "e92120c0-2d07-499f-83f6-2d723a8e65ba",
-                                "parent": "c7748da4-ded2-4e64-83ba-bbbd91cf5b6a",
+                                "uuid": "7d68c360-b6bb-4096-9499-476fbc3c68cd",
+                                "parent": "5b8b7cea-6a4e-480c-b379-37de28dd0bf0",
                                 "class_name": "DropZone",
                                 "transform": {
                                     "x": 60.0,
@@ -125,137 +107,18 @@
                                     "scale_y": 1.0,
                                     "angle": 0.0
                                 },
-                                "parent_sort_me_by": "000042",
+                                "parent_sort_me_by": "000090",
                                 "layer": "default",
                                 "visible": 0,
-                                "children": [
-                                    {
-                                        "uuid": "205cd774-b481-47d3-9ce5-9cbb748818aa",
-                                        "parent": "e92120c0-2d07-499f-83f6-2d723a8e65ba",
-                                        "class_name": "Bag",
-                                        "transform": {
-                                            "x": 0.0,
-                                            "y": 0.0,
-                                            "scale_x": 1.0,
-                                            "scale_y": 1.0,
-                                            "angle": 0
-                                        },
-                                        "parent_sort_me_by": "000045",
-                                        "layer": "default",
-                                        "visible": {
-                                            "x": 0.0,
-                                            "y": 0.0,
-                                            "scale_x": 1.0,
-                                            "scale_y": 1.0,
-                                            "angle": 0
-                                        },
-                                        "image_rotate_offset": 0,
-                                        "image_offset.x": 0.0,
-                                        "image_offset.y": 0.0,
-                                        "use_parent_mask": false,
-                                        "children": [
-                                            {
-                                                "uuid": "3a6192a0-f404-4509-a052-93a0634a9438",
-                                                "parent": "205cd774-b481-47d3-9ce5-9cbb748818aa",
-                                                "class_name": "DropZone",
-                                                "transform": {
-                                                    "x": 0.0,
-                                                    "y": 0.0,
-                                                    "scale_x": 1.0,
-                                                    "scale_y": 1.0,
-                                                    "angle": 0.0
-                                                },
-                                                "parent_sort_me_by": "000047",
-                                                "layer": "default",
-                                                "visible": 0,
-                                                "children": [
-                                                    {
-                                                        "uuid": "5c37e763-b802-44cb-a3a5-8a951aad12f0",
-                                                        "parent": "3a6192a0-f404-4509-a052-93a0634a9438",
-                                                        "class_name": "HandableItem",
-                                                        "transform": {
-                                                            "x": 0.0,
-                                                            "y": 0.0,
-                                                            "scale_x": 1.0,
-                                                            "scale_y": 1.0,
-                                                            "angle": 0
-                                                        },
-                                                        "parent_sort_me_by": "000048",
-                                                        "layer": "default",
-                                                        "visible": {
-                                                            "x": 0.0,
-                                                            "y": 0.0,
-                                                            "scale_x": 1.0,
-                                                            "scale_y": 1.0,
-                                                            "angle": 0
-                                                        },
-                                                        "image_rotate_offset": 0,
-                                                        "image_offset.x": 0.0,
-                                                        "image_offset.y": 0.0,
-                                                        "use_parent_mask": true,
-                                                        "children": [],
-                                                        "anim_path": "predmet|telefon",
-                                                        "state.id": 1,
-                                                        "mass": 1.397,
-                                                        "name": "telefon",
-                                                        "__fallcomp.enabled": false,
-                                                        "__restore_parent": "main_camera"
-                                                    },
-                                                    {
-                                                        "uuid": "e1541ba1-d6e7-4963-b29f-fc5bc6634c7b",
-                                                        "parent": "3a6192a0-f404-4509-a052-93a0634a9438",
-                                                        "class_name": "Item",
-                                                        "transform": {
-                                                            "x": 0.0,
-                                                            "y": 0.0,
-                                                            "scale_x": 1.0,
-                                                            "scale_y": 1.0,
-                                                            "angle": 0
-                                                        },
-                                                        "parent_sort_me_by": "000049",
-                                                        "layer": "default",
-                                                        "visible": {
-                                                            "x": 0.0,
-                                                            "y": 0.0,
-                                                            "scale_x": 1.0,
-                                                            "scale_y": 1.0,
-                                                            "angle": 0
-                                                        },
-                                                        "image_rotate_offset": 0,
-                                                        "image_offset.x": 0.0,
-                                                        "image_offset.y": 0.0,
-                                                        "use_parent_mask": true,
-                                                        "children": [],
-                                                        "anim_path": "predmet|kormushka",
-                                                        "state.id": 1,
-                                                        "mass": 1,
-                                                        "name": "kormushka",
-                                                        "__fallcomp.enabled": false,
-                                                        "__restore_parent": "main_camera"
-                                                    }
-                                                ],
-                                                "max_items": 100,
-                                                "accept_class": [],
-                                                "radius": 35,
-                                                "trigger_name": "Bag"
-                                            }
-                                        ],
-                                        "anim_path": "predmet|rykzak",
-                                        "state.id": 1,
-                                        "mass": 1.4364,
-                                        "name": "rykzak",
-                                        "__fallcomp.enabled": false,
-                                        "__restore_parent": "main_camera"
-                                    }
-                                ],
+                                "children": [],
                                 "max_items": 1,
                                 "accept_class": [],
                                 "radius": 35,
                                 "trigger_name": "RightArm"
                             },
                             {
-                                "uuid": "4483bdd1-07f9-4722-a415-6a06b94744a8",
-                                "parent": "c7748da4-ded2-4e64-83ba-bbbd91cf5b6a",
+                                "uuid": "e96af34f-f3c8-4f41-825d-b4577275a870",
+                                "parent": "5b8b7cea-6a4e-480c-b379-37de28dd0bf0",
                                 "class_name": "DropZone",
                                 "transform": {
                                     "x": 0.0,
@@ -264,13 +127,13 @@
                                     "scale_y": 1.0,
                                     "angle": 0.0
                                 },
-                                "parent_sort_me_by": "000043",
+                                "parent_sort_me_by": "000091",
                                 "layer": "default",
                                 "visible": 0,
                                 "children": [
                                     {
-                                        "uuid": "323d19a4-cfe4-40b0-bb73-b8bc53d5c25e",
-                                        "parent": "4483bdd1-07f9-4722-a415-6a06b94744a8",
+                                        "uuid": "13cae556-d5cb-4fcf-80c9-41cd4bf09c32",
+                                        "parent": "e96af34f-f3c8-4f41-825d-b4577275a870",
                                         "class_name": "Pet",
                                         "transform": {
                                             "x": 0.0,
@@ -279,15 +142,9 @@
                                             "scale_y": 1.0,
                                             "angle": 0
                                         },
-                                        "parent_sort_me_by": "000028",
+                                        "parent_sort_me_by": "000081",
                                         "layer": "default",
-                                        "visible": {
-                                            "x": 0.0,
-                                            "y": 0.0,
-                                            "scale_x": 1.0,
-                                            "scale_y": 1.0,
-                                            "angle": 0
-                                        },
+                                        "visible": true,
                                         "image_rotate_offset": 0,
                                         "image_offset.x": 0.0,
                                         "image_offset.y": 0.0,
@@ -301,155 +158,6 @@
                                         "__restore_parent": "main_camera"
                                     }
                                 ],
-                                "max_items": 1,
-                                "accept_class": [],
-                                "radius": 50,
-                                "trigger_name": "Head"
-                            }
-                        ],
-                        "anim_path": "pers|pusya",
-                        "state.id": 1,
-                        "mass": 6.6717,
-                        "name": "pusya",
-                        "__fallcomp.enabled": false,
-                        "__restore_parent": "main_camera",
-                        "im_sleep": true
-                    }
-                ],
-                "max_items": 1,
-                "accept_class": [
-                    "Chelik",
-                    "Pet"
-                ],
-                "radius": 90,
-                "trigger_name": "Sleep"
-            }
-        ],
-        "anim_path": "mebel|bed2",
-        "state.id": 1,
-        "mass": 15.197,
-        "name": "bed2"
-    },
-    {
-        "uuid": "84c7c8c8-0a1d-4bc0-9fc1-3e19e02765d1",
-        "parent": "main_camera",
-        "class_name": "Interier",
-        "transform": {
-            "x": 1854.517312513705,
-            "y": 527.0,
-            "scale_x": 1.0,
-            "scale_y": 1.0,
-            "angle": 0.0
-        },
-        "parent_sort_me_by": "000019",
-        "layer": "default",
-        "visible": {
-            "x": 1854.517312513705,
-            "y": 527.0,
-            "scale_x": 1.0,
-            "scale_y": 1.0,
-            "angle": 0.0
-        },
-        "image_rotate_offset": 0,
-        "image_offset.x": 0.0,
-        "image_offset.y": 0.0,
-        "use_parent_mask": false,
-        "children": [
-            {
-                "uuid": "0780da45-deb8-4b45-9f0c-863f3a1297d0",
-                "parent": "84c7c8c8-0a1d-4bc0-9fc1-3e19e02765d1",
-                "class_name": "DropZone",
-                "transform": {
-                    "x": 0.0,
-                    "y": -50.0,
-                    "scale_x": 1.0,
-                    "scale_y": 1.0,
-                    "angle": 0.0
-                },
-                "parent_sort_me_by": "000021",
-                "layer": "default",
-                "visible": 0,
-                "children": [
-                    {
-                        "uuid": "be9c9be2-f415-4449-b366-bfe751b31f32",
-                        "parent": "0780da45-deb8-4b45-9f0c-863f3a1297d0",
-                        "class_name": "Chelik",
-                        "transform": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "scale_x": 1.0,
-                            "scale_y": 1.0,
-                            "angle": 0
-                        },
-                        "parent_sort_me_by": "000035",
-                        "layer": "default",
-                        "visible": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "scale_x": 1.0,
-                            "scale_y": 1.0,
-                            "angle": 0
-                        },
-                        "image_rotate_offset": 0,
-                        "image_offset.x": 0.0,
-                        "image_offset.y": 0.0,
-                        "use_parent_mask": false,
-                        "children": [
-                            {
-                                "uuid": "06c4c237-b736-4ea1-b5fd-722d28c36131",
-                                "parent": "be9c9be2-f415-4449-b366-bfe751b31f32",
-                                "class_name": "DropZone",
-                                "transform": {
-                                    "x": -30.0,
-                                    "y": 57.0,
-                                    "scale_x": 1.0,
-                                    "scale_y": 1.0,
-                                    "angle": 0.0
-                                },
-                                "parent_sort_me_by": "000036",
-                                "layer": "default",
-                                "visible": 0,
-                                "children": [],
-                                "max_items": 1,
-                                "accept_class": [],
-                                "radius": 35,
-                                "trigger_name": "LeftArm"
-                            },
-                            {
-                                "uuid": "281b18ca-fb81-46dd-b503-1b0eb8324e91",
-                                "parent": "be9c9be2-f415-4449-b366-bfe751b31f32",
-                                "class_name": "DropZone",
-                                "transform": {
-                                    "x": 44.0,
-                                    "y": 65.0,
-                                    "scale_x": 1.0,
-                                    "scale_y": 1.0,
-                                    "angle": 0.0
-                                },
-                                "parent_sort_me_by": "000037",
-                                "layer": "default",
-                                "visible": 0,
-                                "children": [],
-                                "max_items": 1,
-                                "accept_class": [],
-                                "radius": 35,
-                                "trigger_name": "RightArm"
-                            },
-                            {
-                                "uuid": "ec3fe952-278a-4491-9d46-8e14392297f4",
-                                "parent": "be9c9be2-f415-4449-b366-bfe751b31f32",
-                                "class_name": "DropZone",
-                                "transform": {
-                                    "x": -1.0,
-                                    "y": -79.0,
-                                    "scale_x": 1.0,
-                                    "scale_y": 1.0,
-                                    "angle": 0.0
-                                },
-                                "parent_sort_me_by": "000038",
-                                "layer": "default",
-                                "visible": 0,
-                                "children": [],
                                 "max_items": 1,
                                 "accept_class": [],
                                 "radius": 50,
@@ -474,13 +182,61 @@
                 "trigger_name": "Sleep"
             }
         ],
+        "anim_path": "mebel|bed2",
+        "state.id": 1,
+        "mass": 15.197,
+        "name": "bed2"
+    },
+    {
+        "uuid": "0a5ed6a1-72d6-4dc4-888f-7148ffe4e44a",
+        "parent": "main_camera",
+        "class_name": "Interier",
+        "transform": {
+            "x": 1850.0,
+            "y": 545.0,
+            "scale_x": 1.0,
+            "scale_y": 1.0,
+            "angle": 0.0
+        },
+        "parent_sort_me_by": "000072",
+        "layer": "default",
+        "visible": true,
+        "image_rotate_offset": 0,
+        "image_offset.x": 0.0,
+        "image_offset.y": 0.0,
+        "use_parent_mask": false,
+        "children": [
+            {
+                "uuid": "a366a819-d95d-4ab8-a5b6-70097ea18956",
+                "parent": "0a5ed6a1-72d6-4dc4-888f-7148ffe4e44a",
+                "class_name": "DropZone",
+                "transform": {
+                    "x": 0.0,
+                    "y": -50.0,
+                    "scale_x": 1.0,
+                    "scale_y": 1.0,
+                    "angle": 0.0
+                },
+                "parent_sort_me_by": "000074",
+                "layer": "default",
+                "visible": 0,
+                "children": [],
+                "max_items": 1,
+                "accept_class": [
+                    "Chelik",
+                    "Pet"
+                ],
+                "radius": 90,
+                "trigger_name": "Sleep"
+            }
+        ],
         "anim_path": "mebel|bed1",
         "state.id": 1,
         "mass": 14.9612,
         "name": "bed1"
     },
     {
-        "uuid": "f9568deb-631c-41be-8516-94e50b7017a2",
+        "uuid": "9119f82e-de69-4f1d-8763-c7c3ce818fa0",
         "parent": "main_camera",
         "class_name": "Interier",
         "transform": {
@@ -490,23 +246,17 @@
             "scale_y": 1.0,
             "angle": 0.0
         },
-        "parent_sort_me_by": "000022",
+        "parent_sort_me_by": "000075",
         "layer": "default",
-        "visible": {
-            "x": 2750.0,
-            "y": 540.0,
-            "scale_x": 1.0,
-            "scale_y": 1.0,
-            "angle": 0.0
-        },
+        "visible": true,
         "image_rotate_offset": 0,
         "image_offset.x": 0.0,
         "image_offset.y": 0.0,
         "use_parent_mask": false,
         "children": [
             {
-                "uuid": "64a01f56-6a7f-46d9-aae4-1ca1637b2bfa",
-                "parent": "f9568deb-631c-41be-8516-94e50b7017a2",
+                "uuid": "2bc8fd84-5f58-40af-88a1-7de24128af5f",
+                "parent": "9119f82e-de69-4f1d-8763-c7c3ce818fa0",
                 "class_name": "DropZone",
                 "transform": {
                     "x": -70.0,
@@ -515,105 +265,10 @@
                     "scale_y": 1.0,
                     "angle": 0.0
                 },
-                "parent_sort_me_by": "000024",
+                "parent_sort_me_by": "000077",
                 "layer": "default",
                 "visible": 0,
-                "children": [
-                    {
-                        "uuid": "9a1cc63e-48ee-4e51-bd69-fb90f9dcadd3",
-                        "parent": "64a01f56-6a7f-46d9-aae4-1ca1637b2bfa",
-                        "class_name": "Chelik",
-                        "transform": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "scale_x": 1.0,
-                            "scale_y": 1.0,
-                            "angle": 0
-                        },
-                        "parent_sort_me_by": "000030",
-                        "layer": "default",
-                        "visible": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "scale_x": 1.0,
-                            "scale_y": 1.0,
-                            "angle": 0
-                        },
-                        "image_rotate_offset": 0,
-                        "image_offset.x": 0.0,
-                        "image_offset.y": -30.0,
-                        "use_parent_mask": false,
-                        "children": [
-                            {
-                                "uuid": "70dafee3-59c9-4c24-9a11-d4bc4cfdcee0",
-                                "parent": "9a1cc63e-48ee-4e51-bd69-fb90f9dcadd3",
-                                "class_name": "DropZone",
-                                "transform": {
-                                    "x": -56.0,
-                                    "y": 107.0,
-                                    "scale_x": 1.0,
-                                    "scale_y": 1.0,
-                                    "angle": 0.0
-                                },
-                                "parent_sort_me_by": "000031",
-                                "layer": "default",
-                                "visible": 0,
-                                "children": [],
-                                "max_items": 1,
-                                "accept_class": [],
-                                "radius": 35,
-                                "trigger_name": "LeftArm"
-                            },
-                            {
-                                "uuid": "8a0e2ed9-ab1b-4649-b4da-23d6d3bf59c6",
-                                "parent": "9a1cc63e-48ee-4e51-bd69-fb90f9dcadd3",
-                                "class_name": "DropZone",
-                                "transform": {
-                                    "x": 60.0,
-                                    "y": 107.0,
-                                    "scale_x": 1.0,
-                                    "scale_y": 1.0,
-                                    "angle": 0.0
-                                },
-                                "parent_sort_me_by": "000032",
-                                "layer": "default",
-                                "visible": 0,
-                                "children": [],
-                                "max_items": 1,
-                                "accept_class": [],
-                                "radius": 35,
-                                "trigger_name": "RightArm"
-                            },
-                            {
-                                "uuid": "d4fb1bfa-63bf-4a9a-8348-3fefc2a84bd2",
-                                "parent": "9a1cc63e-48ee-4e51-bd69-fb90f9dcadd3",
-                                "class_name": "DropZone",
-                                "transform": {
-                                    "x": 0.0,
-                                    "y": -122.0,
-                                    "scale_x": 1.0,
-                                    "scale_y": 1.0,
-                                    "angle": 0.0
-                                },
-                                "parent_sort_me_by": "000033",
-                                "layer": "default",
-                                "visible": 0,
-                                "children": [],
-                                "max_items": 1,
-                                "accept_class": [],
-                                "radius": 50,
-                                "trigger_name": "Head"
-                            }
-                        ],
-                        "anim_path": "pers|p9",
-                        "state.id": 1,
-                        "mass": 6.8736,
-                        "name": "p9",
-                        "__fallcomp.enabled": false,
-                        "__restore_parent": "main_camera",
-                        "im_sleep": true
-                    }
-                ],
+                "children": [],
                 "max_items": 1,
                 "accept_class": [
                     "Chelik",
@@ -623,8 +278,8 @@
                 "trigger_name": "Sleep"
             },
             {
-                "uuid": "6445ec5d-bc92-4097-a2e8-08f5b7c4424b",
-                "parent": "f9568deb-631c-41be-8516-94e50b7017a2",
+                "uuid": "31f31147-c432-465d-a146-85cf782c4a6c",
+                "parent": "9119f82e-de69-4f1d-8763-c7c3ce818fa0",
                 "class_name": "DropZone",
                 "transform": {
                     "x": 70.0,
@@ -633,43 +288,10 @@
                     "scale_y": 1.0,
                     "angle": 0.0
                 },
-                "parent_sort_me_by": "000025",
+                "parent_sort_me_by": "000078",
                 "layer": "default",
                 "visible": 0,
-                "children": [
-                    {
-                        "uuid": "33086680-2614-433e-9a71-fffda14c90d1",
-                        "parent": "6445ec5d-bc92-4097-a2e8-08f5b7c4424b",
-                        "class_name": "Pet",
-                        "transform": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "scale_x": 1.0,
-                            "scale_y": 1.0,
-                            "angle": 0
-                        },
-                        "parent_sort_me_by": "000026",
-                        "layer": "default",
-                        "visible": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "scale_x": 1.0,
-                            "scale_y": 1.0,
-                            "angle": 0
-                        },
-                        "image_rotate_offset": 0,
-                        "image_offset.x": 0.0,
-                        "image_offset.y": 0.0,
-                        "use_parent_mask": false,
-                        "children": [],
-                        "anim_path": "pets|oblachko",
-                        "state.id": 2,
-                        "mass": 4.7672,
-                        "name": "oblachko",
-                        "__fallcomp.enabled": false,
-                        "__restore_parent": "main_camera"
-                    }
-                ],
+                "children": [],
                 "max_items": 1,
                 "accept_class": [
                     "Chelik",
@@ -683,5 +305,471 @@
         "state.id": 1,
         "mass": 23.9475,
         "name": "bed3"
+    },
+    {
+        "uuid": "bf34b9e6-059b-4bb1-a9ce-70b320cbaeea",
+        "parent": "main_camera",
+        "class_name": "Pet",
+        "transform": {
+            "x": 762.0,
+            "y": 519.0142800000001,
+            "scale_x": 1.0,
+            "scale_y": 1.0,
+            "angle": 0.0
+        },
+        "parent_sort_me_by": "000079",
+        "layer": "default",
+        "visible": true,
+        "image_rotate_offset": 0,
+        "image_offset.x": 0.0,
+        "image_offset.y": 0.0,
+        "use_parent_mask": false,
+        "children": [],
+        "anim_path": "pets|oblachko",
+        "state.id": 1,
+        "mass": 4.7672,
+        "name": "oblachko",
+        "__fallcomp.enabled": true,
+        "__restore_parent": null
+    },
+    {
+        "uuid": "9a1cc63e-48ee-4e51-bd69-fb90f9dcadd3",
+        "parent": "main_camera",
+        "class_name": "Chelik",
+        "transform": {
+            "x": 744.772793774559,
+            "y": 578.0,
+            "scale_x": 1.0,
+            "scale_y": 1.0,
+            "angle": 0
+        },
+        "parent_sort_me_by": "000030",
+        "layer": "default",
+        "visible": {
+            "x": 2916.0,
+            "y": 68.0,
+            "scale_x": 1.0,
+            "scale_y": 1.0,
+            "angle": 0
+        },
+        "image_rotate_offset": 0,
+        "image_offset.x": 0.0,
+        "image_offset.y": -30.0,
+        "use_parent_mask": false,
+        "children": [
+            {
+                "uuid": "70dafee3-59c9-4c24-9a11-d4bc4cfdcee0",
+                "parent": "9a1cc63e-48ee-4e51-bd69-fb90f9dcadd3",
+                "class_name": "DropZone",
+                "transform": {
+                    "x": -56.0,
+                    "y": 107.0,
+                    "scale_x": 1.0,
+                    "scale_y": 1.0,
+                    "angle": 0.0
+                },
+                "parent_sort_me_by": "000031",
+                "layer": "default",
+                "visible": 0,
+                "children": [],
+                "max_items": 1,
+                "accept_class": [],
+                "radius": 35,
+                "trigger_name": "LeftArm"
+            },
+            {
+                "uuid": "8a0e2ed9-ab1b-4649-b4da-23d6d3bf59c6",
+                "parent": "9a1cc63e-48ee-4e51-bd69-fb90f9dcadd3",
+                "class_name": "DropZone",
+                "transform": {
+                    "x": 60.0,
+                    "y": 107.0,
+                    "scale_x": 1.0,
+                    "scale_y": 1.0,
+                    "angle": 0.0
+                },
+                "parent_sort_me_by": "000032",
+                "layer": "default",
+                "visible": 0,
+                "children": [],
+                "max_items": 1,
+                "accept_class": [],
+                "radius": 35,
+                "trigger_name": "RightArm"
+            },
+            {
+                "uuid": "d4fb1bfa-63bf-4a9a-8348-3fefc2a84bd2",
+                "parent": "9a1cc63e-48ee-4e51-bd69-fb90f9dcadd3",
+                "class_name": "DropZone",
+                "transform": {
+                    "x": 0.0,
+                    "y": -122.0,
+                    "scale_x": 1.0,
+                    "scale_y": 1.0,
+                    "angle": 0.0
+                },
+                "parent_sort_me_by": "000033",
+                "layer": "default",
+                "visible": 0,
+                "children": [],
+                "max_items": 1,
+                "accept_class": [],
+                "radius": 50,
+                "trigger_name": "Head"
+            }
+        ],
+        "anim_path": "pers|p9",
+        "state.id": 1,
+        "mass": 6.8736,
+        "name": "p9",
+        "__fallcomp.enabled": true,
+        "__restore_parent": null,
+        "im_sleep": false
+    },
+    {
+        "uuid": "c7748da4-ded2-4e64-83ba-bbbd91cf5b6a",
+        "parent": "main_camera",
+        "class_name": "Chelik",
+        "transform": {
+            "x": 975.0,
+            "y": 412.1429379353575,
+            "scale_x": 1.0,
+            "scale_y": 1.0,
+            "angle": 0
+        },
+        "parent_sort_me_by": "000040",
+        "layer": "default",
+        "visible": {
+            "x": 975.0,
+            "y": 68.44139793535743,
+            "scale_x": 1.0,
+            "scale_y": 1.0,
+            "angle": 0
+        },
+        "image_rotate_offset": 0,
+        "image_offset.x": 0.0,
+        "image_offset.y": 0.0,
+        "use_parent_mask": false,
+        "children": [
+            {
+                "uuid": "9dedf7f8-3cbf-4514-90c9-9778dd726acc",
+                "parent": "c7748da4-ded2-4e64-83ba-bbbd91cf5b6a",
+                "class_name": "DropZone",
+                "transform": {
+                    "x": -56.0,
+                    "y": 107.0,
+                    "scale_x": 1.0,
+                    "scale_y": 1.0,
+                    "angle": 0.0
+                },
+                "parent_sort_me_by": "000041",
+                "layer": "default",
+                "visible": 0,
+                "children": [],
+                "max_items": 1,
+                "accept_class": [],
+                "radius": 35,
+                "trigger_name": "LeftArm"
+            },
+            {
+                "uuid": "e92120c0-2d07-499f-83f6-2d723a8e65ba",
+                "parent": "c7748da4-ded2-4e64-83ba-bbbd91cf5b6a",
+                "class_name": "DropZone",
+                "transform": {
+                    "x": 60.0,
+                    "y": 107.0,
+                    "scale_x": 1.0,
+                    "scale_y": 1.0,
+                    "angle": 0.0
+                },
+                "parent_sort_me_by": "000042",
+                "layer": "default",
+                "visible": 0,
+                "children": [
+                    {
+                        "uuid": "205cd774-b481-47d3-9ce5-9cbb748818aa",
+                        "parent": "e92120c0-2d07-499f-83f6-2d723a8e65ba",
+                        "class_name": "Bag",
+                        "transform": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "scale_x": 1.0,
+                            "scale_y": 1.0,
+                            "angle": 0
+                        },
+                        "parent_sort_me_by": "000045",
+                        "layer": "default",
+                        "visible": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "scale_x": 1.0,
+                            "scale_y": 1.0,
+                            "angle": 0
+                        },
+                        "image_rotate_offset": 0,
+                        "image_offset.x": 0.0,
+                        "image_offset.y": 0.0,
+                        "use_parent_mask": false,
+                        "children": [
+                            {
+                                "uuid": "3a6192a0-f404-4509-a052-93a0634a9438",
+                                "parent": "205cd774-b481-47d3-9ce5-9cbb748818aa",
+                                "class_name": "DropZone",
+                                "transform": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "scale_x": 1.0,
+                                    "scale_y": 1.0,
+                                    "angle": 0.0
+                                },
+                                "parent_sort_me_by": "000047",
+                                "layer": "default",
+                                "visible": 0,
+                                "children": [
+                                    {
+                                        "uuid": "5c37e763-b802-44cb-a3a5-8a951aad12f0",
+                                        "parent": "3a6192a0-f404-4509-a052-93a0634a9438",
+                                        "class_name": "HandableItem",
+                                        "transform": {
+                                            "x": 0.0,
+                                            "y": 0.0,
+                                            "scale_x": 1.0,
+                                            "scale_y": 1.0,
+                                            "angle": 0
+                                        },
+                                        "parent_sort_me_by": "000048",
+                                        "layer": "default",
+                                        "visible": {
+                                            "x": 0.0,
+                                            "y": 0.0,
+                                            "scale_x": 1.0,
+                                            "scale_y": 1.0,
+                                            "angle": 0
+                                        },
+                                        "image_rotate_offset": 0,
+                                        "image_offset.x": 0.0,
+                                        "image_offset.y": 0.0,
+                                        "use_parent_mask": true,
+                                        "children": [],
+                                        "anim_path": "predmet|telefon",
+                                        "state.id": 1,
+                                        "mass": 1.397,
+                                        "name": "telefon",
+                                        "__fallcomp.enabled": false,
+                                        "__restore_parent": "main_camera"
+                                    },
+                                    {
+                                        "uuid": "e1541ba1-d6e7-4963-b29f-fc5bc6634c7b",
+                                        "parent": "3a6192a0-f404-4509-a052-93a0634a9438",
+                                        "class_name": "Item",
+                                        "transform": {
+                                            "x": 0.0,
+                                            "y": 0.0,
+                                            "scale_x": 1.0,
+                                            "scale_y": 1.0,
+                                            "angle": 0
+                                        },
+                                        "parent_sort_me_by": "000049",
+                                        "layer": "default",
+                                        "visible": {
+                                            "x": 0.0,
+                                            "y": 0.0,
+                                            "scale_x": 1.0,
+                                            "scale_y": 1.0,
+                                            "angle": 0
+                                        },
+                                        "image_rotate_offset": 0,
+                                        "image_offset.x": 0.0,
+                                        "image_offset.y": 0.0,
+                                        "use_parent_mask": true,
+                                        "children": [],
+                                        "anim_path": "predmet|kormushka",
+                                        "state.id": 1,
+                                        "mass": 1,
+                                        "name": "kormushka",
+                                        "__fallcomp.enabled": false,
+                                        "__restore_parent": "main_camera"
+                                    }
+                                ],
+                                "max_items": 100,
+                                "accept_class": [],
+                                "radius": 35,
+                                "trigger_name": "Bag"
+                            }
+                        ],
+                        "anim_path": "predmet|rykzak",
+                        "state.id": 1,
+                        "mass": 1.4364,
+                        "name": "rykzak",
+                        "__fallcomp.enabled": false,
+                        "__restore_parent": "main_camera"
+                    }
+                ],
+                "max_items": 1,
+                "accept_class": [],
+                "radius": 35,
+                "trigger_name": "RightArm"
+            },
+            {
+                "uuid": "4483bdd1-07f9-4722-a415-6a06b94744a8",
+                "parent": "c7748da4-ded2-4e64-83ba-bbbd91cf5b6a",
+                "class_name": "DropZone",
+                "transform": {
+                    "x": 0.0,
+                    "y": -130.0,
+                    "scale_x": 1.0,
+                    "scale_y": 1.0,
+                    "angle": 0.0
+                },
+                "parent_sort_me_by": "000043",
+                "layer": "default",
+                "visible": 0,
+                "children": [
+                    {
+                        "uuid": "323d19a4-cfe4-40b0-bb73-b8bc53d5c25e",
+                        "parent": "4483bdd1-07f9-4722-a415-6a06b94744a8",
+                        "class_name": "Pet",
+                        "transform": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "scale_x": 1.0,
+                            "scale_y": 1.0,
+                            "angle": 0
+                        },
+                        "parent_sort_me_by": "000028",
+                        "layer": "default",
+                        "visible": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "scale_x": 1.0,
+                            "scale_y": 1.0,
+                            "angle": 0
+                        },
+                        "image_rotate_offset": 0,
+                        "image_offset.x": 0.0,
+                        "image_offset.y": 0.0,
+                        "use_parent_mask": false,
+                        "children": [],
+                        "anim_path": "pets|kohka",
+                        "state.id": 1,
+                        "mass": 1,
+                        "name": "kohka",
+                        "__fallcomp.enabled": false,
+                        "__restore_parent": "main_camera"
+                    }
+                ],
+                "max_items": 1,
+                "accept_class": [],
+                "radius": 50,
+                "trigger_name": "Head"
+            }
+        ],
+        "anim_path": "pers|pusya",
+        "state.id": 1,
+        "mass": 6.6717,
+        "name": "pusya",
+        "__fallcomp.enabled": true,
+        "__restore_parent": "main_camera",
+        "im_sleep": false
+    },
+    {
+        "uuid": "b20db5dc-ea6a-4b67-a30d-d073ceccb53c",
+        "parent": "main_camera",
+        "class_name": "Bag",
+        "transform": {
+            "x": 158.0,
+            "y": 525.3528481286551,
+            "scale_x": 1.0,
+            "scale_y": 1.0,
+            "angle": 0.0
+        },
+        "parent_sort_me_by": "000105",
+        "layer": "default",
+        "visible": true,
+        "image_rotate_offset": 0,
+        "image_offset.x": 0.0,
+        "image_offset.y": 0.0,
+        "use_parent_mask": false,
+        "children": [
+            {
+                "uuid": "dc51070a-79fb-479c-a18b-9b336ea22ecc",
+                "parent": "b20db5dc-ea6a-4b67-a30d-d073ceccb53c",
+                "class_name": "DropZone",
+                "transform": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "scale_x": 1.0,
+                    "scale_y": 1.0,
+                    "angle": 0.0
+                },
+                "parent_sort_me_by": "000107",
+                "layer": "default",
+                "visible": 0,
+                "children": [
+                    {
+                        "uuid": "285d0e98-0301-4e7e-ad67-3b5aa90a0797",
+                        "parent": "dc51070a-79fb-479c-a18b-9b336ea22ecc",
+                        "class_name": "HandableItem",
+                        "transform": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "scale_x": 1.0,
+                            "scale_y": 1.0,
+                            "angle": 0
+                        },
+                        "parent_sort_me_by": "000108",
+                        "layer": "default",
+                        "visible": true,
+                        "image_rotate_offset": 0,
+                        "image_offset.x": 0.0,
+                        "image_offset.y": 0.0,
+                        "use_parent_mask": true,
+                        "children": [],
+                        "anim_path": "predmet|telefon",
+                        "state.id": 1,
+                        "mass": 1.397,
+                        "name": "telefon",
+                        "__fallcomp.enabled": false,
+                        "__restore_parent": "main_camera"
+                    },
+                    {
+                        "uuid": "bbcdb4e1-fb2c-446d-bd72-7084d14a3fc6",
+                        "parent": "dc51070a-79fb-479c-a18b-9b336ea22ecc",
+                        "class_name": "Item",
+                        "transform": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "scale_x": 1.0,
+                            "scale_y": 1.0,
+                            "angle": 0
+                        },
+                        "parent_sort_me_by": "000109",
+                        "layer": "default",
+                        "visible": true,
+                        "image_rotate_offset": 0,
+                        "image_offset.x": 0.0,
+                        "image_offset.y": 0.0,
+                        "use_parent_mask": true,
+                        "children": [],
+                        "anim_path": "predmet|kormushka",
+                        "state.id": 1,
+                        "mass": 1,
+                        "name": "kormushka",
+                        "__fallcomp.enabled": false,
+                        "__restore_parent": "main_camera"
+                    }
+                ],
+                "max_items": 100,
+                "accept_class": [],
+                "radius": 35,
+                "trigger_name": "Bag"
+            }
+        ],
+        "anim_path": "predmet|rykzak",
+        "state.id": 1,
+        "mass": 1.4364,
+        "name": "rykzak",
+        "__fallcomp.enabled": true,
+        "__restore_parent": null
     }
 ]

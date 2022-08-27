@@ -1,10 +1,14 @@
+import math
+from random import random, choice
 from typing import Callable, Union, Tuple, Iterable
 
 import pygame
 
+from lighting import Lighting
 from examples.Components.DragAndDrop import DragAndDropController
 from nav_bar import NavBar
-from ramka import Sprite, GameObject, Vector, Game
+from ramka import Sprite, GameObject, Vector, Game, interp_func_cubic, interp_func_spring
+from ramka.gameobject_animators import ScaleAnimator, AngleAnimator
 
 
 class ItemMenu(GameObject):
@@ -31,7 +35,8 @@ class ItemMenu(GameObject):
 
     def on_enter_game(self):
         super().on_enter_game()
-        self.navbar = NavBar("item_select", row_direction=Vector(1, 0), pos=(50, 150), parent=self)
+        self.navbar = NavBar("item_select", row_direction=Vector(1, 0), pos=(max(50, Game.ширинаЭкрана * 0.15), 150),
+                             max_size=Game.высотаЭкрана * 0.90, parent=self)
         DragAndDropController.controller.cancel_drag()
         DragAndDropController.controller.enabled = False
 
@@ -43,8 +48,20 @@ class ItemMenu(GameObject):
 
             return de
 
-        for p in self.prefabs:
-            self.navbar.add_btn(p["object"], action=fac(p))
+        f = [interp_func_cubic, interp_func_spring]
+
+        for i, p in enumerate(self.prefabs):
+            p["object"].update_icon_args(size=80)
+            nb = self.navbar.add_btn(p["object"], action=fac(p))
+            nb.transform.scale = 0.05, 0.05
+            t = 0.05 + 0.25 * random()
+            if random() > 0.7:
+                t += random() * 0.2
+            ScaleAnimator(nb, Vector(1.0), t)().kill()
+            if random() > 0.6:
+                nb.transform.angle = 10 + random() * 200
+                AngleAnimator(nb, 0, 0.3 + 0.25 * random(), delay=t + (1 - random()) * t * 0.5,
+                              interp_func=choice(f))().kill()
 
     def on_leave_game(self):
         super().on_leave_game()
@@ -58,5 +75,5 @@ class ItemMenu(GameObject):
 
     def draw(self, dest: pygame.Surface):
         super().draw(dest)
-
-        dest.blit(self.back, (0, 0))
+        if Lighting.applied_light:
+            dest.blit(self.back, (0, 0))

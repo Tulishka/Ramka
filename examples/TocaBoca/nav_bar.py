@@ -24,7 +24,7 @@ class NavBtn(Sprite):
         self.update_func = update_func
         self.eff = Effects(self)
         self.updated_anim = chelik.state.animation
-        self.update_cd = Cooldown(0.5 + random())
+        self.update_cd = Cooldown(0.3)
 
         self.visible_func = visible_func
 
@@ -41,13 +41,13 @@ class NavBtn(Sprite):
                 self.set_sprite_animations({"default": Animation([self.update_func()], 5, True)})
                 self.updated_anim = self.chelik.state.animation
 
-        if self.visible_func:
-            w = self.visible_func()
-            if w != self.visible:
-                self.visible = w
-                p = self.get_parent(clas=NavBar)
-                if p:
-                    p.rearrange()
+            if self.visible_func:
+                w = self.visible_func()
+                if w != self.visible:
+                    self.visible = w
+                    p = self.get_parent(clas=NavBar)
+                    if p:
+                        p.rearrange()
 
     @Game.on_mouse_up
     def on_mouse_up(self, button):
@@ -119,8 +119,8 @@ class NavBar(GameObject):
         self.row_direction = row_direction
         self.btns_gap = 5
         self.max_size = max_size
-        self.transform.pos = pos - row_direction.rotate(90) * 150
-        PosAnimator(self, pos, 0.5)().kill()
+        self.transform.pos = pos
+        # PosAnimator(self, pos, 0.5)().kill()
 
         if parent:
             self.transform.set_parent(parent)
@@ -135,6 +135,7 @@ class NavBar(GameObject):
         nb.transform.set_parent(self)
         Game.add_object(nb, self.layer)
         self.rearrange()
+        return nb
 
     def remove_btn(self, object: BaseItem):
         for i in self.get_children(filter=lambda x: x.chelik == object):
@@ -154,13 +155,13 @@ class NavBar(GameObject):
         for i in self.get_children():
             if i.visible:
                 i.transform.pos = pos
-                pos += Vector(i.get_computed_size().x + self.btns_gap,
-                              i.get_computed_size().y + self.btns_gap) * self.row_direction.elementwise()
+                pos += Vector(i.get_size().x + self.btns_gap,
+                              i.get_size().y + self.btns_gap) * self.row_direction.elementwise()
 
                 gr = (Vector(self.max_size) * self.row_direction.elementwise()).length()
                 if gr < (pos * self.row_direction.elementwise()).length():
-                    pos = Vector(i.get_computed_size().x + self.btns_gap,
-                                 i.get_computed_size().y + self.btns_gap) * row * second_dir.elementwise()
+                    pos = Vector(i.get_size().x + self.btns_gap,
+                                 i.get_size().y + self.btns_gap) * row * second_dir.elementwise()
                     row += 1
 
     def rearrange(self):

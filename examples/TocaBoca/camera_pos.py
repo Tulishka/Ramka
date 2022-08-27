@@ -1,8 +1,9 @@
+import math
 from math import copysign
 from typing import Callable
 
 from examples.Components.DragAndDrop import Draggable, DragAndDropController
-from ramka import GameObject, Game, Input, Vector, Transform, Camera, interp_mid_spd
+from ramka import GameObject, Game, Input, Vector, Transform, Camera, interp_func_cubic
 from ramka.gameobject_animators import PosAnimator
 from ramka.timeline import Timeline
 
@@ -75,9 +76,7 @@ class CameraPos(Draggable, GameObject):
 
         pos = self.use_limits(Transform.to_local_coord(Camera.main.transform, gameobject.transform))
 
-        f = interp_mid_spd((1, pos - self.transform.pos), (0, Vector(0)))
-
-        tl = PosAnimator(Camera.main.target, pos, 0.5, interp_func=f)()
+        tl = PosAnimator(Camera.main.target, pos, 0.5, interp_func=interp_func_cubic)()
         if on_finish:
             tl.do(on_finish, 0.5)
         tl.kill()

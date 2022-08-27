@@ -17,14 +17,14 @@ class BaseItem(Sprite):
     ...
 
 
-class DropZone(Draggable,Savable, Trigger):
+class DropZone(Draggable, Savable, Trigger):
     def __init__(self, parent: BaseItem, name, pos: Vector = None, radius=None, max_items=1, accept_class=[]):
-        super().__init__(name, pos, radius, parent,color=(255,0,0))
+        super().__init__(name, pos, radius, parent, color=(255, 0, 0))
         self.max_items = max_items
         self.accept_class = accept_class
 
     @staticmethod
-    def get_creation_params(dict,parent):
+    def get_creation_params(dict, parent):
         return [], {
             "parent": parent,
             "name": dict["trigger_name"],
@@ -73,7 +73,6 @@ class DropZone(Draggable,Savable, Trigger):
         self.visible = pygame.key.get_mods() & pygame.KMOD_LCTRL
 
 
-
 class FrontPart(Draggable, Sprite):
     def __init__(self, animations: Union[Animation, pygame.Surface, str, Dict[str, Animation]], parent: BaseItem):
         super().__init__(animations)
@@ -91,8 +90,8 @@ class FrontPart(Draggable, Sprite):
     def on_drag_start(self):
         p = self.get_parent()
         if isinstance(p, Draggable):
-            bs=p.on_drag_start()
-            return bs if isinstance(bs,GameObject) else self.get_parent() if bs!=False else False
+            bs = p.on_drag_start()
+            return bs if isinstance(bs, GameObject) else self.get_parent() if bs != False else False
         else:
             return False
 
@@ -111,10 +110,13 @@ class BaseItem(Savable, Iconable, Sprite):
 
         self.anim_path = anim
 
+        self.type_uid = (type(self).__name__ + "|" + self.anim_path if isinstance(self.anim_path, str) else
+                         ("other|" if "|" not in self.name else "") + self.name).replace("|", "@")
+        self.origin = ""
+
         super().__init__(animations)
         self.drop_zones = []
         self.state.id = 1
-        self.origin=""
         self.transform.pos = pos
         self.mouse_start_point = None
 
@@ -149,10 +151,10 @@ class BaseItem(Savable, Iconable, Sprite):
         super().init_from_dict(opts)
         self.state.id = opts["state.id"]
         self.mass = opts["mass"]
-        self.name = opts.get("name",self.name)
+        self.name = opts.get("name", self.name)
 
     @staticmethod
-    def get_creation_params(dict,parent):
+    def get_creation_params(dict, parent):
         return [], {
             "anim": dict["anim_path"],
             "pos": Vector(dict["transform"]["x"], dict["transform"]["y"]),
@@ -160,7 +162,6 @@ class BaseItem(Savable, Iconable, Sprite):
 
     def can_accept_dropzone_object(self, dropzone: DropZone, obj: Sprite):
         return obj.get_size().x < self.get_size().x
-
 
     def on_object_attached(self, dz: DropZone, object: Sprite):
         pass

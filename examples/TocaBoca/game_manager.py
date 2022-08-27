@@ -87,18 +87,18 @@ class GameManager:
             def create(prefab):
                 GameManager.create_object_from_prefab(prefab,pos=Camera.main.mouse_world_pos()+Vector(0,prefab["object"].get_size().y/4),start_drag=True)
 
-            menu=ItemMenu(GameManager.get_prefabs(),on_item_down=create)
+            menu=ItemMenu(GameManager.get_prefabs(clas=GameObject),on_item_down=create)
             Game.add_object(menu,layer=Game.uiLayer)
 
         nav=NavBar("creature_select", row_direction=Vector(1, 0))
-        nav.add_btn(IconableSprite("img/ui/plus.png").set_icon_args(size=40,border=(220,220,220), background=(150,150,150,200),border_radius=100),action=items_menu, action_on_mb_up=True, prefix="___")
+        nav.add_btn(IconableSprite("img/ui/plus.png").update_icon_args(size=40,border=(220,220,220), background=(150,150,150,200),border_radius=100),action=items_menu, action_on_mb_up=True, prefix="___")
 
         nav = NavBar("game_menu", pos=Vector(Game.ширинаЭкрана - 40, 40), row_direction=Vector(-1, 0))
 
         nav.add_btn(IconableSprite("img/ui/save.png"), action=save_all, action_on_mb_up=True, visible_func=vis_not_drag)
-        nav.add_btn(IconableSprite("img/ui/load.png").set_icon_args(border=(255,0,0),background=(255,100,100)), action=load, action_on_mb_up=True, visible_func=vis_not_drag_shift)
+        nav.add_btn(IconableSprite("img/ui/load.png").update_icon_args(border=(255,0,0),background=(255,100,100)), action=load, action_on_mb_up=True, visible_func=vis_not_drag_shift)
         nav.add_btn(IconableSprite("img/ui/return.png"), action=save_prefab,  action_on_mb_up=True, visible_func=vis_if_drag)
-        nav.add_btn(IconableSprite("img/ui/trash.png").set_icon_args(border=(255,0,0),background=(255,100,100)),  action_on_mb_up=True, action=trash, visible_func=vis_if_drag)
+        nav.add_btn(IconableSprite("img/ui/trash.png").update_icon_args(border=(255,0,0),background=(255,100,100)),  action_on_mb_up=True, action=trash, visible_func=vis_if_drag)
 
 
         rooms = [f"img/komnata{i if i > 1 else ''}.png" for i in [4, 2, 1, 3]]
@@ -218,16 +218,9 @@ class GameManager:
         }
 
         prefab = prefab_s["object"]
+        GameManager.prefabs[prefab.type_uid] = prefab_s
 
-        obj_id = type(prefab).__name__ + "|" + prefab.anim_path if isinstance(prefab.anim_path, str) else \
-            ("other|" if "|" not in prefab.name else "") + prefab.name
-
-        obj_id = obj_id.replace("|", "@")
-        prefab_s["id"] = obj_id
-
-        GameManager.prefabs[obj_id] = prefab_s
-
-        return obj_id
+        return prefab.type_uid
 
     @classmethod
     def add_manual_prefabs(cls):

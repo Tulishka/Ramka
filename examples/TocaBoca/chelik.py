@@ -29,8 +29,9 @@ class Chelik(Creature):
         if self.im_sleep:
             self.state.animation = "blink" + str(self.state.id)
 
-    def get_icon(self):
-        return self._get_icon(offset=(0, 0.1), border_radius=60, background=(0, 220, 220), border=(150, 150, 0))
+    def def_icon_args(self):
+        self.set_icon_args(offset=(0, 0.1), border_radius=60, background=(0, 220, 220), border=(150, 150, 0))
+        return self
 
     def get_init_dict(self):
         res = super().get_init_dict()

@@ -9,7 +9,17 @@ class Iconable:
         self._icon_args = args
         return self
 
+    def update_icon_args(self, **args):
+        self._get_icon_args().update(args)
+        return self
+
+    def def_icon_args(self):
+        self.set_icon_args(size=55, offset=(0, 0), background=(100, 150, 100), border=(50, 110, 50), border_radius=16)
+        return self
+
     def _get_icon_args(self):
+        if not hasattr(self, "_icon_args"):
+            self.def_icon_args()
         return getattr(self, "_icon_args", {})
 
     def get_icon(self):
@@ -61,12 +71,9 @@ class Iconable:
 
 
 class IconableSprite(Iconable, Sprite):
-    def _get_icon_args(self):
-        res = super()._get_icon_args()
-        if not res:
-            res = {
-                "border": (200, 200, 255),
-                "background": (180, 180, 220)
-            }
-
-        return res
+    def def_icon_args(self):
+        self._icon_args = {
+            "border": (200, 200, 255),
+            "background": (180, 180, 220)
+        }
+        return self

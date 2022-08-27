@@ -80,7 +80,7 @@ def point_inside_poly(x, y, poly):
     return inside
 
 
-def _point_inside_poly(points,polygon):
+def _point_inside_poly(points, polygon):
     import matplotlib.path as mpltPath
     path = mpltPath.Path(polygon)
     inside2 = path.contains_points(points)
@@ -126,3 +126,19 @@ def interp_pulse(to_val: Union[Vector, List, Tuple],
         return from_val[1] + d[1] * math.exp(-0.8 * (type * math.e * x - math.e) ** 2)
 
     return interp
+
+
+def interp_func_linear(x):
+    return x
+
+
+def interp_func_squared(x):
+    return 1 - (x - 1) ** 2
+
+
+def interp_func_cubic(x):
+    return 1 + (x - 1) ** 3
+
+
+def interp_func_spring(x):
+    return 0.5 * (2 + (2 * x - 1) ** 3 - (2 * x - 1) ** 2)

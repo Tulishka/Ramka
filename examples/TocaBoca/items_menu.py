@@ -4,6 +4,7 @@ from typing import Callable, Union, Tuple, Iterable
 
 import pygame
 
+from creature import Creature
 from base_item import BaseItem
 from lighting import Lighting
 from examples.Components.DragAndDrop import DragAndDropController
@@ -36,16 +37,18 @@ class ItemMenu(GameObject):
 
     def on_enter_game(self):
         super().on_enter_game()
-        self.navbar = NavBar("item_select", row_direction=Vector(1, 0), pos=(max(50, Game.ширинаЭкрана * 0.15), 150),
-                             max_size=Game.высотаЭкрана * 0.90, parent=self)
+        self.navbar = NavBar("item_select", gap=10, row_direction=Vector(1, 0),
+                             pos=(max(50, Game.ширинаЭкрана * 0.10), 150),
+                             max_size=Game.ширинаЭкрана * 0.80, parent=self)
         DragAndDropController.controller.cancel_drag()
         DragAndDropController.controller.enabled = False
 
         def fac(prefab):
-            def de(obj, btn):
-                if self.on_item_down:
-                    self.on_item_down(prefab)
-                Game.remove_object(self)
+            def de(navbat, btn):
+                if not navbat.present:
+                    if self.on_item_down:
+                        self.on_item_down(prefab)
+                    Game.remove_object(self)
 
             return de
 
@@ -53,11 +56,17 @@ class ItemMenu(GameObject):
 
         for i, p in enumerate(self.prefabs):
             p["object"].update_icon_args(size=80)
-            pid=p["object"].type_uid
-            nb = self.navbar.add_btn(
-                p["object"], action=fac(p),
-                sub_obj=Circle(radius=4, color=(0, 255, 0) if Game.get_object(clas=BaseItem, filter=lambda x: x.type_uid==pid) else (200, 0, 0))
-            )
+            pid = p["object"].type_uid
+
+            if isinstance(p["object"], Creature):
+                present = Game.get_object(clas=BaseItem, filter=lambda x: x.type_uid == pid)
+                sub = Circle(radius=4, color=(0, 255, 0) if not present else (200, 0, 0))
+            else:
+                sub = None
+                present = False
+
+            nb = self.navbar.add_btn(p["object"], action=fac(p), sub_obj=sub)
+            nb.present = present
             nb.transform.scale = 0.05, 0.05
             t = 0.05 + 0.25 * random()
             if random() > 0.7:

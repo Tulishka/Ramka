@@ -55,7 +55,7 @@ class ParentJockey(Component):
         self.enabled = True
 
         self.current_height = 0
-        self.max_height = 25
+        self.max_height = 50
 
     def on_add(self):
         self.host = self.gameObject.get_parent(clas=Sprite)
@@ -99,7 +99,8 @@ class ParentJockey(Component):
             self.current_height = 0
 
         # print(self.current_height)
-        self.gameObject.transform.y = self.gameObject.transform.parent.get_world_transform().y + self.me_start_pos.y - self.current_height
+        t=self.gameObject.transform.parent.get_world_transform()
+        self.gameObject.transform.y = t.y + self.me_start_pos.y * t.scale_y - self.current_height
         self.parent_last_pos = p.transform.pos
 
 

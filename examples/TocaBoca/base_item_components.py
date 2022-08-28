@@ -2,7 +2,7 @@ import math
 from random import randint
 
 from examples.Components.DragAndDrop import Draggable
-from ramka import Component, Sprite, Game, Cooldown, TransformLockX, defaultTransformModifier, TransformLockY
+from ramka import Component, Sprite, Game, Cooldown, TransformLockX, defaultTransformModifier, TransformLockY, Transform
 
 
 class FallingDown(Component):
@@ -63,12 +63,7 @@ class ParentJockey(Component):
             return
         self.me_start_pos = self.gameObject.transform.pos
 
-        print("start jokeyed", self.host)
-        self.gameObject.transform.modifier = TransformLockY()
-
     def on_remove(self):
-        print("end jokeyed")
-        self.gameObject.transform.modifier = defaultTransformModifier
         self.host = None
 
     def update(self, deltaTime: float):
@@ -79,9 +74,8 @@ class ParentJockey(Component):
 
         if self.parent_last_pos is not None:
             dl = p.transform.pos - self.parent_last_pos
-            # self.gameObject.transform.pos -= dl*self.host.w_transform().scale.elementwise()
 
-            self.current_height +=dl.y
+            self.current_height += dl.y
 
         if self.current_height > 0:
 
@@ -94,13 +88,11 @@ class ParentJockey(Component):
             if self.current_height < 0:
                 self.current_height = 0
 
-        elif self.current_height<0:
+        elif self.current_height < 0:
             self.spd = 0
             self.current_height = 0
 
-        # print(self.current_height)
-        t=self.gameObject.transform.parent.get_world_transform()
-        self.gameObject.transform.y = t.y + self.me_start_pos.y * t.scale_y - self.current_height
+        self.gameObject.transform.y = self.me_start_pos.y - self.current_height
         self.parent_last_pos = p.transform.pos
 
 

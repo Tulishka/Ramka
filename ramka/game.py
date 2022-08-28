@@ -96,6 +96,9 @@ class Game:
                                                  0 if not fullscreen else pygame.FULLSCREEN))
         pygame.display.set_caption(caption)
 
+        Game.размерЭкрана = Game.экран.get_size()
+        Game.screen_size = Vector(Game.размерЭкрана)
+
         Game.ширинаЭкрана, Game.высотаЭкрана = Game.размерЭкрана
 
         Game.ph_draw_options = pymunk.pygame_util.DrawOptions(Game.экран)

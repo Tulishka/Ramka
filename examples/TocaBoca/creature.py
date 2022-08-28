@@ -6,12 +6,14 @@ from ramka import Game
 
 class Creature(Movable):
     def __init__(self, *a, **b):
+
         super().__init__(*a, **b)
         self.creature_bar_order = "1"
 
     def on_attach(self, dz):
         super().on_attach(dz)
-        ParentJockey(self)
+        if dz.trigger_name == "Saddle":
+            self.timers.set_timeout(0.5, lambda x: ParentJockey(self))
 
     def on_detach(self, dz):
         super().on_detach(dz)
@@ -32,5 +34,5 @@ class Creature(Movable):
 
     def get_default_pretty_points(self):
         res = super().get_default_pretty_points()
-        res.update({'seat': (0, self.get_size()[1]*0.25)})
+        res.update({'seat': (0, self.get_size()[1] * 0.25)})
         return res

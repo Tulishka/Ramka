@@ -1,7 +1,8 @@
+import math
 from random import randint
 
 from examples.Components.DragAndDrop import Draggable
-from ramka import Component, Sprite, Game, Cooldown
+from ramka import Component, Sprite, Game, Cooldown, TransformLockX, defaultTransformModifier, TransformLockY
 
 
 class FallingDown(Component):
@@ -44,41 +45,61 @@ class FallingDown(Component):
 class ParentJockey(Component):
 
     def __init__(self, game_obj: Sprite):
+        self.host = None
+        self.me_start_pos = None
+        self.parent_last_pos = None
         super().__init__(game_obj)
 
         self.spd = 0
-        self.g = 900
+        self.g = 850
         self.enabled = True
-        self.parent_start_pos = None
-        self.parent_last_pos = None
 
-        self.host=None
+        self.current_height = 0
+        self.max_height = 25
 
     def on_add(self):
         self.host = self.gameObject.get_parent(clas=Sprite)
         if self.host is None:
             return
-        self.parent_start_pos = self.host.transform.pos
-        print("start jokeyed",self.host)
+        self.me_start_pos = self.gameObject.transform.pos
+
+        print("start jokeyed", self.host)
+        self.gameObject.transform.modifier = TransformLockY()
 
     def on_remove(self):
         print("end jokeyed")
+        self.gameObject.transform.modifier = defaultTransformModifier
+        self.host = None
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
-
         p = self.host
-        if p is None:
+        if p is None or not self.enabled:
             return
 
-        if self.parent_last_pos is None:
-            self.parent_last_pos = p.transform.pos
-            return
+        if self.parent_last_pos is not None:
+            dl = p.transform.pos - self.parent_last_pos
+            # self.gameObject.transform.pos -= dl*self.host.w_transform().scale.elementwise()
 
-        dl = p.transform.pos - self.parent_last_pos
+            self.current_height +=dl.y
 
-        self.gameObject.transform.pos = dl
+        if self.current_height > 0:
 
+            if self.current_height > self.max_height:
+                self.current_height = self.max_height
+
+            self.spd += self.g * deltaTime
+
+            self.current_height -= self.spd * deltaTime
+            if self.current_height < 0:
+                self.current_height = 0
+
+        elif self.current_height<0:
+            self.spd = 0
+            self.current_height = 0
+
+        # print(self.current_height)
+        self.gameObject.transform.y = self.gameObject.transform.parent.get_world_transform().y + self.me_start_pos.y - self.current_height
         self.parent_last_pos = p.transform.pos
 
 

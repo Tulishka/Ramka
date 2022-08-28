@@ -34,35 +34,41 @@ class Transform(TransformBase):
         dirty = self.__world_transform_cache is None
         if self.parent is None:
             if dirty:
-                self.__world_transform_cache = self.modifier.apply(self)
+                self.__world_transform_cache = self.modifier.apply(self, self)
         else:
             if dirty:
+                prev = self.copy()
                 if self.modifier.final_apply:
-                    self.__world_transform_cache = self.modifier.apply_ip(self.add(self.parent.get_world_transform()))
+                    self.__world_transform_cache = self.modifier.apply_ip(self.add(self.parent.get_world_transform()),
+                                                                          prev)
                 else:
-                    self.__world_transform_cache = self.modifier.apply(self).add_ip(self.parent.get_world_transform())
+                    self.__world_transform_cache = self.modifier.apply(self).add_ip(self.parent.get_world_transform(),
+                                                                                    prev)
 
         res = self.__world_transform_cache.copy()
         return res
 
     def __nocache_get_world_transform(self) -> TransformBase:
         if self.parent is None:
-            return self.modifier.apply(self)
+            return self.modifier.apply(self, self)
         else:
+            prev = self.copy()
             if self.modifier.final_apply:
-                return self.modifier.apply_ip(self.add(self.parent.get_world_transform()))
+                return self.modifier.apply_ip(self.add(self.parent.get_world_transform()), prev)
             else:
-                return self.modifier.apply(self).add_ip(self.parent.get_world_transform())
+                return self.modifier.apply(self).add_ip(self.parent.get_world_transform(), prev)
 
     def __add_child(self, child: Transform):
         if child not in self.children:
             self.children.append(child)
-            Game._notify_event_listeners(child.gameObject, "on_child_add", notified_object=self.gameObject, check_parent_recursively=True)
+            Game._notify_event_listeners(child.gameObject, "on_child_add", notified_object=self.gameObject,
+                                         check_parent_recursively=True)
 
     def __remove_child(self, child: Transform):
         if child in self.children:
             self.children.remove(child)
-            Game._notify_event_listeners(child.gameObject, "on_child_remove", notified_object=self.gameObject, check_parent_recursively=True)
+            Game._notify_event_listeners(child.gameObject, "on_child_remove", notified_object=self.gameObject,
+                                         check_parent_recursively=True)
 
     def __iter__(self):
         for obj in self.children:
@@ -101,7 +107,7 @@ class Transform(TransformBase):
             target = target.transform
 
         if isinstance(target, TransformBase):
-            local_target=target.gameObject.transform.parent == parent
+            local_target = target.gameObject.transform.parent == parent
             if local_target:
                 target = target._pos
             else:

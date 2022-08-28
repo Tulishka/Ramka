@@ -7,7 +7,7 @@ from game_classes import GameClasses
 from base_item_components import Blink
 from iconable import Iconable
 from savable import Savable
-from typing import Dict, Union
+from typing import Dict, Union, Tuple
 from ramka import GameObject, Sprite, Game, Animation, Vector, Input
 from ramka.gameobject_animators import PosAnimator
 from ramka.trigger import Trigger
@@ -18,10 +18,16 @@ class BaseItem(Sprite):
 
 
 class DropZone(Draggable, Savable, Trigger):
-    def __init__(self, parent: BaseItem, name, pos: Vector = None, radius=None, max_items=1, accept_class=[]):
+    def __init__(self, parent: BaseItem, name, pos: Vector = None, radius=None, max_items=1, accept_class=[],
+                 pretty_point="center"):
         super().__init__(name, pos, radius, parent, color=(255, 0, 0))
         self.max_items = max_items
         self.accept_class = accept_class
+
+        if not isinstance(parent, BaseItem):
+            raise Exception("PrettyPoint: parent must be BaseItem!")
+
+        self.pretty_point = pretty_point
 
     @staticmethod
     def get_creation_params(dict, parent):
@@ -38,7 +44,7 @@ class DropZone(Draggable, Savable, Trigger):
     def attach_object(self, object: GameObject):
         object.transform.set_parent(self, True)
         self.layer.sort_object_children(self.get_parent())
-        pos = Vector(0, 0)
+        pos = -object.get_pretty_point(self.pretty_point)
         if object.transform.pos.length() > Game.ширинаЭкрана:
             object.transform.pos = pos
         else:
@@ -56,6 +62,7 @@ class DropZone(Draggable, Savable, Trigger):
         self.max_items = opts['max_items']
         self.accept_class = [GameClasses.get_class(t) for t in opts['accept_class']]
         self.radius = opts['radius']
+        self.pretty_point = opts.get("pretty_point", "center")
         if 'poly' in opts:
             if opts['poly']:
                 self.set_poly([Vector(t) for t in opts['poly']])
@@ -67,15 +74,58 @@ class DropZone(Draggable, Savable, Trigger):
             "accept_class": [t.__name__ for t in self.accept_class],
             "radius": self.radius,
             "trigger_name": self.trigger_name,
-            "poly": [tuple(t) for t in self._poly] if self._poly else None
+            "poly": [tuple(t) for t in self._poly] if self._poly else None,
+            "pretty_point": self.pretty_point
         })
         return res
 
-    def on_drag_start(self):
+    @staticmethod
+    def interactive():
         return pygame.key.get_mods() & pygame.KMOD_LCTRL
 
+    def on_drag_start(self):
+        return self.interactive()
+
+    @Game.on_key_down
+    def on_key_press(self, keys):
+        if self.interactive() and self.touch_test(Input.mouse_pos):
+            if 1073741911 in keys:
+                self.radius += 10
+            elif 1073741910 in keys:
+                self.radius -= 10
+                if self.radius < 20:
+                    self.radius = 10
+
     def draw(self, dest: pygame.Surface):
-        if pygame.key.get_mods() & pygame.KMOD_LCTRL:
+        if self.interactive():
+            super().draw(dest)
+
+
+class PrettyPoint(Draggable, Trigger):
+    def __init__(self, parent: BaseItem, name, pos: Vector):
+        super().__init__(name, pos, 10, parent, color=(0, 200, 0))
+
+        if not isinstance(parent, BaseItem):
+            raise Exception("PrettyPoint: parent must be BaseItem!")
+
+        self.points_holder = parent
+        self.last_pos = parent.get_pretty_point(self.trigger_name)
+
+    @staticmethod
+    def interactive():
+        return pygame.key.get_mods() & pygame.KMOD_LCTRL
+
+    def update(self, deltaTime: float):
+        super().update(deltaTime)
+
+        if not self.interactive():
+            Game.remove_object(self)
+        elif self.last_pos != self.transform.pos:
+            self.points_holder.set_pretty_point(self.trigger_name, tuple(self.transform.pos))
+            self.last_pos = self.transform.pos
+
+    def draw(self, dest: pygame.Surface):
+        if self.interactive():
             super().draw(dest)
 
 
@@ -126,6 +176,8 @@ class BaseItem(Savable, Iconable, Sprite):
         self.transform.pos = pos
         self.mouse_start_point = None
 
+        self.pretty_points = self.get_default_pretty_points()
+
         if not BaseItem.dd_manager:
             BaseItem.dd_manager = Game.get_object(clas=DragAndDropController)
 
@@ -143,6 +195,29 @@ class BaseItem(Savable, Iconable, Sprite):
             if front_anim:
                 self.front_object = FrontPart(front_anim, self)
 
+    def create_pretty_points_controls(self):
+        if pygame.key.get_mods() & pygame.KMOD_LCTRL:
+            for i in self.get_children(clas=PrettyPoint):
+                return
+            for pk, pp in self.pretty_points.items():
+                Game.add_object(PrettyPoint(self, pk, Vector(pp)))
+
+    def set_pretty_point(self, name, pos) -> BaseItem:
+        self.pretty_points[name] = pos if isinstance(pos, tuple) else tuple(pos)
+        return self
+
+    def set_pretty_points(self, points: Dict[str, Tuple]) -> BaseItem:
+        self.pretty_points.update(points)
+        return self
+
+    def get_pretty_point(self, name, world_coord=False, obj_coord: GameObject = None) -> Vector:
+        p = Vector(self.pretty_points.get(name, (0, 0)))
+        if world_coord:
+            p = self.w_transform().add_to_vector(p)
+        elif obj_coord:
+            p = self.transform.to_local_coord(obj_coord.transform, p, False)
+        return p
+
     def get_init_dict(self):
         res = super().get_init_dict()
         res.update({
@@ -150,6 +225,7 @@ class BaseItem(Savable, Iconable, Sprite):
             "state.id": self.state.id,
             "mass": self.mass,
             "name": self.name,
+            "pretty_points": self.pretty_points
         })
         return res
 
@@ -158,6 +234,7 @@ class BaseItem(Savable, Iconable, Sprite):
         self.state.id = opts["state.id"]
         self.mass = opts["mass"]
         self.name = opts.get("name", self.name)
+        self.pretty_points.update(opts.get("pretty_points", {}))
 
     @staticmethod
     def get_creation_params(dict, parent):
@@ -194,8 +271,9 @@ class BaseItem(Savable, Iconable, Sprite):
                 obj[f"state{f[-5]}"] = Animation(f, 5, True)
         return obj
 
-    def drop_zone_add(self, name, pos: Vector = None, radius=35, max_items=1, accept_class=[]) -> BaseItem:
-        DropZone(self, name, pos, radius, max_items, accept_class)
+    def drop_zone_add(self, name, pos: Vector = None, radius=35, max_items=1, accept_class=[],
+                      pretty_point="center") -> BaseItem:
+        DropZone(self, name, pos, radius, max_items, accept_class, pretty_point)
         return self
 
     def state_next(self):
@@ -228,6 +306,8 @@ class BaseItem(Savable, Iconable, Sprite):
         if self.front_object:
             self.front_object.state.animation = self.state.animation
 
+        self.create_pretty_points_controls()
+
     def update_mass(self):
         sq = self.get_size()
         self.mass = sq.x * sq.y / (100 * 100)
@@ -235,3 +315,5 @@ class BaseItem(Savable, Iconable, Sprite):
             self.mass = 1
         return self.mass
 
+    def get_default_pretty_points(self):
+        return {"center": (0, 0)}

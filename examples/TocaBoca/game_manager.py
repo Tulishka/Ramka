@@ -89,7 +89,7 @@ class GameManager:
             def create(prefab):
                 o = GameManager.create_object_from_prefab(prefab, pos=Camera.main.mouse_world_pos() + Vector(0, prefab[
                     "object"].get_size().y / 4), start_drag=True)
-                Game.mouse_capture = o
+                Game.break_input_eventloop()
 
             menu = ItemMenu(GameManager.get_prefabs(clas=GameObject), on_item_down=create)
             Game.add_object(menu, layer=Game.uiLayer)
@@ -112,6 +112,8 @@ class GameManager:
 
         rooms = [f"img/komnata{i if i > 1 else ''}.png" for i in [4, 2, 1, 3]]
 
+        min_x = None
+        max_x = None
         for i, kom in enumerate(rooms):
             room = Background(kom)
             ks = Game.высотаЭкрана / room.get_size().y
@@ -121,16 +123,20 @@ class GameManager:
             rs[1] = round(rs[1])
             room.transform.pos = rs.x * ((i - 1) + 0.5), Game.высотаЭкрана * 0.5
             Game.add_object(room)
+            if min_x is None:
+                min_x = room.transform.pos.x - rs[0] * 0.5
+            max_x = room.transform.pos.x + rs[0] * 0.5
 
-        for i, kom in enumerate(rooms):
-            wall = Background("img/wall.png")
+        wani=Animation("img/wall.png",5,True)
+        for i in range(len(rooms)+1):
+            wall = Background(wani)
             wall.transform.scale = ks, ks
-            wall.transform.pos = rs.x * i, Game.высотаЭкрана * 0.5
+            wall.transform.pos = rs.x * (i-1), Game.высотаЭкрана * 0.5
             Game.add_object(wall)
 
         FallingDown.floor_y = 600 * ks
 
-        cam_pos = CameraPos(min_x=-rs.x + abs(Game.ширинаЭкрана - rs.x)*0.5 * ks , max_x=rs.x * (len(rooms)-1) - Game.ширинаЭкрана*0.5 - rs.x*0.5 +33)
+        cam_pos = CameraPos(min_x=min_x + Game.ширинаЭкрана*0.5,max_x=max_x - Game.ширинаЭкрана*0.5)
         Game.add_object(cam_pos)
         Camera.main.set_focus(cam_pos, lock_y=True)
 
@@ -332,9 +338,9 @@ class GameManager:
            )
 
         ap(lambda: Bag("predmet|rykzak", (600, 100)).drop_zone_add("Bag", Vector(0, 0), max_items=100))
-        ap(lambda: Transport("transport|Hors1", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150))
-        ap(lambda: Transport("transport|Hors2", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150))
-        ap(lambda: Transport("transport|Hors3", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150))
+        ap(lambda: Transport("transport|Hors1", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150, pretty_point="seat"))
+        ap(lambda: Transport("transport|Hors2", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150, pretty_point="seat"))
+        ap(lambda: Transport("transport|Hors3", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150, pretty_point="seat"))
         ap(lambda: HandableItem("predmet|telefon", (650, 100)))
         ap(lambda: Item("predmet|kormushka", (700, 100)))
 

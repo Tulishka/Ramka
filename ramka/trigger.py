@@ -82,7 +82,7 @@ class Trigger(GameObject):
         return self.radius * (abs(tr.scale.x) + abs(tr.scale.y)) * 0.5
 
     def touch_test(self, point: Vector, func: Callable = None):
-        return self.is_collided(point,func)
+        return self.is_collided(point, func)
 
     def is_collided(self, other: Union[GameObject, Vector], func: Callable = None) -> Union[bool, Tuple[int, int]]:
 
@@ -184,7 +184,15 @@ class Trigger(GameObject):
 
         if self.color:
             poly = self.get_w_poly()
+            sc = self.screen_pos()
             if len(poly):
                 pygame.draw.polygon(dest, self.color, poly, 1)
             else:
-                pygame.draw.circle(dest, self.color, self.screen_pos(), self.w_radius(), 1)
+                pygame.draw.circle(dest, self.color, sc, self.w_radius(), 1)
+
+            pygame.draw.line(dest, self.color, sc - Vector(0, 10), sc + Vector(0, 10))
+            pygame.draw.line(dest, self.color, sc - Vector(10, 0), sc + Vector(10, 0))
+
+            if self.trigger_name:
+                a = Game.font.render(self.trigger_name, True, self.color)
+                dest.blit(a, sc+Vector(-a.get_size()[0]*0.5,self.radius))

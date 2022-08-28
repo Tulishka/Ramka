@@ -59,6 +59,7 @@ class Game:
     time = 0
 
     mouse_capture = None
+    lock_input = None
 
     timers = Timers()
 
@@ -227,7 +228,16 @@ class Game:
                     obj.update_components(deltaTime)
 
             Game.mouse_capture = None
-            for obj in reversed(gobs):
+            Game.break_event_loop = False
+            if Game.lock_input:
+                if Game.lock_input not in Game.gameObjects or not Game.lock_input.enabled:
+                    Game.lock_input = None
+                    inpl = reversed(gobs)
+                else:
+                    inpl = [Game.lock_input]
+            else:
+                inpl = reversed(gobs)
+            for obj in inpl:
                 if obj.enabled:
                     for ev in obj.event_listeners:
                         if ev.event_descriptor != 1:
@@ -286,6 +296,8 @@ class Game:
                                         cap = ev(Game.mouse_released)
                                     if ev.hover and isinstance(cap, GameObject):
                                         Game.mouse_capture = cap
+                if Game.lock_input or Game.break_event_loop:
+                    break
 
             for ul in Game.after_update_listeners:
                 ul(deltaTime)
@@ -468,3 +480,7 @@ class Game:
             return func
 
         return wrapper if func is None else wrapper(func)
+
+    @staticmethod
+    def break_input_eventloop():
+        Game.break_event_loop=True

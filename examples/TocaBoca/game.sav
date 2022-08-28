@@ -21,6 +21,483 @@
         "anim_path": "mebel|window",
         "state.id": 1,
         "mass": 11.4215,
-        "name": "window"
+        "name": "window",
+        "pretty_points": {
+            "center": [
+                0,
+                0
+            ]
+        }
+    },
+    {
+        "uuid": "e05f2d2f-c86f-458d-83cf-6806929ae272",
+        "parent": "main_camera",
+        "class_name": "Transport",
+        "transform": {
+            "x": 237.0,
+            "y": 340.25,
+            "scale_x": 1.0,
+            "scale_y": 1.0,
+            "angle": 0.0
+        },
+        "parent_sort_me_by": "000154",
+        "layer": "default",
+        "visible": true,
+        "image_rotate_offset": 0,
+        "image_offset.x": 0.0,
+        "image_offset.y": 0.0,
+        "use_parent_mask": false,
+        "children": [
+            {
+                "uuid": "0447e79f-c242-4e31-8ff9-c0f98e2e0e1d",
+                "parent": "e05f2d2f-c86f-458d-83cf-6806929ae272",
+                "class_name": "DropZone",
+                "transform": {
+                    "x": 42.0,
+                    "y": -27.0,
+                    "scale_x": 1.0,
+                    "scale_y": 1.0,
+                    "angle": 0.0
+                },
+                "parent_sort_me_by": "000156",
+                "layer": "default",
+                "visible": true,
+                "children": [],
+                "max_items": 1,
+                "accept_class": [],
+                "radius": 150,
+                "trigger_name": "Saddle",
+                "poly": null,
+                "pretty_point": "seat"
+            }
+        ],
+        "anim_path": "transport|Hors1",
+        "state.id": 1,
+        "mass": 23.5571,
+        "name": "Hors1",
+        "pretty_points": {
+            "center": [
+                0,
+                0
+            ]
+        },
+        "__fallcomp.enabled": true,
+        "__restore_parent": null
+    },
+    {
+        "uuid": "dd895546-f557-4f56-804b-dad569187ab4",
+        "parent": "main_camera",
+        "class_name": "Chelik",
+        "transform": {
+            "x": 565.0,
+            "y": 548.420018558361,
+            "scale_x": 1.0,
+            "scale_y": 1.0,
+            "angle": 0
+        },
+        "parent_sort_me_by": "000146",
+        "layer": "default",
+        "visible": true,
+        "image_rotate_offset": 0,
+        "image_offset.x": 0.0,
+        "image_offset.y": 0.0,
+        "use_parent_mask": false,
+        "children": [
+            {
+                "uuid": "0373474a-3b07-42d2-9215-5f1147b3a8a1",
+                "parent": "dd895546-f557-4f56-804b-dad569187ab4",
+                "class_name": "DropZone",
+                "transform": {
+                    "x": -56.0,
+                    "y": 107.0,
+                    "scale_x": 1.0,
+                    "scale_y": 1.0,
+                    "angle": 0.0
+                },
+                "parent_sort_me_by": "000147",
+                "layer": "default",
+                "visible": true,
+                "children": [],
+                "max_items": 1,
+                "accept_class": [],
+                "radius": 35,
+                "trigger_name": "LeftArm",
+                "poly": null,
+                "pretty_point": "center"
+            },
+            {
+                "uuid": "1e133789-9511-4147-86d0-1915fc4a30e5",
+                "parent": "dd895546-f557-4f56-804b-dad569187ab4",
+                "class_name": "DropZone",
+                "transform": {
+                    "x": 60.0,
+                    "y": 107.0,
+                    "scale_x": 1.0,
+                    "scale_y": 1.0,
+                    "angle": 0.0
+                },
+                "parent_sort_me_by": "000148",
+                "layer": "default",
+                "visible": true,
+                "children": [],
+                "max_items": 1,
+                "accept_class": [],
+                "radius": 35,
+                "trigger_name": "RightArm",
+                "poly": null,
+                "pretty_point": "center"
+            },
+            {
+                "uuid": "ebbd0571-c46e-489a-8fa9-89c4fa758690",
+                "parent": "dd895546-f557-4f56-804b-dad569187ab4",
+                "class_name": "DropZone",
+                "transform": {
+                    "x": 0.0,
+                    "y": -130.0,
+                    "scale_x": 1.0,
+                    "scale_y": 1.0,
+                    "angle": 0.0
+                },
+                "parent_sort_me_by": "000149",
+                "layer": "default",
+                "visible": true,
+                "children": [],
+                "max_items": 1,
+                "accept_class": [],
+                "radius": 50,
+                "trigger_name": "Head",
+                "poly": null,
+                "pretty_point": "center"
+            }
+        ],
+        "anim_path": "pers|p2",
+        "state.id": 1,
+        "mass": 6.868,
+        "name": "p2",
+        "pretty_points": {
+            "center": [
+                0.0,
+                15.0
+            ],
+            "seat": [
+                0.0,
+                91.0
+            ]
+        },
+        "__fallcomp.enabled": true,
+        "__restore_parent": null,
+        "im_sleep": false
+    },
+    {
+        "uuid": "0f2282cd-d184-42a0-b0a0-7f9c18fab918",
+        "parent": "main_camera",
+        "class_name": "Chelik",
+        "transform": {
+            "x": 818.6570363800379,
+            "y": 584.75,
+            "scale_x": 1.0,
+            "scale_y": 1.0,
+            "angle": 0
+        },
+        "parent_sort_me_by": "000332",
+        "layer": "default",
+        "visible": true,
+        "image_rotate_offset": 0,
+        "image_offset.x": 0.0,
+        "image_offset.y": 0.0,
+        "use_parent_mask": false,
+        "children": [
+            {
+                "uuid": "bec91987-37c4-40d6-b2fd-68e7c595f781",
+                "parent": "0f2282cd-d184-42a0-b0a0-7f9c18fab918",
+                "class_name": "DropZone",
+                "transform": {
+                    "x": -56.0,
+                    "y": 107.0,
+                    "scale_x": 1.0,
+                    "scale_y": 1.0,
+                    "angle": 0.0
+                },
+                "parent_sort_me_by": "000333",
+                "layer": "default",
+                "visible": true,
+                "children": [],
+                "max_items": 1,
+                "accept_class": [],
+                "radius": 35,
+                "trigger_name": "LeftArm",
+                "poly": null,
+                "pretty_point": "center"
+            },
+            {
+                "uuid": "f5ed5416-169a-428f-ab1a-31ac3b658126",
+                "parent": "0f2282cd-d184-42a0-b0a0-7f9c18fab918",
+                "class_name": "DropZone",
+                "transform": {
+                    "x": 60.0,
+                    "y": 107.0,
+                    "scale_x": 1.0,
+                    "scale_y": 1.0,
+                    "angle": 0.0
+                },
+                "parent_sort_me_by": "000334",
+                "layer": "default",
+                "visible": true,
+                "children": [],
+                "max_items": 1,
+                "accept_class": [],
+                "radius": 35,
+                "trigger_name": "RightArm",
+                "poly": null,
+                "pretty_point": "center"
+            },
+            {
+                "uuid": "616c3a3b-c6aa-4b96-9000-48e969b87b5e",
+                "parent": "0f2282cd-d184-42a0-b0a0-7f9c18fab918",
+                "class_name": "DropZone",
+                "transform": {
+                    "x": 0.0,
+                    "y": -130.0,
+                    "scale_x": 1.0,
+                    "scale_y": 1.0,
+                    "angle": 0.0
+                },
+                "parent_sort_me_by": "000335",
+                "layer": "default",
+                "visible": true,
+                "children": [],
+                "max_items": 1,
+                "accept_class": [],
+                "radius": 50,
+                "trigger_name": "Head",
+                "poly": null,
+                "pretty_point": "center"
+            }
+        ],
+        "anim_path": "pers|p3",
+        "state.id": 1,
+        "mass": 7.1162,
+        "name": "p3",
+        "pretty_points": {
+            "center": [
+                0,
+                0
+            ],
+            "seat": [
+                2.0,
+                81.5
+            ]
+        },
+        "__fallcomp.enabled": true,
+        "__restore_parent": null,
+        "im_sleep": false
+    },
+    {
+        "uuid": "77d1e94a-8328-4a55-b1de-1cd2acca0422",
+        "parent": "main_camera",
+        "class_name": "Chelik",
+        "transform": {
+            "x": 453.0,
+            "y": 550.8450568204507,
+            "scale_x": 1.0,
+            "scale_y": 1.0,
+            "angle": 0
+        },
+        "parent_sort_me_by": "000379",
+        "layer": "default",
+        "visible": true,
+        "image_rotate_offset": 0,
+        "image_offset.x": 0.0,
+        "image_offset.y": 0.0,
+        "use_parent_mask": false,
+        "children": [
+            {
+                "uuid": "abe1c2a0-8664-4e49-9080-5f3621932d28",
+                "parent": "77d1e94a-8328-4a55-b1de-1cd2acca0422",
+                "class_name": "DropZone",
+                "transform": {
+                    "x": -56.0,
+                    "y": 107.0,
+                    "scale_x": 1.0,
+                    "scale_y": 1.0,
+                    "angle": 0.0
+                },
+                "parent_sort_me_by": "000380",
+                "layer": "default",
+                "visible": true,
+                "children": [],
+                "max_items": 1,
+                "accept_class": [],
+                "radius": 35,
+                "trigger_name": "LeftArm",
+                "poly": null,
+                "pretty_point": "center"
+            },
+            {
+                "uuid": "4135542c-07ba-4050-affb-d6fadad4db70",
+                "parent": "77d1e94a-8328-4a55-b1de-1cd2acca0422",
+                "class_name": "DropZone",
+                "transform": {
+                    "x": 60.0,
+                    "y": 107.0,
+                    "scale_x": 1.0,
+                    "scale_y": 1.0,
+                    "angle": 0.0
+                },
+                "parent_sort_me_by": "000381",
+                "layer": "default",
+                "visible": true,
+                "children": [],
+                "max_items": 1,
+                "accept_class": [],
+                "radius": 35,
+                "trigger_name": "RightArm",
+                "poly": null,
+                "pretty_point": "center"
+            },
+            {
+                "uuid": "ba63fd44-80bc-44a4-9e33-c8a4d8a02058",
+                "parent": "77d1e94a-8328-4a55-b1de-1cd2acca0422",
+                "class_name": "DropZone",
+                "transform": {
+                    "x": 0.0,
+                    "y": -130.0,
+                    "scale_x": 1.0,
+                    "scale_y": 1.0,
+                    "angle": 0.0
+                },
+                "parent_sort_me_by": "000382",
+                "layer": "default",
+                "visible": true,
+                "children": [],
+                "max_items": 1,
+                "accept_class": [],
+                "radius": 50,
+                "trigger_name": "Head",
+                "poly": null,
+                "pretty_point": "center"
+            }
+        ],
+        "anim_path": "pers|p6",
+        "state.id": 1,
+        "mass": 6.954,
+        "name": "p6",
+        "pretty_points": {
+            "center": [
+                0,
+                0
+            ],
+            "seat": [
+                -2.0,
+                116.5
+            ]
+        },
+        "__fallcomp.enabled": true,
+        "__restore_parent": null,
+        "im_sleep": false
+    },
+    {
+        "uuid": "cea1d4f4-37d7-4c33-99ab-53fa12fa9a95",
+        "parent": "main_camera",
+        "class_name": "Chelik",
+        "transform": {
+            "x": 681.0,
+            "y": 563.8328972655224,
+            "scale_x": 1.0,
+            "scale_y": 1.0,
+            "angle": 0
+        },
+        "parent_sort_me_by": "000242",
+        "layer": "default",
+        "visible": true,
+        "image_rotate_offset": 0,
+        "image_offset.x": 0.0,
+        "image_offset.y": 0.0,
+        "use_parent_mask": false,
+        "children": [
+            {
+                "uuid": "9bd17584-1ba0-48a0-b7c8-9ae93b83ffa9",
+                "parent": "cea1d4f4-37d7-4c33-99ab-53fa12fa9a95",
+                "class_name": "DropZone",
+                "transform": {
+                    "x": -56.0,
+                    "y": 107.0,
+                    "scale_x": 1.0,
+                    "scale_y": 1.0,
+                    "angle": 0.0
+                },
+                "parent_sort_me_by": "000243",
+                "layer": "default",
+                "visible": true,
+                "children": [],
+                "max_items": 1,
+                "accept_class": [],
+                "radius": 35,
+                "trigger_name": "LeftArm",
+                "poly": null,
+                "pretty_point": "center"
+            },
+            {
+                "uuid": "59ab60d4-07ec-4190-ae83-18526b38a363",
+                "parent": "cea1d4f4-37d7-4c33-99ab-53fa12fa9a95",
+                "class_name": "DropZone",
+                "transform": {
+                    "x": 60.0,
+                    "y": 107.0,
+                    "scale_x": 1.0,
+                    "scale_y": 1.0,
+                    "angle": 0.0
+                },
+                "parent_sort_me_by": "000244",
+                "layer": "default",
+                "visible": true,
+                "children": [],
+                "max_items": 1,
+                "accept_class": [],
+                "radius": 35,
+                "trigger_name": "RightArm",
+                "poly": null,
+                "pretty_point": "center"
+            },
+            {
+                "uuid": "3c344a7d-424f-4d52-8edd-63a9e461b3bd",
+                "parent": "cea1d4f4-37d7-4c33-99ab-53fa12fa9a95",
+                "class_name": "DropZone",
+                "transform": {
+                    "x": 0.0,
+                    "y": -130.0,
+                    "scale_x": 1.0,
+                    "scale_y": 1.0,
+                    "angle": 0.0
+                },
+                "parent_sort_me_by": "000245",
+                "layer": "default",
+                "visible": true,
+                "children": [],
+                "max_items": 1,
+                "accept_class": [],
+                "radius": 50,
+                "trigger_name": "Head",
+                "poly": null,
+                "pretty_point": "center"
+            }
+        ],
+        "anim_path": "pers|pusya",
+        "state.id": 1,
+        "mass": 6.6717,
+        "name": "pusya",
+        "pretty_points": {
+            "center": [
+                0,
+                0
+            ],
+            "seat": [
+                1.0,
+                103.25
+            ]
+        },
+        "__fallcomp.enabled": true,
+        "__restore_parent": null,
+        "im_sleep": false
     }
 ]

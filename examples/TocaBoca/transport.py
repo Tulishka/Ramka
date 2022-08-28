@@ -1,8 +1,10 @@
 from math import copysign
 
+from creature import Creature
+from base_item import DropZone
 from examples.Components.DragAndDrop import DragAndDropController
 from movable import Movable
-from ramka import Input
+from ramka import Input, Sprite
 
 
 class Transport(Movable):
@@ -11,6 +13,8 @@ class Transport(Movable):
         self.direction = 1
         self.last_pos = None
 
+    def can_accept_dropzone_object(self, dropzone: DropZone, obj: Sprite):
+        return super().can_accept_dropzone_object(dropzone, obj) and isinstance(obj, Creature)
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
@@ -24,4 +28,4 @@ class Transport(Movable):
                     self.direction = 1
 
         self.last_pos = self.screen_pos()
-        self.transform.scale_x = copysign(self.transform.scale_x,self.direction)
+        self.transform.scale_x = copysign(self.transform.scale_x, self.direction)

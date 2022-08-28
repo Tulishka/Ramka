@@ -12,7 +12,7 @@ class CameraPos(Draggable, GameObject):
     def __init__(self, min_x=0, max_x=0, auto_limits=True):
         super().__init__()
         self.transform.pos = Game.screen_size * 0.5
-        self.spd = 400
+        self.spd = 700
         self.parent_sort_me_by = "..."
         self.last_position = self.transform.pos
         self.last_spd = Vector(0)
@@ -68,9 +68,9 @@ class CameraPos(Draggable, GameObject):
                 scp=obj.screen_pos()
                 if Game.высотаЭкрана * 0.20 < scp.y < Game.высотаЭкрана * 0.80:
                     if scp.x < Game.ширинаЭкрана * 0.05:
-                        self.last_spd.x = - min(500, max(4 * abs(self.transform.pos.x - self.min_x), 100))
+                        self.last_spd.x = - min(self.spd, max(4 * abs(self.transform.pos.x - self.min_x), 100))
                     elif scp.x > Game.ширинаЭкрана - Game.ширинаЭкрана * 0.05:
-                        self.last_spd.x = min(500, max(4 * abs(self.transform.pos.x - self.max_x), 100))
+                        self.last_spd.x = min(self.spd, max(4 * abs(self.transform.pos.x - self.max_x), 100))
 
     def animate_to(self, gameobject, on_finish) -> Timeline:
 

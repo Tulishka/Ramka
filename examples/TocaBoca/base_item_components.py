@@ -55,7 +55,7 @@ class ParentJockey(Component):
         self.enabled = True
 
         self.current_height = 0
-        self.max_height = 50
+        self.max_height = 25
 
     def on_add(self):
         self.host = self.gameObject.get_parent(clas=Sprite)

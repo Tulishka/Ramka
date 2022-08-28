@@ -343,6 +343,12 @@ class GameManager:
         ap(lambda: Transport("transport|Hors3", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150, pretty_point="seat"))
         ap(lambda: Transport("transport|Hors4", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150, pretty_point="seat"))
         ap(lambda: Transport("transport|Hors5", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150, pretty_point="seat"))
+        ap(lambda: Transport("transport|Hors6", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150, pretty_point="seat"))
+        ap(lambda: Transport("transport|Hors7", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150, pretty_point="seat"))
+        ap(lambda: Transport("transport|Hors8", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150, pretty_point="seat"))
+        ap(lambda: Transport("transport|Hors9", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150, pretty_point="seat"))
+        ap(lambda: Transport("transport|Hors10", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150, pretty_point="seat"))
+        ap(lambda: Transport("transport|Hors11", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150, pretty_point="seat"))
         ap(lambda: HandableItem("predmet|telefon", (650, 100)))
         ap(lambda: Item("predmet|kormushka", (700, 100)))
 

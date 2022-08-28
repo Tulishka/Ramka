@@ -1,3 +1,4 @@
+from base_item_components import ParentJockey
 from nav_bar import NavBar
 from movable import Movable
 from ramka import Game
@@ -7,6 +8,15 @@ class Creature(Movable):
     def __init__(self, *a, **b):
         super().__init__(*a, **b)
         self.creature_bar_order = "1"
+
+    def on_attach(self, dz):
+        super().on_attach(dz)
+        ParentJockey(self)
+
+    def on_detach(self, dz):
+        super().on_detach(dz)
+        for i in self.get_components(component_class=ParentJockey):
+            i.remove()
 
     def on_enter_game(self):
         super().on_enter_game()

@@ -10,14 +10,13 @@ class FallingDown(Component):
     def __init__(self, game_obj: Sprite):
         super().__init__(game_obj)
 
-
         self.spd = 0
         self.g = 900
         self.enabled = True
 
-    @Game.on_mouse_down(button=3,hover=True)
+    @Game.on_mouse_down(button=3, hover=True)
     def mouse_3_click(self):
-        self.spd=-max(800 / self.gameObject.mass,400)
+        self.spd = -max(800 / self.gameObject.mass, 400)
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
@@ -40,6 +39,47 @@ class FallingDown(Component):
 
         if y > Game.высотаЭкрана - 10:
             self.gameObject.transform.y = Game.высотаЭкрана - 11 - self.gameObject.get_computed_size().y * 0.5
+
+
+class ParentJockey(Component):
+
+    def __init__(self, game_obj: Sprite):
+        super().__init__(game_obj)
+
+        self.spd = 0
+        self.g = 900
+        self.enabled = True
+        self.parent_start_pos = None
+        self.parent_last_pos = None
+
+        self.host=None
+
+    def on_add(self):
+        self.host = self.gameObject.get_parent(clas=Sprite)
+        if self.host is None:
+            return
+        self.parent_start_pos = self.host.transform.pos
+        print("start jokeyed",self.host)
+
+    def on_remove(self):
+        print("end jokeyed")
+
+    def update(self, deltaTime: float):
+        super().update(deltaTime)
+
+        p = self.host
+        if p is None:
+            return
+
+        if self.parent_last_pos is None:
+            self.parent_last_pos = p.transform.pos
+            return
+
+        dl = p.transform.pos - self.parent_last_pos
+
+        self.gameObject.transform.pos = dl
+
+        self.parent_last_pos = p.transform.pos
 
 
 class Blink(Component):

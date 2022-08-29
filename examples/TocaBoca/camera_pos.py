@@ -2,6 +2,7 @@ import math
 from math import copysign
 from typing import Callable
 
+from CameraPosModificator import CameraPosModInterface
 from examples.Components.DragAndDrop import Draggable, DragAndDropController
 from ramka import GameObject, Game, Input, Vector, Transform, Camera, interp_func_cubic
 from ramka.gameobject_animators import PosAnimator
@@ -29,7 +30,7 @@ class CameraPos(Draggable, GameObject):
     def move_me_top(self):
         return False
 
-    def use_limits(self,pos: Vector):
+    def use_limits(self, pos: Vector):
 
         if pos.x > self.max_x:
             pos.x = self.max_x
@@ -61,16 +62,22 @@ class CameraPos(Draggable, GameObject):
             if self.last_spd.length_squared() > 2:
                 self.drag_set_new_position(self.transform.pos + self.last_spd * deltaTime)
             else:
-                self.last_spd=Vector(0)
+                self.last_spd = Vector(0)
 
             obj = DragAndDropController.controller and DragAndDropController.controller.get_dragged_object()
             if obj:
-                scp=obj.screen_pos()
+                scp = obj.screen_pos()
+                if isinstance(obj, CameraPosModInterface):
+                    spd = obj.get_scroll_speed()
+                    rng = obj.get_scroll_activation_edge_range()
+                else:
+                    spd = self.spd
+                    rng = Game.высотаЭкрана * 0.05
                 if Game.высотаЭкрана * 0.20 < scp.y < Game.высотаЭкрана * 0.80:
-                    if scp.x < Game.ширинаЭкрана * 0.05:
-                        self.last_spd.x = - min(self.spd, max(4 * abs(self.transform.pos.x - self.min_x), 100))
-                    elif scp.x > Game.ширинаЭкрана - Game.ширинаЭкрана * 0.05:
-                        self.last_spd.x = min(self.spd, max(4 * abs(self.transform.pos.x - self.max_x), 100))
+                    if scp.x < rng:
+                        self.last_spd.x = - min(spd, max(4 * abs(self.transform.pos.x - self.min_x), 100))
+                    elif scp.x > Game.ширинаЭкрана - rng:
+                        self.last_spd.x = min(spd, max(4 * abs(self.transform.pos.x - self.max_x), 100))
 
     def animate_to(self, gameobject, on_finish) -> Timeline:
 

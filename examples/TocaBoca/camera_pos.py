@@ -66,7 +66,7 @@ class CameraPos(Draggable, GameObject):
 
             obj = DragAndDropController.controller and DragAndDropController.controller.get_dragged_object()
             if obj:
-                scp = obj.screen_pos()
+                scp = Input.mouse_pos
                 if isinstance(obj, CameraPosModInterface):
                     spd = obj.get_scroll_speed()
                     rng = obj.get_scroll_activation_edge_range()

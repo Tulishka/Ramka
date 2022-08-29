@@ -65,6 +65,7 @@ class ParentJockey(Component):
 
     def on_remove(self):
         self.host = None
+        self.me_start_pos = None
 
     def update(self, deltaTime: float):
         super().update(deltaTime)

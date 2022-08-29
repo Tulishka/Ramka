@@ -1,3 +1,4 @@
+from base_item import DropZone
 from base_item_components import ParentJockey
 from nav_bar import NavBar
 from movable import Movable
@@ -36,3 +37,9 @@ class Creature(Movable):
         res = super().get_default_pretty_points()
         res.update({'seat': (0, self.get_size()[1] * 0.25)})
         return res
+
+    def init_from_dict(self, d):
+        super().init_from_dict(d)
+        p = self.get_parent()
+        if isinstance(p, DropZone) and p.trigger_name == "Saddle":
+            self.timers.set_timeout(0.5, lambda x: ParentJockey(self))

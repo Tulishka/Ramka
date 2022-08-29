@@ -42,6 +42,11 @@ class Transport(CameraPosModInterface, Movable):
         self.last_pos = self.screen_pos()
         self.transform.scale_x = copysign(self.transform.scale_x, self.direction)
 
+        for c in self.get_children(clas=Creature,recursive=True):
+            return
+
+        self.path_len = 0
+
     def get_scroll_speed(self) -> float:
         return 700 + 3 * self.path_len
 

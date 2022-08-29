@@ -1,5 +1,7 @@
 from math import copysign
 
+import pygame
+
 from CameraPosModificator import CameraPosModInterface
 from creature import Creature
 from base_item import DropZone
@@ -42,7 +44,8 @@ class Transport(CameraPosModInterface, Movable):
         self.last_pos = self.screen_pos()
         self.transform.scale_x = copysign(self.transform.scale_x, self.direction)
 
-        for c in self.get_children(clas=Creature,recursive=True):
+        #c in self.get_children(clas=Creature, recursive=True)
+        if pygame.key.get_mods() & pygame.KMOD_LSHIFT:
             return
 
         self.path_len = 0

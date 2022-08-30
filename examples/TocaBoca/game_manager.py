@@ -127,16 +127,16 @@ class GameManager:
                 min_x = room.transform.pos.x - rs[0] * 0.5
             max_x = room.transform.pos.x + rs[0] * 0.5
 
-        wani=Animation("img/wall.png",5,True)
-        for i in range(len(rooms)+1):
+        wani = Animation("img/wall.png", 5, True)
+        for i in range(len(rooms) + 1):
             wall = Background(wani)
             wall.transform.scale = ks, ks
-            wall.transform.pos = rs.x * (i-1), Game.высотаЭкрана * 0.5
+            wall.transform.pos = rs.x * (i - 1), Game.высотаЭкрана * 0.5
             Game.add_object(wall)
 
         FallingDown.floor_y = 600 * ks
 
-        cam_pos = CameraPos(min_x=min_x + Game.ширинаЭкрана*0.5,max_x=max_x - Game.ширинаЭкрана*0.5)
+        cam_pos = CameraPos(min_x=min_x + Game.ширинаЭкрана * 0.5, max_x=max_x - Game.ширинаЭкрана * 0.5)
         Game.add_object(cam_pos)
         Camera.main.set_focus(cam_pos, lock_y=True)
 
@@ -268,6 +268,15 @@ class GameManager:
         ap(lambda: Interier("mebel|bed2", (160, 545)).drop_zone_add("Sleep", Vector(0, -50), radius=90,
                                                                     accept_class=[Chelik, Pet]))
 
+        ap(lambda: Interier("mebel|shkaf1", (160, 545)).drop_zone_add("Flat", Vector(0, -50), radius=90))
+
+        ap(lambda: Interier("mebel|mirror", (160, 545)).drop_zone_add("Flat", Vector(0, 60), radius=90,
+                                                                      accept_class=[Item, Pet], max_items=20,
+                                                                      pretty_point="bottom",
+                                                                      attach_style=DropZone.attach_horizontal,
+                                                                      poly=[(-100, -120), (100, -120), (100, 10),
+                                                                            (-100, 10)]))
+
         ap(lambda: Interier("mebel|bed1", (1850, 545)).drop_zone_add("Sleep", Vector(0, -50), radius=90,
                                                                      accept_class=[Chelik, Pet]))
 
@@ -338,17 +347,28 @@ class GameManager:
            )
 
         ap(lambda: Bag("predmet|rykzak", (600, 100)).drop_zone_add("Bag", Vector(0, 0), max_items=100))
-        ap(lambda: Transport("transport|Hors1", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150, pretty_point="seat"))
-        ap(lambda: Transport("transport|Hors2", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150, pretty_point="seat"))
-        ap(lambda: Transport("transport|Hors3", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150, pretty_point="seat"))
-        ap(lambda: Transport("transport|Hors4", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150, pretty_point="seat"))
-        ap(lambda: Transport("transport|Hors5", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150, pretty_point="seat"))
-        # ap(lambda: Transport("transport|Hors6", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150, pretty_point="seat"))
-        # ap(lambda: Transport("transport|Hors7", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150, pretty_point="seat"))
-        # ap(lambda: Transport("transport|Hors8", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150, pretty_point="seat"))
-        # ap(lambda: Transport("transport|Hors9", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150, pretty_point="seat"))
-        # ap(lambda: Transport("transport|Hors10", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150, pretty_point="seat"))
-        # ap(lambda: Transport("transport|Hors11", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150, pretty_point="seat"))
+        ap(lambda: Transport("transport|Hors1", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150,
+                                                                          pretty_point="seat"))
+        ap(lambda: Transport("transport|Hors2", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150,
+                                                                          pretty_point="seat"))
+        ap(lambda: Transport("transport|Hors3", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150,
+                                                                          pretty_point="seat"))
+        ap(lambda: Transport("transport|Hors4", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150,
+                                                                          pretty_point="seat"))
+        ap(lambda: Transport("transport|Hors5", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150,
+                                                                          pretty_point="seat"))
+        ap(lambda: Transport("transport|Hors6", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150,
+                                                                          pretty_point="seat"))
+        ap(lambda: Transport("transport|Hors7", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150,
+                                                                          pretty_point="seat"))
+        ap(lambda: Transport("transport|Hors8", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150,
+                                                                          pretty_point="seat"))
+        ap(lambda: Transport("transport|Hors9", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150,
+                                                                          pretty_point="seat"))
+        ap(lambda: Transport("transport|Hors10", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150,
+                                                                           pretty_point="seat"))
+        ap(lambda: Transport("transport|Hors11", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150,
+                                                                           pretty_point="seat"))
         ap(lambda: HandableItem("predmet|telefon", (650, 100)))
         ap(lambda: Item("predmet|kormushka", (700, 100)))
 

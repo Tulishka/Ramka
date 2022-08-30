@@ -11,7 +11,7 @@ class HandableItem(Item):
             self.transform.angle = 45
         elif dz.trigger_name == "RightArm":
             self.transform.angle = -45
-        elif dz.trigger_name in ("Head", "Sleep"):
+        elif dz.trigger_name in ("Head", "Sleep","Flat"):
             self.transform.angle = -90
 
     def on_detach(self, dz):

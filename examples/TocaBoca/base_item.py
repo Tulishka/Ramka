@@ -18,11 +18,17 @@ class BaseItem(Sprite):
 
 
 class DropZone(Draggable, Savable, Trigger):
+    attach_none = 0
+    attach_point = 1
+    attach_vertical = 2
+    attach_horizontal = 3
+
     def __init__(self, parent: BaseItem, name, pos: Vector = None, radius=None, max_items=1, accept_class=[],
-                 pretty_point="center"):
-        super().__init__(name, pos, radius, parent, color=(255, 0, 0))
+                 pretty_point="center", attach_style=1, **kwargs):
+        super().__init__(name, pos, radius, parent, color=(255, 0, 0), **kwargs)
         self.max_items = max_items
         self.accept_class = accept_class
+        self.attach_style=attach_style
 
         if not isinstance(parent, BaseItem):
             raise Exception("PrettyPoint: parent must be BaseItem!")
@@ -38,17 +44,27 @@ class DropZone(Draggable, Savable, Trigger):
 
     def can_attach_object(self, object: GameObject):
         return self.max_items > len(
-            self.transform.children) and (not self.accept_class or type(
-            object) in self.accept_class) and self.get_parent().can_accept_dropzone_object(self, object)
+            self.transform.children) and (not self.accept_class or any(
+                        isinstance(object, t) for t in self.accept_class)) and self.get_parent().can_accept_dropzone_object(self, object)
 
     def attach_object(self, object: GameObject):
         object.transform.set_parent(self, True)
         self.layer.sort_object_children(self.get_parent())
+
         pos = -object.get_pretty_point(self.pretty_point)
-        if object.transform.pos.length() > Game.ширинаЭкрана:
-            object.transform.pos = pos
-        else:
-            PosAnimator(object, pos, 0.2)().kill()
+
+        if self.attach_style>0:
+
+            if self.attach_style == DropZone.attach_horizontal:
+                pos.x = object.transform.pos.x
+            elif self.attach_style == DropZone.attach_vertical:
+                pos.y=object.transform.pos.y
+
+            if object.transform.pos.length() > Game.ширинаЭкрана:
+                object.transform.pos = pos
+            else:
+                PosAnimator(object, pos, 0.2)().kill()
+
         self.get_parent().on_object_attached(self, object)
         return True
 
@@ -63,6 +79,7 @@ class DropZone(Draggable, Savable, Trigger):
         self.accept_class = [GameClasses.get_class(t) for t in opts['accept_class']]
         self.radius = opts['radius']
         self.pretty_point = opts.get("pretty_point", "center")
+        self.attach_style = opts.get("attach_style", DropZone.attach_point)
         if 'poly' in opts:
             if opts['poly']:
                 self.set_poly([Vector(t) for t in opts['poly']])
@@ -75,7 +92,8 @@ class DropZone(Draggable, Savable, Trigger):
             "radius": self.radius,
             "trigger_name": self.trigger_name,
             "poly": [tuple(t) for t in self._poly] if self._poly else None,
-            "pretty_point": self.pretty_point
+            "pretty_point": self.pretty_point,
+            "attach_style": self.attach_style
         })
         return res
 
@@ -272,8 +290,8 @@ class BaseItem(Savable, Iconable, Sprite):
         return obj
 
     def drop_zone_add(self, name, pos: Vector = None, radius=35, max_items=1, accept_class=[],
-                      pretty_point="center") -> BaseItem:
-        DropZone(self, name, pos, radius, max_items, accept_class, pretty_point)
+                      pretty_point="center", attach_style=1, **kwargs) -> BaseItem:
+        DropZone(self, name, pos, radius, max_items, accept_class, pretty_point, attach_style, **kwargs)
         return self
 
     def state_next(self):
@@ -316,4 +334,11 @@ class BaseItem(Savable, Iconable, Sprite):
         return self.mass
 
     def get_default_pretty_points(self):
-        return {"center": (0, 0)}
+        sz=self.get_size()*0.5
+        return {
+            "center": (0, 0),
+            "left": (-sz.x, 0),
+            "right": (sz.x, 0),
+            "bottom": (0, sz.y),
+            "top": (0, -sz.y),
+        }

@@ -80,17 +80,17 @@
                 "visible": true,
                 "children": [
                     {
-                        "uuid": "3497eba4-2dff-4ee6-badf-1811dcafc17a",
+                        "uuid": "98dacbad-85d6-403f-bd87-77db5502f15d",
                         "parent": "cd926b91-2ec4-4182-81bb-c308e8e81f79",
-                        "class_name": "HandableItem",
+                        "class_name": "Item",
                         "transform": {
-                            "x": -14.711820339580754,
-                            "y": -49.5,
+                            "x": 52.67950357648442,
+                            "y": -51.0,
                             "scale_x": 1.0,
                             "scale_y": 1.0,
                             "angle": 0
                         },
-                        "parent_sort_me_by": "000426",
+                        "parent_sort_me_by": "000524",
                         "layer": "default",
                         "visible": true,
                         "image_rotate_offset": 0,
@@ -98,30 +98,78 @@
                         "image_offset.y": 0.0,
                         "use_parent_mask": false,
                         "children": [],
-                        "anim_path": "predmet|telefon",
+                        "anim_path": "predmet|kosmetik",
                         "state.id": 1,
-                        "mass": 1.397,
-                        "name": "telefon",
+                        "mass": 1.0812,
+                        "name": "kosmetik",
                         "pretty_points": {
                             "center": [
                                 0,
                                 0
                             ],
                             "left": [
-                                -55.0,
+                                -53.0,
                                 0
                             ],
                             "right": [
-                                55.0,
+                                53.0,
                                 0
                             ],
                             "bottom": [
-                                -1.0,
-                                49.5
+                                0,
+                                51.0
                             ],
                             "top": [
                                 0,
-                                -63.5
+                                -51.0
+                            ]
+                        },
+                        "__fallcomp.enabled": false,
+                        "__restore_parent": "main_camera"
+                    },
+                    {
+                        "uuid": "3ef1faaf-7e19-46a0-b15b-8326fc060c6c",
+                        "parent": "cd926b91-2ec4-4182-81bb-c308e8e81f79",
+                        "class_name": "Item",
+                        "transform": {
+                            "x": -18.32049642351558,
+                            "y": -35.0,
+                            "scale_x": 1.0,
+                            "scale_y": 1.0,
+                            "angle": 0
+                        },
+                        "parent_sort_me_by": "000573",
+                        "layer": "default",
+                        "visible": true,
+                        "image_rotate_offset": 0,
+                        "image_offset.x": 0.0,
+                        "image_offset.y": 0.0,
+                        "use_parent_mask": false,
+                        "children": [],
+                        "anim_path": "predmet|duhi",
+                        "state.id": 1,
+                        "mass": 1,
+                        "name": "duhi",
+                        "pretty_points": {
+                            "center": [
+                                0,
+                                0
+                            ],
+                            "left": [
+                                -33.0,
+                                0
+                            ],
+                            "right": [
+                                33.0,
+                                0
+                            ],
+                            "bottom": [
+                                0,
+                                35.0
+                            ],
+                            "top": [
+                                0,
+                                -35.0
                             ]
                         },
                         "__fallcomp.enabled": false,
@@ -137,20 +185,20 @@
                 "trigger_name": "Flat",
                 "poly": [
                     [
-                        -100,
-                        -120
+                        -100.0,
+                        -120.0
                     ],
                     [
-                        100,
-                        -120
+                        100.0,
+                        -120.0
                     ],
                     [
-                        100,
-                        10
+                        100.0,
+                        10.0
                     ],
                     [
-                        -100,
-                        10
+                        -100.0,
+                        10.0
                     ]
                 ],
                 "pretty_point": "bottom",
@@ -484,7 +532,56 @@
                 "parent_sort_me_by": "000381",
                 "layer": "default",
                 "visible": true,
-                "children": [],
+                "children": [
+                    {
+                        "uuid": "559d58f7-a42b-4403-ba2b-c25352dc407b",
+                        "parent": "c724df92-730d-49e0-9d61-a16db7a302a8",
+                        "class_name": "Item",
+                        "transform": {
+                            "x": -0.0,
+                            "y": -0.0,
+                            "scale_x": 1.0,
+                            "scale_y": 1.0,
+                            "angle": 0
+                        },
+                        "parent_sort_me_by": "000269",
+                        "layer": "default",
+                        "visible": true,
+                        "image_rotate_offset": 0,
+                        "image_offset.x": 0.0,
+                        "image_offset.y": 0.0,
+                        "use_parent_mask": true,
+                        "children": [],
+                        "anim_path": "predmet|karandah",
+                        "state.id": 1,
+                        "mass": 1.2596,
+                        "name": "karandah",
+                        "pretty_points": {
+                            "center": [
+                                0,
+                                0
+                            ],
+                            "left": [
+                                -47.0,
+                                0
+                            ],
+                            "right": [
+                                47.0,
+                                0
+                            ],
+                            "bottom": [
+                                -5.0,
+                                58.0
+                            ],
+                            "top": [
+                                0,
+                                -67.0
+                            ]
+                        },
+                        "__fallcomp.enabled": false,
+                        "__restore_parent": "main_camera"
+                    }
+                ],
                 "max_items": 100,
                 "accept_class": [],
                 "radius": 35,
@@ -577,7 +674,7 @@
         "class_name": "Pet",
         "transform": {
             "x": 789.7731725913809,
-            "y": 668.4396163483808,
+            "y": 669.0516416613527,
             "scale_x": 1.0,
             "scale_y": 1.0,
             "angle": 0
@@ -622,5 +719,191 @@
         },
         "__fallcomp.enabled": true,
         "__restore_parent": null
+    },
+    {
+        "uuid": "3497eba4-2dff-4ee6-badf-1811dcafc17a",
+        "parent": "main_camera",
+        "class_name": "HandableItem",
+        "transform": {
+            "x": 705.5701193440615,
+            "y": 698.25,
+            "scale_x": 1.0,
+            "scale_y": 1.0,
+            "angle": 0
+        },
+        "parent_sort_me_by": "000426",
+        "layer": "default",
+        "visible": true,
+        "image_rotate_offset": 0,
+        "image_offset.x": 0.0,
+        "image_offset.y": 0.0,
+        "use_parent_mask": false,
+        "children": [],
+        "anim_path": "predmet|telefon",
+        "state.id": 1,
+        "mass": 1.397,
+        "name": "telefon",
+        "pretty_points": {
+            "center": [
+                0,
+                0
+            ],
+            "left": [
+                -55.0,
+                0
+            ],
+            "right": [
+                55.0,
+                0
+            ],
+            "bottom": [
+                -1.0,
+                49.5
+            ],
+            "top": [
+                0,
+                -63.5
+            ]
+        },
+        "__fallcomp.enabled": true,
+        "__restore_parent": null
+    },
+    {
+        "uuid": "ab3d3bb1-87f8-40df-8ecd-56dde7687531",
+        "parent": "main_camera",
+        "class_name": "LightItem",
+        "transform": {
+            "x": 250.04497420201017,
+            "y": 240.75,
+            "scale_x": 1.0,
+            "scale_y": 1.0,
+            "angle": 0.0
+        },
+        "parent_sort_me_by": "000277",
+        "layer": "default",
+        "visible": true,
+        "image_rotate_offset": 0,
+        "image_offset.x": 0.0,
+        "image_offset.y": 0.0,
+        "use_parent_mask": false,
+        "children": [],
+        "anim_path": "mebel|ramka",
+        "state.id": 1,
+        "mass": 4.5365,
+        "name": "ramka",
+        "pretty_points": {
+            "center": [
+                0,
+                0
+            ],
+            "left": [
+                -105.5,
+                0
+            ],
+            "right": [
+                105.5,
+                0
+            ],
+            "bottom": [
+                0,
+                107.5
+            ],
+            "top": [
+                0,
+                -107.5
+            ]
+        }
+    },
+    {
+        "uuid": "e73c0d79-ae78-4076-9fbb-d1b68aaddefa",
+        "parent": "main_camera",
+        "class_name": "LightItem",
+        "transform": {
+            "x": 882.8006800833138,
+            "y": 247.5,
+            "scale_x": 1.0,
+            "scale_y": 1.0,
+            "angle": 0.0
+        },
+        "parent_sort_me_by": "000328",
+        "layer": "default",
+        "visible": true,
+        "image_rotate_offset": 0,
+        "image_offset.x": 0.0,
+        "image_offset.y": 0.0,
+        "use_parent_mask": false,
+        "children": [],
+        "anim_path": "mebel|plokati1",
+        "state.id": 1,
+        "mass": 1.95,
+        "name": "plokati1",
+        "pretty_points": {
+            "center": [
+                0,
+                0
+            ],
+            "left": [
+                -75.0,
+                0
+            ],
+            "right": [
+                75.0,
+                0
+            ],
+            "bottom": [
+                0,
+                65.0
+            ],
+            "top": [
+                0,
+                -65.0
+            ]
+        }
+    },
+    {
+        "uuid": "e018dfd2-a87f-479a-ba24-3dbe938c8699",
+        "parent": "main_camera",
+        "class_name": "LightItem",
+        "transform": {
+            "x": 143.80910912550928,
+            "y": 90.0,
+            "scale_x": 1.0,
+            "scale_y": 1.0,
+            "angle": 0.0
+        },
+        "parent_sort_me_by": "000379",
+        "layer": "default",
+        "visible": true,
+        "image_rotate_offset": 0,
+        "image_offset.x": 0.0,
+        "image_offset.y": 0.0,
+        "use_parent_mask": false,
+        "children": [],
+        "anim_path": "mebel|plokati2",
+        "state.id": 1,
+        "mass": 2.34,
+        "name": "plokati2",
+        "pretty_points": {
+            "center": [
+                0,
+                0
+            ],
+            "left": [
+                -97.5,
+                0
+            ],
+            "right": [
+                97.5,
+                0
+            ],
+            "bottom": [
+                0,
+                60.0
+            ],
+            "top": [
+                0,
+                -60.0
+            ]
+        }
     }
 ]

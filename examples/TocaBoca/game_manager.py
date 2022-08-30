@@ -265,6 +265,12 @@ class GameManager:
 
         ap(lambda: LightItem("mebel|window", (693, 278)))
 
+        ap(lambda: LightItem("mebel|ramka", (693, 278)))
+
+        ap(lambda: LightItem("mebel|plokati1", (693, 278)))
+
+        ap(lambda: LightItem("mebel|plokati2", (693, 278)))
+
         ap(lambda: Interier("mebel|bed2", (160, 545)).drop_zone_add("Sleep", Vector(0, -50), radius=90,
                                                                     accept_class=[Chelik, Pet]))
 
@@ -371,6 +377,9 @@ class GameManager:
                                                                            pretty_point="seat"))
         ap(lambda: HandableItem("predmet|telefon", (650, 100)))
         ap(lambda: Item("predmet|kormushka", (700, 100)))
+        ap(lambda: Item("predmet|duhi", (700, 100)))
+        ap(lambda: Item("predmet|kosmetik", (700, 100)))
+        ap(lambda: Item("predmet|karandah", (700, 100)))
 
     @classmethod
     def add_autogen_prefabs(cls):

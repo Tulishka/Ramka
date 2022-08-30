@@ -8,11 +8,11 @@ from iconable import Iconable
 from examples.Components.DragAndDrop import DragAndDropController
 from base_item import BaseItem, DropZone
 from camera_pos import CameraPos
-from ramka import Sprite, Game, Camera, GameObject, Vector, Input, Animation, Cooldown, Transform
+from ramka import Sprite, Game, Camera, GameObject, Vector, Input, Animation, Cooldown, Transform, interp_func_spring, \
+    interp_func_cubic, interp_func_squared
 from ramka.effects import Effects
 from ramka.gameobject_animators import ScaleAnimator, PosAnimator
-
-
+from ramka.timeline import Timeline
 
 
 class NavBtn(Sprite):
@@ -35,6 +35,9 @@ class NavBtn(Sprite):
         self.on_mup_process: Callable[[int], None] = self.process_button if action_on_mb_up else None
         self.on_mdn_process: Callable[[int], None] = None if action_on_mb_up else self.process_button
 
+        self.hovering = False
+        self.scale_animator: Timeline = None
+
     def update(self, deltaTime: float):
         super().update(deltaTime)
         if self.update_cd.ready:
@@ -50,6 +53,18 @@ class NavBtn(Sprite):
                     p = self.get_parent(clas=NavBar)
                     if p:
                         p.rearrange()
+
+        if self.visible:
+            hovering = self.touch_test(Input.mouse_pos)
+        else:
+            hovering = False
+
+        if hovering != self.hovering:
+            self.hovering = hovering
+            if self.scale_animator:
+                self.scale_animator.remove()
+
+            self.scale_animator = ScaleAnimator(self, Vector(1.0 + (0.2 if hovering else 0)), 0.2,interp_func=interp_func_squared)().kill()
 
     @Game.on_mouse_up
     def on_mouse_up(self, button):
@@ -138,7 +153,7 @@ class NavBar(GameObject):
         Game.add_object(nb, self.layer)
         if sub_obj:
             sub_obj.transform.set_parent(nb, False)
-            sub_obj.transform.pos = 0.4*Vector(nb.get_size())
+            sub_obj.transform.pos = 0.4 * Vector(nb.get_size())
             Game.add_object(sub_obj, self.layer)
 
         self.rearrange()

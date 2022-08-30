@@ -48,6 +48,9 @@ class CameraPos(Draggable, GameObject):
     def touch_test(self, point: Vector, func: Callable = None):
         return True
 
+    def update_speed(self, spd: Vector):
+        self.last_spd = spd
+
     def update(self, deltaTime: float):
         super(CameraPos, self).update(deltaTime)
 
@@ -68,8 +71,11 @@ class CameraPos(Draggable, GameObject):
             if obj:
                 scp = Input.mouse_pos
                 if isinstance(obj, CameraPosModInterface):
-                    spd = obj.get_scroll_speed()
-                    rng = obj.get_scroll_activation_edge_range()
+                    spd = obj.get_camera_max_speed()
+                    rng = obj.get_camera_scroll_activation_edge_range()
+                    cspd = obj.update_camera_speed(self.last_spd)
+                    if cspd is not None:
+                        self.last_spd = cspd
                 else:
                     spd = self.spd
                     rng = Game.высотаЭкрана * 0.05

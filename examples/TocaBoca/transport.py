@@ -26,32 +26,27 @@ class Transport(CameraPosModInterface, Movable):
         if self.is_dragged():
 
             if self.last_pos:
-                delta = self.screen_pos() - self.last_pos
+                delta = self.transform.pos - self.last_pos
             else:
                 delta = Vector(0)
 
-            self.path_len += delta.length()
-            self.path_len *= 0.95
+            if pygame.key.get_mods() & pygame.KMOD_LSHIFT:
+                self.path_len *= 0.96
+                self.path_len += abs(delta.y)+0.0001
+            else:
 
-            if Camera.main and Camera.main.target and abs(Camera.main.target.last_spd.x) >= max(delta.x/deltaTime,705):
-                delta = Camera.main.target.last_spd
+                if delta.x > 3:
+                    self.direction = -1
+                elif delta.x < -3:
+                    self.direction = 1
 
-            if delta.x > 3:
-                self.direction = -1
-            elif delta.x < -3:
-                self.direction = 1
+                self.path_len = 0
 
-        self.last_pos = self.screen_pos()
+        self.last_pos = self.transform.pos
         self.transform.scale_x = copysign(self.transform.scale_x, self.direction)
 
-        #c in self.get_children(clas=Creature, recursive=True)
-        if pygame.key.get_mods() & pygame.KMOD_LSHIFT:
-            return
-
-        self.path_len = 0
-
-    def get_scroll_speed(self) -> float:
-        return 700 + 3 * self.path_len
-
-    def get_scroll_activation_edge_range(self) -> float:
-        return Game.ширинаЭкрана * (0.05 + min(0.30 * self.path_len / 90,0.40))
+    def update_camera_speed(self, cur_spd: Vector) -> Vector:
+        if self.path_len:
+            return Vector(-self.direction * (300 + 3 * self.path_len), 0)
+        else:
+            return None

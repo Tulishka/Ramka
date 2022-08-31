@@ -4,6 +4,7 @@ from item import Item
 class HandableItem(Item):
     def __init__(self, *a, **b):
         super().__init__(*a, **b)
+        self.update_icon_args(angle=-45)
 
     def on_attach(self, dz):
         super().on_attach(dz)
@@ -19,3 +20,4 @@ class HandableItem(Item):
     def on_detach(self, dz):
         super().on_detach(dz)
         self.transform.angle = 0
+

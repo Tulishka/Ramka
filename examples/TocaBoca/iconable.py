@@ -28,18 +28,34 @@ class Iconable:
     @staticmethod
     def create_icon_image(image: pygame.Surface, size=55, offset=(0, 0), background=(100, 150, 100),
                           border=(50, 110, 50),
-                          border_radius=16):
+                          border_radius=16, angle=0, scale_contain=False):
 
+        if angle:
+            image = pygame.transform.rotate(image, angle)
         sz = image.get_size()
         pw = size - size // 7
-        k = pw / sz[0]
-        x = (size - pw) / 2
-        y = (size - int(k * sz[1])) / 2
+        if pw > sz[0]:
+            pw = sz[0]
+            scaled = image
+
+        if scale_contain:
+            k = pw / max(sz)
+        else:
+            k = pw / sz[0]
+
+        sz = int(k * sz[0]), int(k * sz[1])
+
+        x = (size - sz[0]) / 2
+        y = (size - sz[1]) / 2
         res = pygame.Surface((size, size), flags=pygame.SRCALPHA)
         res.fill(background)
+
+        if k != 1:
+            scaled = pygame.transform.smoothscale(image, (sz[0], sz[1]))
+
         res.blit(
-            pygame.transform.smoothscale(image, (pw, int(k * sz[1]))),
-            (x + offset[0] * k * sz[0], y + offset[1] * k * sz[1])
+            scaled,
+            (x + offset[0] * sz[0], y + offset[1] * sz[1])
         )
 
         ms = pygame.Surface((size, size), flags=pygame.SRCALPHA)
@@ -51,7 +67,7 @@ class Iconable:
         return res
 
     def _get_icon(self, size=55, offset=(0, 0), background=(100, 150, 100), border=(50, 110, 50),
-                  animation_name: str = None, border_radius=16):
+                  animation_name: str = None, border_radius=16, angle=0, scale_contain=False):
 
         if isinstance(self, Sprite):
             if animation_name is None:
@@ -64,7 +80,8 @@ class Iconable:
                 if not ani:
                     ani = self.curr_animation()
 
-            return Iconable.create_icon_image(ani.get_image(0), size, offset, background, border, border_radius)
+            return Iconable.create_icon_image(ani.get_image(0), size, offset, background, border, border_radius, angle,
+                                              scale_contain)
 
         else:
             raise Exception("use Iconable as mixin for Sprite class only")

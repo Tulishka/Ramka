@@ -11,6 +11,6 @@ class Item(Movable):
         super().__init__(*a, **b)
 
     def def_icon_args(self):
-        self.set_icon_args(background=(100, 100, 180), border=(70, 70, 100))
+        self.set_icon_args(background=(100, 100, 180), border=(70, 70, 100),scale_contain=True)
         return self
 

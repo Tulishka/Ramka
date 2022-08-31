@@ -399,7 +399,7 @@ class GameManager:
         ap(lambda: Item("predmet|kormushka", (700, 100)))
         ap(lambda: Item("predmet|duhi", (700, 100)))
         ap(lambda: Item("predmet|kosmetik", (700, 100)))
-        ap(lambda: Item("predmet|karandah", (700, 100)))
+        ap(lambda: HandableItem("predmet|karandah", (700, 100)))
         ap(lambda: Item("predmet|chuloc", (700, 100)))
         ap(lambda: Item("predmet|kay", (700, 100)))
 

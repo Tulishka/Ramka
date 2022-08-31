@@ -13,7 +13,9 @@ class HandableItem(Item):
         elif dz.trigger_name == "RightArm":
             self.transform.angle = -45
         elif dz.trigger_name in ("Head", "Sleep","Flat"):
-            self.transform.angle = -90
+            sz=self.get_size()
+            if sz[1]>sz[0]:
+                self.transform.angle = -90
 
         dz.update_attached_object_pos(self)
 

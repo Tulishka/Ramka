@@ -1,6 +1,7 @@
 import uuid
 from typing import Dict
-from ramka import Sprite, GameObject, Game
+
+from ramka import Sprite, GameObject, Game, Camera
 
 
 class Savable:
@@ -12,7 +13,7 @@ class Savable:
         return self.uuid
 
     @staticmethod
-    def get_creation_params(dict,parent) -> Dict:
+    def get_creation_params(dict, parent) -> Dict:
         return [], {}
 
     def init_from_dict(self, dict: Dict[str, any]):
@@ -23,6 +24,10 @@ class Savable:
             self.visible = dict.get('visible', True)
             self._parent_sort_me_by = dict['parent_sort_me_by']
             self.requested_layer_name = dict['layer']
+
+            pr=self.get_parent()
+            if (isinstance(pr, Camera) or pr is None) and abs(self.transform.pos.y)<5:
+                self.transform.y = self.transform.y * Game.высотаЭкрана
 
             if isinstance(self, Sprite):
                 self.image_rotate_offset = dict['image_rotate_offset']
@@ -35,13 +40,19 @@ class Savable:
     def get_init_dict(self):
 
         if isinstance(self, GameObject):
-            p = self.get_parent()
-            p = self.get_parent().get_uuid() if p and hasattr(p, "get_uuid") else None
+            pr = self.get_parent()
+            p = self.get_parent().get_uuid() if pr and hasattr(pr, "get_uuid") else None
+            if isinstance(pr, Camera) or pr is None:
+                tr = self.transform.copy()
+                tr.y = tr.y / Game.высотаЭкрана
+            else:
+                tr = self.transform
+
             res = {
                 "uuid": self.get_uuid(),
                 "parent": p,
                 "class_name": type(self).__name__,
-                "transform": self.transform.to_dict(),
+                "transform": tr.to_dict(),
                 "parent_sort_me_by": self.parent_sort_me_by,
                 "layer": self.layer.name if self.layer else self.requested_layer_name,
                 "visible": self.visible,

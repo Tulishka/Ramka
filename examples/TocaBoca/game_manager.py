@@ -276,11 +276,12 @@ class GameManager:
 
         ap(lambda: Interier("mebel|shkaf1", (160, 545)).drop_zone_add("Flat", Vector(0, -50), radius=90))
 
-        ap(lambda: Interier("mebel|mirror", (160, 545)).drop_zone_add("Flat", Vector(0, 60), radius=90,
+        ap(lambda: Interier("mebel|mirror", (160, 545)).drop_zone_add("Flat", Vector(0, 60), radius=160,
                                                                       accept_class=[Item, Pet], max_items=20,
                                                                       pretty_point="bottom",
-                                                                      attach_style=DropZone.attach_horizontal,
-                                                                      poly=[(-100, -120), (100, -120), (100, 10),
+                                                                      attach_style=DropZone.attach_none,
+                                                                      floor_y=0,
+                                                                      poly=[(-100, -190), (100, -190), (100, 10),
                                                                             (-100, 10)]))
 
         ap(lambda: Interier("mebel|bed1", (1850, 545)).drop_zone_add("Sleep", Vector(0, -50), radius=90,

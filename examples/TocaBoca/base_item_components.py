@@ -25,16 +25,27 @@ class FallingDown(Component):
             self.spd = 0
             return
 
-        y = self.gameObject.screen_pos().y + self.gameObject.get_computed_size().y * 0.5
-        if y < self.floor_y or self.spd < 0:
-            self.spd += self.g * deltaTime
-        elif self.spd > 0:
-            if self.spd < 200:
-                self.spd = 0
-                # self.gameObject.transform.y = self.floor_y + 1 - self.gameObject.get_computed_size().y * 0.5
+        p = self.gameObject.get_parent()
+        if hasattr(p, "floor_y") and p.floor_y is not None:
+            floor_y = p.floor_y
+            y = self.gameObject.transform.y
+            popup=True
+        else:
+            floor_y=self.floor_y
+            y=self.gameObject.screen_pos().y
+            popup = False
 
+        y = y + self.gameObject.get_computed_size().y * 0.5
+        if y < floor_y or self.spd < 0:
+            self.spd += self.g * deltaTime
+        else:
+            if 0 < self.spd < 200:
+                self.spd = 0
             else:
                 self.spd *= -0.3
+            if popup:
+                self.gameObject.transform.y = floor_y - self.gameObject.get_computed_size().y * 0.5
+
         if self.spd:
             self.gameObject.transform.y = self.gameObject.transform.y + self.spd * deltaTime
 

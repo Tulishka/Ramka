@@ -14,6 +14,8 @@ class HandableItem(Item):
         elif dz.trigger_name in ("Head", "Sleep","Flat"):
             self.transform.angle = -90
 
+        dz.update_attached_object_pos(self)
+
     def on_detach(self, dz):
         super().on_detach(dz)
         self.transform.angle = 0

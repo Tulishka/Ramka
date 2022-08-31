@@ -24,11 +24,13 @@ class DropZone(Draggable, Savable, Trigger):
     attach_horizontal = 3
 
     def __init__(self, parent: BaseItem, name, pos: Vector = None, radius=None, max_items=1, accept_class=[],
-                 pretty_point="center", attach_style=1, **kwargs):
+                 pretty_point="center", attach_style=1, floor_y=None, **kwargs):
         super().__init__(name, pos, radius, parent, color=(255, 0, 0), **kwargs)
         self.max_items = max_items
         self.accept_class = accept_class
-        self.attach_style=attach_style
+        self.attach_style = attach_style
+        self.floor_y = floor_y
+        self.__atl=None
 
         if not isinstance(parent, BaseItem):
             raise Exception("PrettyPoint: parent must be BaseItem!")
@@ -45,25 +47,32 @@ class DropZone(Draggable, Savable, Trigger):
     def can_attach_object(self, object: GameObject):
         return self.max_items > len(
             self.transform.children) and (not self.accept_class or any(
-                        isinstance(object, t) for t in self.accept_class)) and self.get_parent().can_accept_dropzone_object(self, object)
+            isinstance(object, t) for t in self.accept_class)) and self.get_parent().can_accept_dropzone_object(self,
+                                                                                                                object)
+    def is_childs_freezed(self):
+        return self.floor_y is None
+
+    def update_attached_object_pos(self,object: GameObject):
+        pos = -object.get_pretty_point(self.pretty_point)
+
+        if self.attach_style > 0:
+            if self.__atl:
+                self.__atl.remove()
+            if self.attach_style == DropZone.attach_horizontal:
+                pos.x = object.transform.pos.x
+            elif self.attach_style == DropZone.attach_vertical:
+                pos.y = object.transform.pos.y
+
+            if object.transform.pos.length() > Game.ширинаЭкрана:
+                object.transform.pos = pos
+            else:
+                self.__atl=PosAnimator(object, pos, 0.2)().kill()
 
     def attach_object(self, object: GameObject):
         object.transform.set_parent(self, True)
         self.layer.sort_object_children(self.get_parent())
 
-        pos = -object.get_pretty_point(self.pretty_point)
-
-        if self.attach_style>0:
-
-            if self.attach_style == DropZone.attach_horizontal:
-                pos.x = object.transform.pos.x
-            elif self.attach_style == DropZone.attach_vertical:
-                pos.y=object.transform.pos.y
-
-            if object.transform.pos.length() > Game.ширинаЭкрана:
-                object.transform.pos = pos
-            else:
-                PosAnimator(object, pos, 0.2)().kill()
+        self.update_attached_object_pos(object)
 
         self.get_parent().on_object_attached(self, object)
         return True
@@ -80,6 +89,7 @@ class DropZone(Draggable, Savable, Trigger):
         self.radius = opts['radius']
         self.pretty_point = opts.get("pretty_point", "center")
         self.attach_style = opts.get("attach_style", DropZone.attach_point)
+        self.floor_y = opts.get("floor_y", None)
         if 'poly' in opts:
             if opts['poly']:
                 self.set_poly([Vector(t) for t in opts['poly']])
@@ -93,6 +103,7 @@ class DropZone(Draggable, Savable, Trigger):
             "trigger_name": self.trigger_name,
             "poly": [tuple(t) for t in self._poly] if self._poly else None,
             "pretty_point": self.pretty_point,
+            "floor_y": self.floor_y,
             "attach_style": self.attach_style
         })
         return res
@@ -229,11 +240,42 @@ class BaseItem(Savable, Iconable, Sprite):
         return self
 
     def get_pretty_point(self, name, world_coord=False, obj_coord: GameObject = None) -> Vector:
-        p = Vector(self.pretty_points.get(name, (0, 0)))
-        if world_coord:
-            p = self.w_transform().add_to_vector(p)
-        elif obj_coord:
-            p = self.transform.to_local_coord(obj_coord.transform, p, False)
+
+        def transform(p):
+            if world_coord:
+                p = self.w_transform().add_to_vector(p)
+            elif obj_coord:
+                p = self.transform.to_local_coord(obj_coord.transform, p, False)
+            else:
+                p = self.transform.add_to_vector(p) - self.transform.pos
+            return p
+
+        if name.startswith("@"):
+            comp = 0
+
+            def min_v(val, v):
+                if val is None or v[comp] < val[comp]:
+                    val = v
+                return val
+
+            def max_v(val, v):
+                if val is None or v[comp] > val[comp]:
+                    val = v
+                return val
+
+            ff = name[1:].split("_")
+            reducer = min_v if ff[0] == "min" else max_v
+            comp = 0 if ff[1] == "x" else 1
+
+            res = None
+            for p in (Vector(p) for k, p in self.pretty_points.items() if k in ['top', 'bottom', 'left', 'right']):
+                p = transform(p)
+                res = reducer(res, p)
+
+            p = res
+        else:
+            p = transform(Vector(self.pretty_points.get(name, (0, 0))))
+
         return p
 
     def get_init_dict(self):
@@ -290,8 +332,8 @@ class BaseItem(Savable, Iconable, Sprite):
         return obj
 
     def drop_zone_add(self, name, pos: Vector = None, radius=35, max_items=1, accept_class=[],
-                      pretty_point="center", attach_style=1, **kwargs) -> BaseItem:
-        DropZone(self, name, pos, radius, max_items, accept_class, pretty_point, attach_style, **kwargs)
+                      pretty_point="center", attach_style=1, floor_y=None, **kwargs) -> BaseItem:
+        DropZone(self, name, pos, radius, max_items, accept_class, pretty_point, attach_style, floor_y, **kwargs)
         return self
 
     def state_next(self):
@@ -334,7 +376,7 @@ class BaseItem(Savable, Iconable, Sprite):
         return self.mass
 
     def get_default_pretty_points(self):
-        sz=self.get_size()*0.5
+        sz = self.get_size() * 0.5
         return {
             "center": (0, 0),
             "left": (-sz.x, 0),

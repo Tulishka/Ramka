@@ -62,7 +62,7 @@ class Movable(Draggable, BaseItem):
                 self.on_detach(dz)
 
     def on_attach(self, dz):
-        self.__fallcomp.enabled = False
+        self.__fallcomp.enabled = not dz.is_childs_freezed()
 
     def on_detach(self, dz):
         self.__fallcomp.enabled = True
@@ -102,7 +102,7 @@ class Movable(Draggable, BaseItem):
     def init_from_dict(self, opts):
         super().init_from_dict(opts)
         # self.__fallcomp.enabled = opts.get("__fallcomp.enabled", False)
-        self.__fallcomp.enabled = self.get_parent(clas=DropZone) is None
+        self.__fallcomp.enabled = self.get_parent(clas=DropZone,filter=lambda fz: fz.is_childs_freezed()) is None
         n = opts.get("__restore_parent", False)
         if n and n != "null":
             self.__restore_parent = lambda: Game.get_object(filter=lambda x: getattr(x, "uuid", False) == n)

@@ -168,7 +168,9 @@ class GameManager:
         # print("====")
 
         output = []
-        for o in Camera.main.get_children(clas=Savable):
+        ch=sorted(Camera.main.get_children(clas=Savable),key=lambda x: Game.gameObjects.index(x))
+
+        for o in ch:
             output.append(o.get_init_dict())
             # print(o.type_uid, o, o.origin)
 

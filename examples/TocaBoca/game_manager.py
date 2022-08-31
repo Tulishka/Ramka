@@ -265,7 +265,26 @@ class GameManager:
 
         ap(lambda: LightItem("mebel|window", (693, 278)))
 
+
+        ap(lambda: LightItem("mebel|flower1", (693, 278)))
+        ap(lambda: LightItem("mebel|flower2", (693, 278)))
+        ap(lambda: LightItem("mebel|flower3", (693, 278)))
+        ap(lambda: LightItem("mebel|flower4", (693, 278)))
+        ap(lambda: LightItem("mebel|flower5", (693, 278)))
+        ap(lambda: LightItem("mebel|flower6", (693, 278)))
+        ap(lambda: LightItem("mebel|flower7", (693, 278)))
+        ap(lambda: LightItem("mebel|flower8", (693, 278)))
+        ap(lambda: LightItem("mebel|flower9", (693, 278)))
+        ap(lambda: LightItem("mebel|flower10", (693, 278)))
+        ap(lambda: LightItem("mebel|flower11", (693, 278)))
+        ap(lambda: LightItem("mebel|flower12", (693, 278)))
+        ap(lambda: LightItem("mebel|flower13", (693, 278)))
+        ap(lambda: LightItem("mebel|flower14", (693, 278)))
+
+
+
         ap(lambda: LightItem("mebel|ramka", (693, 278)))
+        ap(lambda: LightItem("mebel|ramka2", (693, 278)))
 
         ap(lambda: LightItem("mebel|plokati1", (693, 278)))
 
@@ -382,6 +401,7 @@ class GameManager:
         ap(lambda: Item("predmet|kosmetik", (700, 100)))
         ap(lambda: Item("predmet|karandah", (700, 100)))
         ap(lambda: Item("predmet|chuloc", (700, 100)))
+        ap(lambda: Item("predmet|kay", (700, 100)))
 
     @classmethod
     def add_autogen_prefabs(cls):

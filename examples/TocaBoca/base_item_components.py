@@ -35,7 +35,9 @@ class FallingDown(Component):
             y=self.gameObject.screen_pos().y
             popup = False
 
-        y = y + self.gameObject.get_computed_size().y * 0.5
+        height=self.gameObject.get_rect().height
+
+        y = y + height * 0.5
         if y < floor_y or self.spd < 0:
             self.spd += self.g * deltaTime
         else:
@@ -44,13 +46,13 @@ class FallingDown(Component):
             else:
                 self.spd *= -0.3
             if popup:
-                self.gameObject.transform.y = floor_y - self.gameObject.get_computed_size().y * 0.5
+                self.gameObject.transform.y = floor_y - height * 0.5
 
         if self.spd:
             self.gameObject.transform.y = self.gameObject.transform.y + self.spd * deltaTime
 
         if y > Game.высотаЭкрана - 10:
-            self.gameObject.transform.y = Game.высотаЭкрана - 11 - self.gameObject.get_computed_size().y * 0.5
+            self.gameObject.transform.y = Game.высотаЭкрана - 11 - height * 0.5
 
 
 class ParentJockey(Component):

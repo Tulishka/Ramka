@@ -401,7 +401,7 @@ class GameManager:
         ap(lambda: Item("predmet|kosmetik", (700, 100)))
         ap(lambda: HandableItem("predmet|karandah", (700, 100)))
         ap(lambda: Item("predmet|chuloc", (700, 100)))
-        ap(lambda: Item("predmet|kay", (700, 100)))
+        ap(lambda: HandableItem("predmet|kay", (700, 100)))
 
     @classmethod
     def add_autogen_prefabs(cls):

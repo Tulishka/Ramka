@@ -8,7 +8,13 @@ class BaseAnimator:
 
     def __init__(self, game_object: GameObject, new_val, duration, interp_func=None, delay=0):
         self.gameObject = game_object
-        self.tl = Timeline(self.gameObject)
+
+        tag=type(self).__name__
+        for c in self.gameObject.get_components(component_class=Timeline,component_tag=tag):
+            # c.force_complete()
+            c.remove()
+
+        self.tl = Timeline(self.gameObject,tag=type(self).__name__)
         self.new_val = new_val
         self.duration = duration
         self.delay = delay

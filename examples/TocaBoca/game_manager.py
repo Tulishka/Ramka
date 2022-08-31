@@ -243,6 +243,8 @@ class GameManager:
             if p.transform.parent or p.transform.pos.length_squared() > 0:
                 Game.add_object(p)
 
+            break
+
     @staticmethod
     def get_class(t):
         return eval(t)

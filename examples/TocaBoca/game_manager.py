@@ -3,6 +3,7 @@ from typing import Callable
 
 from base_item_components import FallingDown
 from creature import Creature
+from ramka.video import Video
 
 from transport import Transport
 from items_menu import ItemMenu
@@ -145,6 +146,18 @@ class GameManager:
         Game.add_object(cam_pos)
         Camera.main.set_focus(cam_pos, lock_y=True)
 
+
+        class VideoObject(GameObject):
+            def __init__(self):
+                super().__init__()
+
+                self.video = Video("e:\\rain.mp4")
+
+            def draw(self, dest: pygame.Surface):
+                super().draw(dest)
+                dest.blit(self.video.get_frame(self.time),(20,20))
+
+        Game.add_object(VideoObject())
         # ======== load
 
         if not GameManager.load_scene(scene_name):

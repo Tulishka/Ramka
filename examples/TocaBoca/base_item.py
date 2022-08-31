@@ -30,7 +30,7 @@ class DropZone(Draggable, Savable, Trigger):
         self.accept_class = accept_class
         self.attach_style = attach_style
         self.floor_y = floor_y
-        self.__atl=None
+        self.__atl = None
 
         if not isinstance(parent, BaseItem):
             raise Exception("PrettyPoint: parent must be BaseItem!")
@@ -49,10 +49,11 @@ class DropZone(Draggable, Savable, Trigger):
             self.transform.children) and (not self.accept_class or any(
             isinstance(object, t) for t in self.accept_class)) and self.get_parent().can_accept_dropzone_object(self,
                                                                                                                 object)
+
     def is_childs_freezed(self):
         return self.floor_y is None
 
-    def update_attached_object_pos(self,object: GameObject):
+    def update_attached_object_pos(self, object: GameObject):
         pos = -object.get_pretty_point(self.pretty_point)
 
         if self.attach_style > 0:
@@ -66,7 +67,7 @@ class DropZone(Draggable, Savable, Trigger):
             if object.transform.pos.length() > Game.ширинаЭкрана:
                 object.transform.pos = pos
             else:
-                self.__atl=PosAnimator(object, pos, 0.2)().kill()
+                self.__atl = PosAnimator(object, pos, 0.2)().kill()
 
     def attach_object(self, object: GameObject):
         object.transform.set_parent(self, True)
@@ -183,6 +184,7 @@ class FrontPart(Draggable, Sprite):
 
 class BaseItem(Savable, Iconable, Sprite):
     dd_manager: DragAndDropController = None
+    animation_cache = {}
 
     def __init__(self, anim: str, pos, mass=None):
 
@@ -191,7 +193,11 @@ class BaseItem(Savable, Iconable, Sprite):
             raise Exception("Анимация BaseItem может быть создана только из строки! Неверный тип anim! ")
 
         self.name = anim.split("|")[-1]
-        animations = BaseItem.create_animation(anim)
+
+        if anim in BaseItem.animation_cache:
+            animations = BaseItem.animation_cache[anim]
+        else:
+            animations = BaseItem.create_animation(anim)
 
         self.anim_path = anim
 
@@ -223,6 +229,8 @@ class BaseItem(Savable, Iconable, Sprite):
             front_anim = BaseItem.create_animation(anim, "_f")
             if front_anim:
                 self.front_object = FrontPart(front_anim, self)
+
+        self.on_state_change()
 
     def create_pretty_points_controls(self):
         if pygame.key.get_mods() & pygame.KMOD_LCTRL:
@@ -291,10 +299,12 @@ class BaseItem(Savable, Iconable, Sprite):
 
     def init_from_dict(self, opts):
         super().init_from_dict(opts)
+        old = self.state.id
         self.state.id = opts["state.id"]
         self.mass = opts["mass"]
         self.name = opts.get("name", self.name)
         self.pretty_points.update(opts.get("pretty_points", {}))
+        self.on_state_change(old)
 
     @staticmethod
     def get_creation_params(dict, parent):
@@ -336,12 +346,18 @@ class BaseItem(Savable, Iconable, Sprite):
         DropZone(self, name, pos, radius, max_items, accept_class, pretty_point, attach_style, floor_y, **kwargs)
         return self
 
+    def on_state_change(self, old=None):
+        pass
+
     def state_next(self):
+        old = self.state.id
         n = f"state{self.state.id + 1}"
         if n in self.animations:
             self.state.id += 1
         else:
             self.state.id = 1
+
+        self.on_state_change(old)
 
     def state_anim_name(self):
         return f"state{self.state.id}"

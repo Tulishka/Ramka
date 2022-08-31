@@ -3,6 +3,7 @@ from typing import Callable
 
 from base_item_components import FallingDown
 from creature import Creature
+
 from transport import Transport
 from items_menu import ItemMenu
 from examples.Components.DragAndDrop import DragAndDropController
@@ -16,6 +17,7 @@ from nav_bar import NavBar
 from camera_pos import CameraPos
 
 # savables ===========================
+from shkaf import Shkaf
 from bag import Bag
 from chelik import Chelik
 from handable_item import HandableItem
@@ -30,6 +32,7 @@ from base_item import *
 
 class GameManager:
     prefabs = {}
+    scene = "scene"
 
     @staticmethod
     def init():
@@ -55,6 +58,8 @@ class GameManager:
 
     @staticmethod
     def prepare_scene(scene_name):
+
+        GameManager.scene = scene_name
 
         def save_all(*a, **b):
             GameManager.save_scene()
@@ -152,8 +157,9 @@ class GameManager:
         light.layer.change_order_first(light)
 
     @staticmethod
-    def save_scene(filename="game.sav"):
+    def save_scene():
 
+        filename = GameManager.scene + ".sav"
         # print("game objects")
         # for z in Game.get_objects(clas=BaseItem):
         #     print(z.type_uid, z, z.origin)
@@ -168,7 +174,7 @@ class GameManager:
         # print("====")
 
         output = []
-        ch=sorted(Camera.main.get_children(clas=Savable),key=lambda x: Game.gameObjects.index(x))
+        ch = sorted(Camera.main.get_children(clas=Savable), key=lambda x: Game.gameObjects.index(x))
 
         for o in ch:
             output.append(o.get_init_dict())
@@ -267,35 +273,75 @@ class GameManager:
 
         ap(lambda: LightItem("mebel|window", (693, 278)))
 
+        ap(lambda: Interier("mebel|flower1", (693, 278)))
+        ap(lambda: Interier("mebel|flower2", (693, 278)))
+        ap(lambda: Interier("mebel|flower3", (693, 278)))
+        ap(lambda: Interier("mebel|flower4", (693, 278)))
+        ap(lambda: Interier("mebel|flower5", (693, 278)))
+        ap(lambda: Interier("mebel|flower6", (693, 278)))
+        ap(lambda: Interier("mebel|flower7", (693, 278)))
+        ap(lambda: Interier("mebel|flower8", (693, 278)))
+        ap(lambda: Interier("mebel|flower9", (693, 278)))
+        ap(lambda: Interier("mebel|flower10", (693, 278)))
+        ap(lambda: Interier("mebel|flower11", (693, 278)))
+        ap(lambda: Interier("mebel|flower12", (693, 278)))
+        ap(lambda: Interier("mebel|flower13", (693, 278)))
+        ap(lambda: Interier("mebel|flower14", (693, 278)))
 
-        ap(lambda: LightItem("mebel|flower1", (693, 278)))
-        ap(lambda: LightItem("mebel|flower2", (693, 278)))
-        ap(lambda: LightItem("mebel|flower3", (693, 278)))
-        ap(lambda: LightItem("mebel|flower4", (693, 278)))
-        ap(lambda: LightItem("mebel|flower5", (693, 278)))
-        ap(lambda: LightItem("mebel|flower6", (693, 278)))
-        ap(lambda: LightItem("mebel|flower7", (693, 278)))
-        ap(lambda: LightItem("mebel|flower8", (693, 278)))
-        ap(lambda: LightItem("mebel|flower9", (693, 278)))
-        ap(lambda: LightItem("mebel|flower10", (693, 278)))
-        ap(lambda: LightItem("mebel|flower11", (693, 278)))
-        ap(lambda: LightItem("mebel|flower12", (693, 278)))
-        ap(lambda: LightItem("mebel|flower13", (693, 278)))
-        ap(lambda: LightItem("mebel|flower14", (693, 278)))
+        ap(lambda: Interier("mebel|ramka", (693, 278)))
+        ap(lambda: Interier("mebel|ramka2", (693, 278)))
 
+        ap(lambda: Interier("mebel|plokati1", (693, 278)))
+        ap(lambda: Interier("mebel|plokati2", (693, 278)))
+        ap(lambda: Interier("mebel|girlanda1", (693, 278)))
+        ap(lambda: Interier("mebel|girlanda2", (693, 278)))
+        ap(lambda: Interier("mebel|telek", (693, 278)))
 
+        ap(lambda: Interier("mebel|pillow", (160, 545)).drop_zone_add("Seat", Vector(0, -50), radius=90,
+                                                                      pretty_point="seat",
+                                                                      accept_class=[Chelik, Pet]))
 
-        ap(lambda: LightItem("mebel|ramka", (693, 278)))
-        ap(lambda: LightItem("mebel|ramka2", (693, 278)))
-
-        ap(lambda: LightItem("mebel|plokati1", (693, 278)))
-
-        ap(lambda: LightItem("mebel|plokati2", (693, 278)))
+        ap(lambda: Interier("mebel|kreslo", (160, 545)).drop_zone_add("Seat", Vector(0, -50), radius=90,
+                                                                      pretty_point="seat",
+                                                                      accept_class=[Chelik, Pet]))
+        ap(lambda: Interier("mebel|kreslo2", (160, 545)).drop_zone_add("Seat", Vector(0, -50), radius=90,
+                                                                       pretty_point="seat",
+                                                                       accept_class=[Chelik, Pet]))
 
         ap(lambda: Interier("mebel|bed2", (160, 545)).drop_zone_add("Sleep", Vector(0, -50), radius=90,
                                                                     accept_class=[Chelik, Pet]))
 
-        ap(lambda: Interier("mebel|shkaf1", (160, 545)).drop_zone_add("Flat", Vector(0, -50), radius=90))
+        ap(lambda: Shkaf("mebel|shkaf1", (160, 545))
+           .drop_zone_add("Flat", Vector(0, 60), radius=160,
+                          accept_class=[Item, Pet], max_items=20,
+                          pretty_point="bottom",
+                          attach_style=DropZone.attach_none,
+                          floor_y=0,
+                          poly=[(-120, -100), (120, -100), (120, 10),
+                                (-120, 10)])
+           .drop_zone_add("Flat", Vector(0, -60), radius=160,
+                          accept_class=[Item, Pet], max_items=20,
+                          pretty_point="bottom",
+                          attach_style=DropZone.attach_none,
+                          floor_y=0,
+                          poly=[(-130, -100), (130, -100), (130, 10),
+                                (-130, 10)])
+           .drop_zone_add("Flat", Vector(0, 173), radius=160,
+                          accept_class=[Item, Pet], max_items=20,
+                          pretty_point="bottom",
+                          attach_style=DropZone.attach_none,
+                          floor_y=0,
+                          poly=[(-90, -100), (90, -100), (90, 10),
+                                (-90, 10)])
+           .drop_zone_add("Head", Vector(0, -196), radius=160,
+                          accept_class=[Item, Pet], max_items=20,
+                          pretty_point="bottom",
+                          attach_style=DropZone.attach_none,
+                          floor_y=0,
+                          poly=[(-70, -100), (70, -100), (70, 10),
+                                (-70, 10)])
+
+           )
 
         ap(lambda: Interier("mebel|mirror", (160, 545)).drop_zone_add("Flat", Vector(0, 60), radius=160,
                                                                       accept_class=[Item, Pet], max_items=20,
@@ -398,12 +444,15 @@ class GameManager:
         ap(lambda: Transport("transport|Hors11", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150,
                                                                            pretty_point="seat"))
         ap(lambda: HandableItem("predmet|telefon", (650, 100)))
+        ap(lambda: HandableItem("predmet|telefon2", (650, 100)))
+        ap(lambda: HandableItem("predmet|bymajniPlanhet", (650, 100)))
         ap(lambda: Item("predmet|kormushka", (700, 100)))
         ap(lambda: Item("predmet|duhi", (700, 100)))
         ap(lambda: Item("predmet|kosmetik", (700, 100)))
         ap(lambda: HandableItem("predmet|karandah", (700, 100)))
         ap(lambda: Item("predmet|chuloc", (700, 100)))
         ap(lambda: HandableItem("predmet|kay", (700, 100)))
+        ap(lambda: HandableItem("predmet|brelok", (700, 100)))
 
     @classmethod
     def add_autogen_prefabs(cls):

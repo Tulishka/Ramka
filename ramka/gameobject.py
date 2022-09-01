@@ -132,6 +132,19 @@ class GameObject:
     def screen_pos(self):
         return self.transform.get_world_transform().pos
 
+    def pos(self, *argv):
+        if len(argv):
+            if isinstance(argv[0], Iterable):
+                self.transform.pos = argv[0]
+            else:
+                if len(argv) > 1:
+                    self.transform.pos = argv[0], argv[1]
+                else:
+                    self.transform.pos = argv[0], argv[0]
+            return self
+        else:
+            return self.transform.pos
+
     def __add_event_listers(self, source):
         for m in source.__dir__():
             try:

@@ -3,7 +3,7 @@ from typing import Dict, Callable, Union, Tuple
 
 from pygame import PixelArray
 
-from . import Game
+from . import AnimatedSquence, Game
 from .gameobject import GameObject
 
 from .animation import Animation, FlipStyle, slice_image
@@ -13,7 +13,7 @@ from .transformbase import TransformBase
 
 class Sprite(GameObject):
 
-    def __init__(self, animations: Union[Animation, pygame.Surface, str, Dict[str, Animation]], duration=None,
+    def __init__(self, animations: Union[AnimatedSquence, pygame.Surface, str, Dict[str, AnimatedSquence]], duration=None,
                  slice_images_rows=1, slice_images_cols=1):
         super().__init__()
 
@@ -35,7 +35,7 @@ class Sprite(GameObject):
         if type(animations) == pygame.Surface:
             animations = Animation([animations], 0, True)
 
-        if type(animations) == Animation:
+        if isinstance(animations, AnimatedSquence):
             animations = {"default": animations}
 
         self.animations = animations
@@ -57,12 +57,12 @@ class Sprite(GameObject):
         self.use_parent_mask = False
         self.__use_parent_mask_cache = {"masked_image": None, "pos": None, "mask": None, "image": None}
 
-    def replace_color(self,from_color,to_color,distance=0):
+    def replace_color(self, from_color, to_color, distance=0):
         pixels = PixelArray(self.sprite.image)
-        pixels.replace(from_color,to_color,distance=distance)
+        pixels.replace(from_color, to_color, distance=distance)
         del pixels
 
-    def set_sprite_animations(self,animations):
+    def set_sprite_animations(self, animations):
         self.animations = animations
         self.last_animation = None
         self.cache = {}
@@ -224,7 +224,7 @@ class Sprite(GameObject):
         if func is None:
             func = pygame.sprite.collide_mask
         if other.is_visible() and isinstance(other,
-                                        Sprite) and self.sprite.image is not None and other.sprite.image is not None:
+                                             Sprite) and self.sprite.image is not None and other.sprite.image is not None:
             return func(self.sprite, other.sprite)
         else:
             return super().is_collided(other)

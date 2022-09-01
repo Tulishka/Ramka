@@ -1,11 +1,12 @@
 from typing import Dict, List, Tuple, Union
 
+from .animated_squence import AnimatedSquence
 from .shared import *
 
 FlipStyle = Tuple[bool, bool]
 
 
-class Animation:
+class Animation(AnimatedSquence):
     def __init__(self, images: Union[List[pygame.Surface],str], fps: int, looped: bool):
 
         if type(images) == str:

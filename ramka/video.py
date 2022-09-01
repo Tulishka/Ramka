@@ -1,10 +1,13 @@
+from typing import Callable
+
 import pygame
 import cv2
-from ramka import Game, Vector
+from ramka import Game, Vector, AnimatedSquence
 
 
-class Video:
-    def __init__(self, url, output_size=(int(256 * 1.9), 256)):
+class Video(AnimatedSquence):
+    def __init__(self, url, image_size=None, fps=None, speed=1, looped=True,
+                 callback: Callable = None):
         self.url = url
         self.video = cv2.VideoCapture(url)
 
@@ -14,39 +17,67 @@ class Video:
             success, video_image = False, 0
 
         self.ready = success
-        self.output_size = output_size
-        self.video_surf = pygame.Surface(output_size)
+        self.looped = looped
+        self.callback = callback
+
+        self.output_size = image_size if image_size else (int(256 * 1.9), 256)
+        self.video_surf = pygame.Surface(self.output_size)
+
         if success:
             self.fps = self.video.get(cv2.CAP_PROP_FPS)
             self.size = video_image.shape[1::-1]
             self.frames = self.video.get(cv2.CAP_PROP_FRAME_COUNT)
             self.video_image = video_image
-            self.frame_from_buffer(video_image)
+            self.__frame_from_buffer(video_image)
         else:
             self.frames = 0
             self.size = (0, 0)
             self.fps = 1
-            self.render_error()
+            self.__render_error()
 
-        self.desired_spd = 0.2
+        self.desired_spd = speed
+        if fps:
+            fps = min(self.fps, fps)
+        else:
+            fps = self.fps
+
         self.frame_time = 1 / self.fps
-        self.next_frame_time = 0
+        self.__prepared_time = 0
         self.time = 0
         self.frame = 1
-        self.desired_fps=15
 
-    def get_frame(self, time=None):
+        self.frames_for_update = self.fps / fps
+        self.__grabbed_frames = 0
+
+    def get_duration(self):
+        return self.get_source_duration() * self.desired_spd
+
+    def get_native_duration(self):
+        return self.frame_time * self.frames
+
+    def reset(self):
+        self.time = 0
+        self.frame = 0
+        self.__grabbed_frames = 0
+        self.__prepared_time = 0
         if self.ready:
+            try:
+                self.video.set(cv2.CAP_PROP_POS_FRAMES, 0)
+            except Exception as e:
+                print("reset video:", e)
+                self.ready = False
 
-            if time is None:
-                time = self.time
+    def get_frame_index(self, time: float) -> int:
+        grab_time = (self.frame_time / self.desired_spd)
+        if grab_time:
+            return int(time / grab_time)
+        else:
+            return 0
 
-            if time >= self.time:
-                self.update(time - self.time)
-
+    def get_image(self, time=None):
         return self.video_surf
 
-    def frame_from_buffer(self, video_image):
+    def __frame_from_buffer(self, video_image):
         try:
             video_surf = pygame.image.frombuffer(video_image.tobytes(), self.size, "BGR")
             if self.size != self.output_size:
@@ -58,24 +89,39 @@ class Video:
 
     def update(self, deltaTime: float):
 
-        nd = self.time + deltaTime
+        self.__prepared_time += deltaTime
 
-        if self.ready:
-            while self.ready and nd > self.time:
-                self.time += self.frame_time / self.desired_spd
+        if self.ready and self.frame < self.frames:
+
+            grab_time = self.frame_time / self.desired_spd
+
+            while self.ready and self.__prepared_time - self.time >= grab_time:
+                self.time += grab_time
                 ss = self.video.grab()
+                self.__grabbed_frames += 1
                 self.frame += 1
                 self.ready = ss
 
-            ss, aa = self.video.retrieve(self.video_image)
-            self.ready = ss
-            if self.ready:
-                self.frame_from_buffer(self.video_image)
-            else:
-                self.render_error()
+                if self.frame >= self.frames:
+                    if callable(self.callback):
+                        self.callback(self)
+                    if self.looped:
+                        self.reset()
+                    else:
+                        self.__grabbed_frames = self.frames_for_update
+                        break
 
-    def render_error(self):
+            if self.__grabbed_frames >= self.frames_for_update:
+                self.__grabbed_frames = 0
+                ss, aa = self.video.retrieve(self.video_image)
+                self.ready = ss
+                if self.ready:
+                    self.__frame_from_buffer(self.video_image)
+                else:
+                    self.__render_error()
+
+    def __render_error(self):
         self.video_surf.fill((0, 0, 0))
         txt = Game.font.render("The end", True, (255, 0, 0))
-        pos=0.5 * (Vector(self.video_surf.get_size()) - Vector(txt.get_size()[0], 0))
+        pos = 0.5 * (Vector(self.video_surf.get_size()) - Vector(txt.get_size()[0], 0))
         self.video_surf.blit(txt, pos)

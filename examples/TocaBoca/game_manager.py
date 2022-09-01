@@ -1,6 +1,7 @@
 import gc
 from typing import Callable
 
+from video_interier import VideoInterier
 from base_item_components import FallingDown
 from creature import Creature
 from ramka.video import Video
@@ -147,7 +148,6 @@ class GameManager:
         Game.add_object(cam_pos)
         Camera.main.set_focus(cam_pos, lock_y=True)
 
-        Game.add_object(VideoSprite("e:\\rain.mp4").pos(400,400))
         # ======== load
 
         if not GameManager.load_scene(scene_name):
@@ -302,6 +302,8 @@ class GameManager:
         ap(lambda: Interier("mebel|girlanda2", (693, 278)))
         ap(lambda: Interier("mebel|telek", (693, 278)))
 
+        ap(lambda: VideoInterier("mebel|tvset", (400, 300), ("e:\\rain.mp4", (248, 138)), (-3, -92)))
+
         ap(lambda: Interier("mebel|pillow", (160, 545)).drop_zone_add("Seat", Vector(0, -50), radius=90,
                                                                       pretty_point="seat",
                                                                       accept_class=[Chelik, Pet]))
@@ -363,7 +365,7 @@ class GameManager:
            .drop_zone_add("Sleep", Vector(-70, -85), radius=90, accept_class=[Chelik, Pet])
            .drop_zone_add("Sleep", Vector(70, -85), radius=90, accept_class=[Chelik, Pet]))
 
-        ap(lambda: Pet("pets|oblachko", (700, 100)))
+        ap(lambda: Pet("pets|oblachko", (700, 100)).update_icon_args(animation_name="state1"))
 
         ap(lambda: Pet("pets|kohka", (800, 100)))
 

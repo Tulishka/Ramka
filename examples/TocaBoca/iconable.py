@@ -80,7 +80,12 @@ class Iconable:
                 if not ani:
                     ani = self.curr_animation()
 
-            return Iconable.create_icon_image(ani.get_image(0), size, offset, background, border, border_radius, angle,
+            img = ani.get_image(0)
+            if hasattr(self, "front_object") and self.front_object:
+                img = img.copy()
+                img.blit(self.front_object.curr_animation().get_image(0), (0, 0))
+
+            return Iconable.create_icon_image(img, size, offset, background, border, border_radius, angle,
                                               scale_contain)
 
         else:

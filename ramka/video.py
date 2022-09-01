@@ -6,7 +6,7 @@ from ramka import Game, Vector, AnimatedSquence
 
 
 class Video(AnimatedSquence):
-    def __init__(self, url, image_size=None, fps=None, speed=1, looped=True,
+    def __init__(self, url, size=None, fps=None, speed=1, looped=True,
                  callback: Callable = None):
         self.url = url
         self.video = cv2.VideoCapture(url)
@@ -20,7 +20,7 @@ class Video(AnimatedSquence):
         self.looped = looped
         self.callback = callback
 
-        self.output_size = image_size if image_size else (int(256 * 1.9), 256)
+        self.output_size = size if size else (int(256 * 1.9), 256)
         self.video_surf = pygame.Surface(self.output_size)
 
         if success:

@@ -128,3 +128,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 /examples/TocaBoca/game1.sav
+/examples/TocaBoca/video/source/

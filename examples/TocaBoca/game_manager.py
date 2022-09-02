@@ -332,11 +332,13 @@ class GameManager:
         ap(lambda: Interier("mebel|telek", (693, 278)))
 
         ap(lambda: VideoInterier("mebel|tvset", (400, 300), (
-            [".\\video\\minecraft1.mp4",
-             ".\\video\\minecraft2.mp4",
-             ".\\video\\minecraft3.mp4",
-             ".\\video\\minecraft4.mp4",
-             ".\\video\\genshi1.mp4"], (248, 138)), (-3, -92)))
+            [
+             ".\\video\\minecraft1.mpg",
+             ".\\video\\minecraft2.mpg",
+             ".\\video\\minecraft3.mpg",
+             ".\\video\\minecraft4.mpg",
+             ".\\video\\genshi1.mp4"
+            ], (248, 138)), (-3, -92)))
 
         ap(lambda: Interier("mebel|pillow", (160, 545)).drop_zone_add("Seat", Vector(0, -50), radius=90,
                                                                       pretty_point="seat",

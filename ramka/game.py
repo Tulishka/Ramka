@@ -190,9 +190,17 @@ class Game:
 
     @staticmethod
     def run():
+
+        skip_time = 2
+
         while 1:
 
-            deltaTime = Game.deltaTime()
+            if skip_time:
+                deltaTime = 0
+                skip_time -= 1
+            else:
+                deltaTime = Game.deltaTime()
+
             Game.time += deltaTime
             Game.keys_pressed = set()
             Game.mouse_pressed = set()
@@ -332,31 +340,43 @@ class Game:
                 yield cc
 
     @staticmethod
-    def get_object(clas: Union[type, Iterable[type]] = None, layer: Layer = None, filter: Callable = None):
+    def get_object(clas: Union[type, Iterable[type]] = None, layer: Layer = None, filter: Callable = None,
+                   revers=False):
         if filter is None:
             filter = lambda x: True
 
+        if revers:
+            objs = reversed(Game.gameObjects)
+        else:
+            objs = Game.gameObjects
+
         if not isinstance(clas, Iterable):
-            for c in Game.gameObjects:
+            for c in objs:
                 if (clas is None or isinstance(c, clas)) and (layer is None or c.layer == layer) and filter(c):
                     return c
         else:
-            for c in Game.gameObjects:
+            for c in objs:
                 if (not clas or any(
                         isinstance(c, t) for t in clas)) and (layer is None or c.layer == layer) and filter(c):
                     return c
 
     @staticmethod
-    def get_objects(clas: Union[type, Iterable[type]] = None, layer: Layer = None, filter: Callable = None):
+    def get_objects(clas: Union[type, Iterable[type]] = None, layer: Layer = None, filter: Callable = None,
+                    revers=False):
         if filter is None:
             filter = lambda x: True
 
+        if revers:
+            objs = reversed(Game.gameObjects)
+        else:
+            objs = Game.gameObjects
+
         if not isinstance(clas, Iterable):
-            for c in Game.gameObjects:
+            for c in objs:
                 if (clas is None or isinstance(c, clas)) and (layer is None or c.layer == layer) and filter(c):
                     yield c
         else:
-            for c in Game.gameObjects:
+            for c in objs:
                 if (not clas or any(
                         isinstance(c, t) for t in clas)) and (layer is None or c.layer == layer) and filter(c):
                     yield c
@@ -486,4 +506,4 @@ class Game:
 
     @staticmethod
     def break_input_eventloop():
-        Game.break_event_loop=True
+        Game.break_event_loop = True

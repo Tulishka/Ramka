@@ -27,9 +27,12 @@ class ItemMenu(GameObject):
 
         self.on_item_down = on_item_down
 
+    def close(self):
+        Game.remove_object(self)
+
     @Game.on_mouse_down(button=1)
     def mdown(self):
-        Game.remove_object(self)
+        self.close()
 
     @Game.on_mouse_up(button=1)
     def mup(self):

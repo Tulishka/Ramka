@@ -54,7 +54,7 @@ class Timeline(Component):
             return 1.0 if self.ready() else 0
 
     def ready(self):
-        return self.duration() <= self.gameObject.time
+        return self.duration() <= self.gameObject.time - self.start_time
 
     def do(self, action: Callable[[TimeLineProgressInfo], None], duration=0, absolute=None,
            continuous=False) -> Timeline:

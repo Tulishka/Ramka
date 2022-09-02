@@ -1,5 +1,5 @@
 from random import random
-from typing import Callable, Union, Dict
+from typing import Callable, Union, Dict, Tuple, Iterable
 
 import pygame
 
@@ -64,7 +64,8 @@ class NavBtn(Sprite):
             if self.scale_animator:
                 self.scale_animator.remove()
 
-            self.scale_animator = ScaleAnimator(self, Vector(1.0 + (0.2 if hovering else 0)), 0.2,interp_func=interp_func_squared)().kill()
+            self.scale_animator = ScaleAnimator(self, Vector(1.0 + (0.2 if hovering else 0)), 0.2,
+                                                interp_func=interp_func_squared)().kill()
 
     @Game.on_mouse_up
     def on_mouse_up(self, button):
@@ -137,20 +138,27 @@ class NavBar(GameObject):
         self.btns_gap = gap
         self.max_size = max_size
         self.transform.pos = pos
-        # PosAnimator(self, pos, 0.5)().kill()
+        self.short_cuts = []
 
         if parent:
             self.transform.set_parent(parent)
 
         Game.add_object(self, Game.uiLayer)
 
-    def add_btn(self, object: Iconable, prefix: str = "", action_on_mb_up=False, sub_obj: GameObject = None, **kwargs):
+    def add_btn(self, object: Iconable, prefix: str = "", action_on_mb_up=False, sub_obj: GameObject = None,
+                hot_key: Union[int, Tuple[int, int]] = None, **kwargs):
         for i in self.get_children(filter=lambda x: x.object == object):
             return
         nb = NavBtn(object.get_icon(), object, update_func=object.get_icon, action_on_mb_up=action_on_mb_up, **kwargs)
         nb.parent_sort_me_by = str(prefix) + nb.parent_sort_me_by
         nb.transform.set_parent(self)
         Game.add_object(nb, self.layer)
+
+        if hot_key:
+            if not isinstance(hot_key, Iterable):
+                hot_key = (hot_key, 1)
+            self.short_cuts.append((nb, hot_key))
+
         if sub_obj:
             sub_obj.transform.set_parent(nb, False)
             sub_obj.transform.pos = 0.4 * Vector(nb.get_size())
@@ -163,8 +171,18 @@ class NavBar(GameObject):
         for i in self.get_children(filter=lambda x: x.object == object):
             i.transform.detach()
             Game.remove_object(i)
+            for sc in self.short_cuts:
+                if sc[0] == i:
+                    self.short_cuts.remove(sc)
+                    break
             self.rearrange()
             return
+
+    @Game.on_key_down
+    def on_key_down(self, keys):
+        for sc in self.short_cuts:
+            if sc[1][0] in keys and sc[0].enabled and sc[0].is_visible():
+                sc[0].process_button([sc[1][1]])
 
     def update_btns_positions(self):
         pos = Vector(0)

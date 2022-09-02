@@ -1,12 +1,15 @@
 import math
 from random import randint
 
+import pygame.sprite
+
 from examples.Components.DragAndDrop import Draggable
 from ramka import Component, Sprite, Game, Cooldown, TransformLockX, defaultTransformModifier, TransformLockY, Transform
 
 
 class FallingDown(Component):
     floor_y = 900
+    floor_find_object_class = Sprite
 
     def __init__(self, game_obj: Sprite):
         super().__init__(game_obj)
@@ -14,6 +17,28 @@ class FallingDown(Component):
         self.spd = 0
         self.g = 900
         self.enabled = True
+
+    def find_floor(self, start_y=None):
+
+        r = self.gameObject.get_rect()
+        t, b, l, r, cx = r.y, r.bottom, r.left, r.right, r.centerx
+
+        m = start_y if start_y else max(FallingDown.floor_y, b)
+
+        def colid(obj):
+            sp=obj.get_rect()
+            return sp.bottom > m and (sp.x < cx < sp.right)
+
+        objs = Game.get_objects(clas=FallingDown.floor_find_object_class,
+                                filter=lambda x: colid(x),
+                                revers=True)
+
+        for o in objs:
+            nm = o.get_rect().bottom
+            if nm > m:
+                m = nm
+
+        self.floor_y = m
 
     @Game.on_mouse_down(button=3, hover=True)
     def mouse_3_click(self):
@@ -29,13 +54,13 @@ class FallingDown(Component):
         if hasattr(p, "floor_y") and p.floor_y is not None:
             floor_y = p.floor_y
             y = self.gameObject.transform.y
-            popup=True
+            popup = True
         else:
-            floor_y=self.floor_y
-            y=self.gameObject.screen_pos().y
+            floor_y = self.floor_y
+            y = self.gameObject.screen_pos().y
             popup = False
 
-        height=self.gameObject.get_rect().height
+        height = self.gameObject.get_rect().height
 
         y = y + height * 0.5
         if y < floor_y or self.spd < 0:

@@ -49,6 +49,8 @@ class GameManager:
 
         GameManager.reset()
 
+        FallingDown.floor_find_object_class = BaseItem
+
     @staticmethod
     def reset():
         lst = list(Game.get_objects())
@@ -101,6 +103,11 @@ class GameManager:
                     "object"].get_size().y / 4), start_drag=True)
                 Game.break_input_eventloop()
 
+            old = Game.get_object(clas=ItemMenu)
+            if old:
+                old.close()
+                return
+
             menu = ItemMenu(GameManager.get_prefabs(clas=GameObject), on_item_down=create)
             Game.add_object(menu, layer=Game.uiLayer)
 
@@ -108,7 +115,7 @@ class GameManager:
         nav.add_btn(IconableSprite("img/ui/plus.png").update_icon_args(size=40, border=(220, 220, 220),
                                                                        background=(150, 150, 150, 200),
                                                                        border_radius=100), action=items_menu,
-                    action_on_mb_up=True, prefix="___")
+                    action_on_mb_up=True, hot_key=pygame.K_q, prefix="___")
 
         nav = NavBar("game_menu", pos=Vector(Game.ширинаЭкрана - 40, 40), row_direction=Vector(-1, 0))
 
@@ -422,7 +429,7 @@ class GameManager:
            .drop_zone_add("LeftArm", Vector(-56, 107), parent_sort_order="___1")
            .drop_zone_add("RightArm", Vector(60, 107), parent_sort_order="___2")
            .drop_zone_add("Head", Vector(0, -130), radius=50)
-           .drop_zone_add("Pocket", Vector(0, 68), radius=30,max_items=2)
+           .drop_zone_add("Pocket", Vector(0, 68), radius=30, max_items=2)
            )
 
         ap(lambda: Chelik("pers|p6", (600, 100))

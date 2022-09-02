@@ -371,8 +371,8 @@ class BaseItem(Savable, Iconable, Sprite):
         if self.mouse_start_point:
             self.state_next()
 
-    @Game.on_mouse_down(button=1)
-    def on_mouse_down(self):
+    @Game.on_mouse_down
+    def on_mouse_down(self,buttons):
         self.mouse_start_point = Input.mouse_pos
 
     def update(self, deltaTime: float):

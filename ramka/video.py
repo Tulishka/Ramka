@@ -49,6 +49,9 @@ class Video(AnimatedSquence):
         self.frames_for_update = self.fps / fps
         self.__grabbed_frames = 0
 
+    def __del__(self):
+        self.video.release()
+
     def get_duration(self):
         return self.get_source_duration() * self.desired_spd
 

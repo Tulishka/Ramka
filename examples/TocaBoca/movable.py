@@ -77,7 +77,6 @@ class Movable(Draggable, BaseItem):
                         return
 
         self.__fallcomp.find_floor()
-        print(self.__fallcomp.floor_y)
 
         if self.last_vert_spd < 0:
             self.__fallcomp.spd = max(self.last_vert_spd / self.mass, -600)

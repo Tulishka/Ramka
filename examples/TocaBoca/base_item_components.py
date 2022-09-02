@@ -8,7 +8,8 @@ from ramka import Component, Sprite, Game, Cooldown, TransformLockX, defaultTran
 
 
 class FallingDown(Component):
-    floor_y = 900
+    floor_y = 800
+    max_floor_y = 900
     floor_find_object_class = Sprite
 
     def __init__(self, game_obj: Sprite):
@@ -38,7 +39,7 @@ class FallingDown(Component):
             if nm > m:
                 m = nm
 
-        self.floor_y = m
+        self.floor_y = min(m,FallingDown.max_floor_y)
 
     @Game.on_mouse_down(button=3, hover=True)
     def mouse_3_click(self):
@@ -76,8 +77,8 @@ class FallingDown(Component):
         if self.spd:
             self.gameObject.transform.y = self.gameObject.transform.y + self.spd * deltaTime
 
-        if y > Game.высотаЭкрана - 10:
-            self.gameObject.transform.y = Game.высотаЭкрана - 11 - height * 0.5
+        if y > FallingDown.max_floor_y:
+            self.gameObject.transform.y = FallingDown.max_floor_y - height * 0.5
 
 
 class ParentJockey(Component):

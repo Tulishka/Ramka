@@ -50,6 +50,7 @@ class GameManager:
         GameManager.reset()
 
         FallingDown.floor_find_object_class = BaseItem
+        FallingDown.max_floor_y = Game.высотаЭкрана - 20
 
     @staticmethod
     def reset():

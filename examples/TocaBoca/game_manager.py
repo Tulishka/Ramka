@@ -337,7 +337,7 @@ class GameManager:
              ".\\video\\minecraft2.mpg",
              ".\\video\\minecraft3.mpg",
              ".\\video\\minecraft4.mpg",
-             ".\\video\\genshi1.mp4"
+             ".\\video\\genshi1.mpg"
             ], (248, 138)), (-3, -92)))
 
         ap(lambda: Interier("mebel|pillow", (160, 545)).drop_zone_add("Seat", Vector(0, -50), radius=90,

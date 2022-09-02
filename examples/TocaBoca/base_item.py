@@ -24,13 +24,15 @@ class DropZone(Draggable, Savable, Trigger):
     attach_horizontal = 3
 
     def __init__(self, parent: BaseItem, name, pos: Vector = None, radius=None, max_items=1, accept_class=[],
-                 pretty_point="center", attach_style=1, floor_y=None, **kwargs):
+                 pretty_point="center", attach_style=1, floor_y=None, parent_sort_order=None, **kwargs):
         super().__init__(name, pos, radius, parent, color=(255, 0, 0), **kwargs)
         self.max_items = max_items
         self.accept_class = accept_class
         self.attach_style = attach_style
         self.floor_y = floor_y
         self.__atl = None
+        if parent_sort_order:
+            self.parent_sort_me_by = parent_sort_order
 
         if not isinstance(parent, BaseItem):
             raise Exception("PrettyPoint: parent must be BaseItem!")
@@ -45,7 +47,7 @@ class DropZone(Draggable, Savable, Trigger):
         }
 
     def can_attach_object(self, object: GameObject):
-        return self.max_items > len(
+        return (self.trigger_name!="Pocket" or object.get_size()[0]<self.radius*1.5) and self.max_items > len(
             self.transform.children) and (not self.accept_class or any(
             isinstance(object, t) for t in self.accept_class)) and self.get_parent().can_accept_dropzone_object(self,
                                                                                                                 object)
@@ -314,7 +316,7 @@ class BaseItem(Savable, Iconable, Sprite):
         }
 
     def can_accept_dropzone_object(self, dropzone: DropZone, obj: Sprite):
-        return obj.get_size().x < self.get_size().x
+        return obj.get_size().x < self.get_size().x and dropzone.visible
 
     def on_object_attached(self, dz: DropZone, object: Sprite):
         pass
@@ -342,8 +344,10 @@ class BaseItem(Savable, Iconable, Sprite):
         return obj
 
     def drop_zone_add(self, name, pos: Vector = None, radius=35, max_items=1, accept_class=[],
-                      pretty_point="center", attach_style=1, floor_y=None, **kwargs) -> BaseItem:
-        DropZone(self, name, pos, radius, max_items, accept_class, pretty_point, attach_style, floor_y, **kwargs)
+                      pretty_point="center", attach_style=1, floor_y=None, parent_sort_order=None,
+                      **kwargs) -> BaseItem:
+        DropZone(self, name, pos, radius, max_items, accept_class, pretty_point, attach_style, floor_y,
+                 parent_sort_order, **kwargs)
         return self
 
     def on_state_change(self, old=None):

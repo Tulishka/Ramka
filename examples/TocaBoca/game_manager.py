@@ -4,6 +4,8 @@ from typing import Callable
 from video_interier import VideoInterier
 from base_item_components import FallingDown
 from creature import Creature
+from key import Key
+from locker import Locker
 from ramka.video import Video
 from ramka.video_sprite import VideoSprite
 
@@ -276,7 +278,26 @@ class GameManager:
 
         ap = GameManager.add_prefab
 
-        ap(lambda: LightItem("mebel|window", (693, 278)))
+        ap(lambda: LightItem("mebel|window", (693, 278)).drop_zone_add("Flat", Vector(0, 60), radius=160,
+                                                                       accept_class=[Item, Pet], max_items=20,
+                                                                       pretty_point="bottom",
+                                                                       attach_style=DropZone.attach_none,
+                                                                       floor_y=0,
+                                                                       poly=[(-120, -100), (120, -100), (120, 10),
+                                                                             (-120, 10)]))
+
+        ap(lambda: Locker("mebel|seiv1", (693, 278))
+           .drop_zone_add("Flat", Vector(0, 60), radius=160,
+                          accept_class=[Item, Pet], max_items=20,
+                          pretty_point="bottom",
+                          attach_style=DropZone.attach_none,
+                          floor_y=0,
+                          poly=[(-120, -100), (120, -100), (120, 10),
+                                (-120, 10)])
+           .drop_zone_add("Head", Vector(81, -1), radius=20,
+                          pretty_point="seat",
+                          accept_class=[Key])
+           )
 
         ap(lambda: Interier("mebel|flower1", (693, 278)))
         ap(lambda: Interier("mebel|flower2", (693, 278)))
@@ -397,33 +418,34 @@ class GameManager:
            .drop_zone_add("Head", Vector(0, -130), radius=50)
            )
 
-        ap(lambda: Chelik("pers|pusya", (600, 100)) \
-           .drop_zone_add("LeftArm", Vector(-56, 107)) \
-           .drop_zone_add("RightArm", Vector(60, 107)) \
+        ap(lambda: Chelik("pers|pusya", (600, 100))
+           .drop_zone_add("LeftArm", Vector(-56, 107), parent_sort_order="___1")
+           .drop_zone_add("RightArm", Vector(60, 107), parent_sort_order="___2")
+           .drop_zone_add("Head", Vector(0, -130), radius=50)
+           .drop_zone_add("Pocket", Vector(0, 68), radius=30,max_items=2)
+           )
+
+        ap(lambda: Chelik("pers|p6", (600, 100))
+           .drop_zone_add("LeftArm", Vector(-56, 107))
+           .drop_zone_add("RightArm", Vector(60, 107))
            .drop_zone_add("Head", Vector(0, -130), radius=50)
            )
 
-        ap(lambda: Chelik("pers|p6", (600, 100)) \
-           .drop_zone_add("LeftArm", Vector(-56, 107)) \
-           .drop_zone_add("RightArm", Vector(60, 107)) \
+        ap(lambda: Chelik("pers|p3", (600, 100))
+           .drop_zone_add("LeftArm", Vector(-56, 107))
+           .drop_zone_add("RightArm", Vector(60, 107))
            .drop_zone_add("Head", Vector(0, -130), radius=50)
            )
 
-        ap(lambda: Chelik("pers|p3", (600, 100)) \
-           .drop_zone_add("LeftArm", Vector(-56, 107)) \
-           .drop_zone_add("RightArm", Vector(60, 107)) \
+        ap(lambda: Chelik("pers|p1", (600, 100))
+           .drop_zone_add("LeftArm", Vector(-56, 107))
+           .drop_zone_add("RightArm", Vector(60, 107))
            .drop_zone_add("Head", Vector(0, -130), radius=50)
            )
 
-        ap(lambda: Chelik("pers|p1", (600, 100)) \
-           .drop_zone_add("LeftArm", Vector(-56, 107)) \
-           .drop_zone_add("RightArm", Vector(60, 107)) \
-           .drop_zone_add("Head", Vector(0, -130), radius=50)
-           )
-
-        ap(lambda: Chelik("pers|p2", (600, 100)) \
-           .drop_zone_add("LeftArm", Vector(-56, 107)) \
-           .drop_zone_add("RightArm", Vector(60, 107)) \
+        ap(lambda: Chelik("pers|p2", (600, 100))
+           .drop_zone_add("LeftArm", Vector(-56, 107))
+           .drop_zone_add("RightArm", Vector(60, 107))
            .drop_zone_add("Head", Vector(0, -130), radius=50)
            )
 
@@ -452,13 +474,17 @@ class GameManager:
                                                                            pretty_point="seat"))
         ap(lambda: HandableItem("predmet|telefon", (650, 100)))
         ap(lambda: HandableItem("predmet|telefon2", (650, 100)))
+        ap(lambda: HandableItem("predmet|pad1", (650, 100)))
         ap(lambda: HandableItem("predmet|bymajniPlanhet", (650, 100)))
+        ap(lambda: Item("predmet|mani", (650, 100)))
+        ap(lambda: HandableItem("predmet|kupis", (650, 100)))
+        ap(lambda: HandableItem("predmet|kup", (650, 100)))
         ap(lambda: Item("predmet|kormushka", (700, 100)))
         ap(lambda: Item("predmet|duhi", (700, 100)))
         ap(lambda: Item("predmet|kosmetik", (700, 100)))
         ap(lambda: HandableItem("predmet|karandah", (700, 100)))
         ap(lambda: Item("predmet|chuloc", (700, 100)))
-        ap(lambda: HandableItem("predmet|kay", (700, 100)))
+        ap(lambda: Key("predmet|kay", (700, 100)))
         ap(lambda: HandableItem("predmet|brelok", (700, 100)))
 
     @classmethod

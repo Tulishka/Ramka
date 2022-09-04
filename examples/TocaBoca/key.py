@@ -1,5 +1,3 @@
-import pygame.sprite
-
 from base_item import DropZone
 from handable_item import HandableItem
 from ramka import Game

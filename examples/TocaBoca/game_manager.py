@@ -2,22 +2,19 @@ import gc
 from random import choice, randint, random
 from typing import Callable
 
+from trash import Trash
 from ramka.gameobject_animators import AngleAnimator
 from ramka.object_generator import ObjectGenerator
 from video_interier import VideoInterier
 from base_item_components import FallingDown, AutoKill
-from creature import Creature
+
 from key import Key
 from locker import Locker
-from ramka.video import Video
-from ramka.video_sprite import VideoSprite
 
 from transport import Transport
 from items_menu import ItemMenu
-from examples.Components.DragAndDrop import DragAndDropController
-from game_classes import GameClasses
 from iconable import IconableSprite
-from ramka import Game, Camera, Vector
+from ramka import Camera
 
 import json
 from background import Background
@@ -294,6 +291,11 @@ class GameManager:
                                                                        poly=[(-120, -100), (120, -100), (120, 10),
                                                                              (-120, 10)]))
 
+        ap(lambda: Trash("mebel|trash", (693, 278)).drop_zone_add("Trash", Vector(0, -80), radius=60,
+                                                                       accept_class=[Item],
+                                                                       pretty_point="bottom"
+                                                                  ))
+
         ap(lambda: Locker("mebel|seiv1", (693, 278))
            .drop_zone_add("Flat", Vector(0, 60), radius=160,
                           accept_class=[Item, Pet], max_items=20,
@@ -307,19 +309,19 @@ class GameManager:
                           accept_class=[Key])
            )
 
-        ap(lambda: Interier("mebel|flower1", (693, 278)))
-        ap(lambda: Interier("mebel|flower2", (693, 278)))
+        ap(lambda: Item("mebel|flower1", (693, 278)))
+        ap(lambda: Item("mebel|flower2", (693, 278)))
         ap(lambda: Interier("mebel|flower3", (693, 278)))
         ap(lambda: Interier("mebel|flower4", (693, 278)))
         ap(lambda: Interier("mebel|flower5", (693, 278)))
-        ap(lambda: Interier("mebel|flower6", (693, 278)))
-        ap(lambda: Interier("mebel|flower7", (693, 278)))
+        ap(lambda: Item("mebel|flower6", (693, 278)))
+        ap(lambda: Item("mebel|flower7", (693, 278)))
         ap(lambda: Interier("mebel|flower8", (693, 278)))
         ap(lambda: Interier("mebel|flower9", (693, 278)))
         ap(lambda: Interier("mebel|flower10", (693, 278)))
-        ap(lambda: Interier("mebel|flower11", (693, 278)))
+        ap(lambda: Item("mebel|flower11", (693, 278)))
         ap(lambda: Interier("mebel|flower12", (693, 278)))
-        ap(lambda: Interier("mebel|flower13", (693, 278)))
+        ap(lambda: Item("mebel|flower13", (693, 278)))
         ap(lambda: Interier("mebel|flower14", (693, 278)))
 
         ap(lambda: Interier("mebel|ramka", (693, 278)))

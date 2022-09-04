@@ -17,5 +17,5 @@ class Trash(Interier):
             PosAnimator(object, Vector(0.0,60), 0.15)().kill()
             self.eff.pulse(1.1, 0.6)
 
-        self.timers.set_timeout(0.1,aaa)
+        self.timers.set_timeout(0.2,aaa)
 

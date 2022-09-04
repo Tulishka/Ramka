@@ -293,7 +293,6 @@ class GameManager:
 
         ap(lambda: Trash("mebel|trash", (693, 278)).drop_zone_add("Trash", Vector(0, -80), radius=60,
                                                                        accept_class=[Item],
-                                                                       pretty_point="bottom"
                                                                   ))
 
         ap(lambda: Locker("mebel|seiv1", (693, 278))

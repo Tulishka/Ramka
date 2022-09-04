@@ -27,7 +27,7 @@ class FallingDown(Component):
         m = start_y if start_y else max(FallingDown.floor_y, b)
 
         def colid(obj):
-            sp=obj.get_rect()
+            sp = obj.get_rect()
             return sp.bottom > m and (sp.x < cx < sp.right)
 
         objs = Game.get_objects(clas=FallingDown.floor_find_object_class,
@@ -39,7 +39,7 @@ class FallingDown(Component):
             if nm > m:
                 m = nm
 
-        self.floor_y = min(m,FallingDown.max_floor_y)
+        self.floor_y = min(m, FallingDown.max_floor_y)
 
     @Game.on_mouse_down(button=3, hover=True)
     def mouse_3_click(self):
@@ -151,3 +151,11 @@ class Blink(Component):
         if self.gameObject.time > self.blink_time:
             self.blink.start()
             self.blink_time = self.gameObject.time + randint(1, 8)
+
+
+class AutoKill(Component):
+
+    def update(self, deltaTime: float):
+        super().update(deltaTime)
+        if self.gameObject.time > 3:
+            Game.remove_object(self.gameObject)

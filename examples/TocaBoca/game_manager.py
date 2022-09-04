@@ -1,8 +1,11 @@
 import gc
+from random import choice, randint, random
 from typing import Callable
 
+from ramka.gameobject_animators import AngleAnimator
+from ramka.object_generator import ObjectGenerator
 from video_interier import VideoInterier
-from base_item_components import FallingDown
+from base_item_components import FallingDown, AutoKill
 from creature import Creature
 from key import Key
 from locker import Locker
@@ -164,6 +167,15 @@ class GameManager:
             GameManager.generate_manual()
 
         # ================ end load
+        def factory(x):
+            pref=list(GameManager.get_prefabs(clas=Item))
+            rr=AutoKill(GameManager.create_object_from_prefab(choice(pref)).pos(Vector(randint(-25,25),randint(-25,25))+Input.mouse_pos)).gameObject
+            AngleAnimator(rr,choice([90,-90,270,-270]),1+random())().kill()
+            for c in rr.get_components(component_class=FallingDown):
+                c.floor_y=FallingDown.max_floor_y-random()*200
+                c.spd=-random()*600
+            return rr
+        # Game.add_object(ObjectGenerator(factory,3, [1,2,4,1,5,20,10,40]))
 
         light = Lighting()
         Game.add_object(light, layer=Game.uiLayer)
@@ -173,18 +185,6 @@ class GameManager:
     def save_scene():
 
         filename = GameManager.scene + ".sav"
-        # print("game objects")
-        # for z in Game.get_objects(clas=BaseItem):
-        #     print(z.type_uid, z, z.origin)
-        # print("====")
-        # print("ui layer")
-        # for z in Game.uiLayer.gameObjects:
-        #     print(z)
-        # print("====")
-        # print("default layer")
-        # for z in Game.defaultLayer.gameObjects:
-        #     print(z)
-        # print("====")
 
         output = []
         ch = sorted(Camera.main.get_children(clas=Savable), key=lambda x: Game.gameObjects.index(x))

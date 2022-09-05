@@ -296,7 +296,7 @@ class GameManager:
                                                                              (-120, 10)]))
 
         ap(lambda: Aquarium("mebel|aqua", (693, 278)).drop_zone_add("Aqua", Vector(0, 0), radius=200,
-                                                                    accept_class=[Item, Pet], max_items=20,
+                                                                    accept_class=[Item, Pet, Chelik], max_items=20,
                                                                     attach_style=DropZone.attach_none)
                                                                    )
 

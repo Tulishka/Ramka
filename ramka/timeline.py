@@ -27,13 +27,14 @@ class TimeLineProgressInfo:
 
 
 class Timeline(Component):
-    def __init__(self, game_object, tag=""):
+    def __init__(self, game_object, tag="", kill_on_end=False):
         super().__init__(game_object, tag=tag)
 
         self.plan = []
         self.start_time = game_object.time
         self.fired_time = -1
         self.__paused_progress = None
+        self.kill_on_end = kill_on_end
 
     def duration(self):
         if self.plan:
@@ -137,8 +138,11 @@ class Timeline(Component):
     def kill(self):
         "Удалить тайм лайн из game object"
 
-        def fi(*a, **bb):
-            self.remove()
+        def fi(pi: TimeLineProgressInfo):
+            if pi.entire_progress == 1:
+                self.remove()
+            else:
+                self.kill_on_end = True
 
         self.do(fi)
 
@@ -150,13 +154,14 @@ class Timeline(Component):
         if self.__paused_progress is not None:
             return
 
+        pi = TimeLineProgressInfo()
+        pi.timeline = self
+        pi.deltaTime = deltaTime
+
         for gg in range(5):
             pt = self.gameObject.time - self.start_time
-            pi = TimeLineProgressInfo()
             pi.entire_time = pt
             pi.entire_progress = self.progress()
-            pi.timeline = self
-            pi.deltaTime = deltaTime
 
             stt = self.start_time
 
@@ -173,3 +178,6 @@ class Timeline(Component):
                 break
 
         self.fired_time = pt
+
+        if self.kill_on_end and pi.entire_progress >= 1:
+            self.remove()

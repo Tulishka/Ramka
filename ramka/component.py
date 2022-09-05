@@ -40,6 +40,6 @@ class Component:
         pass
 
     def remove(self):
-        self.on_remove()
-        self.gameObject.remove_component(self)
-        # self.gameObject = None
+        if self in self.gameObject.components:
+            self.on_remove()
+            self.gameObject.remove_component(self)

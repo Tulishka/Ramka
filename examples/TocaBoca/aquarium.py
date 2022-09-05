@@ -83,5 +83,7 @@ class Aquarium(Interier):
 
     def on_object_detached(self, dz: DropZone, object: Sprite):
         object.use_parent_mask = False
+        if object==self.puz_fih:
+            self.puz_fih = None
         for c in object.get_components(component_class=FloatingEffect):
             c.remove()

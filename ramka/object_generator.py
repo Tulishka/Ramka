@@ -40,7 +40,7 @@ class ObjectGenerator(ObjectGeneratorInterface, GameObject):
 
     def spawn(self, cnt):
         if self.factory:
-            for i in range(cnt):
+            for i in range(int(cnt)):
                 a = self.factory(self)
                 if isinstance(a, GameObject):
                     Game.add_object(a)

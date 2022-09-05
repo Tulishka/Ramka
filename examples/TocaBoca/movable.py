@@ -18,11 +18,17 @@ class Movable(Draggable, BaseItem):
         self.last_vert_spd = 0
         self.eff = Effects(self)
 
+        self.allow_dragging = True
+
         self.__restore_parent = None
 
     def on_drag_start(self):
-        self.detach()
-        self.eff.pulse(1.1, 0.5)
+
+        if self.allow_dragging:
+            self.detach()
+            self.eff.pulse(1.1, 0.5)
+
+        return self.allow_dragging
 
     def is_attachable(self):
         return True
@@ -104,7 +110,7 @@ class Movable(Draggable, BaseItem):
     def init_from_dict(self, opts):
         super().init_from_dict(opts)
         # self.__fallcomp.enabled = opts.get("__fallcomp.enabled", False)
-        self.__fallcomp.enabled = self.get_parent(clas=DropZone,filter=lambda fz: fz.is_childs_freezed()) is None
+        self.__fallcomp.enabled = self.get_parent(clas=DropZone, filter=lambda fz: fz.is_childs_freezed()) is None
         n = opts.get("__restore_parent", False)
         if n and n != "null":
             self.__restore_parent = lambda: Game.get_object(filter=lambda x: getattr(x, "uuid", False) == n)
@@ -116,4 +122,3 @@ class Movable(Draggable, BaseItem):
         #     icn=self.get_icon()
         #     pos = self.screen_pos() - (icn.get_size()[0]/2, icn.get_size()[1] + self.get_size()[1]/2 ) - self.image_offset + Vector(0,3*math.sin(self.time*8))
         #     dest.blit(icn, dest=pygame.Rect(pos, Vector(0)))
-

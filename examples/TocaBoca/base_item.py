@@ -30,7 +30,6 @@ class DropZone(Draggable, Savable, Trigger):
         self.accept_class = accept_class
         self.attach_style = attach_style
         self.floor_y = floor_y
-        self.__atl = None
         if parent_sort_order:
             self.parent_sort_me_by = parent_sort_order
 
@@ -59,8 +58,6 @@ class DropZone(Draggable, Savable, Trigger):
         pos = -object.get_pretty_point(self.pretty_point)
 
         if self.attach_style > 0:
-            if self.__atl:
-                self.__atl.remove()
             if self.attach_style == DropZone.attach_horizontal:
                 pos.x = object.transform.pos.x
             elif self.attach_style == DropZone.attach_vertical:
@@ -69,7 +66,7 @@ class DropZone(Draggable, Savable, Trigger):
             if object.transform.pos.length() > Game.ширинаЭкрана:
                 object.transform.pos = pos
             else:
-                self.__atl = PosAnimator(object, pos, 0.2)().kill()
+                PosAnimator(object, pos, 0.2)().kill()
 
     def attach_object(self, object: GameObject):
         object.transform.set_parent(self, True)

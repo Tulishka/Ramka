@@ -166,15 +166,13 @@ class GameManager:
 
         # ================ end load
         def factory(x):
-            pref = list(GameManager.get_prefabs(clas=Item))
-            rr = AutoKill(GameManager.create_object_from_prefab(choice(pref)).pos(
-                Vector(randint(-25, 25), randint(-25, 25)) + Input.mouse_pos)).gameObject
-            AngleAnimator(rr, choice([90, -90, 270, -270]), 1 + random())().kill()
+            pref=list(GameManager.get_prefabs(clas=Item))
+            rr=AutoKill(GameManager.create_object_from_prefab(choice(pref)).pos(Vector(randint(-25,25),randint(-25,25))+Input.mouse_pos)).gameObject
+            AngleAnimator(rr,choice([90,-90,270,-270]),1+random())().kill()
             for c in rr.get_components(component_class=FallingDown):
-                c.floor_y = FallingDown.max_floor_y - random() * 200
-                c.spd = -random() * 600
+                c.floor_y=FallingDown.max_floor_y-random()*200
+                c.spd=-random()*600
             return rr
-
         # Game.add_object(ObjectGenerator(factory,3, [1,2,4,1,5,20,10,40]))
 
         light = Lighting()
@@ -300,8 +298,8 @@ class GameManager:
                                                                     ))
 
         ap(lambda: Trash("mebel|trash", (693, 278)).drop_zone_add("Trash", Vector(0, -80), radius=60,
-                                                                  accept_class=[Item],
-                                                                  pretty_point="bottom"
+                                                                       accept_class=[Item],
+                                                                       pretty_point="bottom"
                                                                   ))
 
         ap(lambda: Locker("mebel|seiv1", (693, 278))
@@ -343,11 +341,11 @@ class GameManager:
 
         ap(lambda: VideoInterier("mebel|tvset", (400, 300), (
             [
-                ".\\video\\minecraft1.mpg",
-                ".\\video\\minecraft2.mpg",
-                ".\\video\\minecraft3.mpg",
-                ".\\video\\minecraft4.mpg",
-                ".\\video\\genshi1.mpg"
+             ".\\video\\minecraft1.mpg",
+             ".\\video\\minecraft2.mpg",
+             ".\\video\\minecraft3.mpg",
+             ".\\video\\minecraft4.mpg",
+             ".\\video\\genshi1.mpg"
             ], (248, 138)), (-3, -92)))
 
         ap(lambda: Interier("mebel|pillow", (160, 545)).drop_zone_add("Seat", Vector(0, -50), radius=90,

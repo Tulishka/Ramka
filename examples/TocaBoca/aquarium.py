@@ -31,16 +31,16 @@ class Puzirik(Sprite):
         self.top_y = top_y
         self.spd = 0
         self.g = -70
-        self.faza=3*random()
-        self.omega=random()*4+1
-        self.amplituda=random()*80-40
+        self.faza = 3 * random()
+        self.omega = random() * 4 + 1
+        self.amplituda = random() * 80 - 40
 
     def update(self, deltaTime: float):
         super(Puzirik, self).update(deltaTime)
         self.spd += self.g * deltaTime
         self.transform.y += self.spd * deltaTime * self.transform.scale_x
 
-        self.transform.x += self.amplituda*sin(self.omega*self.time+self.faza)*deltaTime
+        self.transform.x += self.amplituda * sin(self.omega * self.time + self.faza) * deltaTime
 
         if self.transform.y < self.top_y:
             Game.remove_object(self)
@@ -60,10 +60,10 @@ class Aquarium(Interier):
                 p = Puzirik(tt).pos(f.transform.pos)
                 p.transform.set_parent(self)
                 self.layer.sort_object_children(self)
-                p.use_parent_mask=True
+                p.use_parent_mask = True
                 return p
 
-        self.puzgen = ObjectGenerator(get_puz, 5, [0, 0, 3, 0, 5, 0, lambda *a: random()*4+2])
+        self.puzgen = ObjectGenerator(get_puz, 5, [0, 0, 3, 0, 5, 0, lambda *a: random() * 4 + 2])
 
         self.puzgen.transform.set_parent(self)
 
@@ -77,13 +77,17 @@ class Aquarium(Interier):
                 self.puz_fih = None
         return self.puz_fih
 
+    def on_full_load(self):
+        for c in self.get_children(True, clas=BaseItem):
+            self.on_object_attached(c.get_parent(), c)
+
     def on_object_attached(self, dz: DropZone, object: Sprite):
         FloatingEffect(object)
         object.use_parent_mask = True
 
     def on_object_detached(self, dz: DropZone, object: Sprite):
         object.use_parent_mask = False
-        if object==self.puz_fih:
+        if object == self.puz_fih:
             self.puz_fih = None
         for c in object.get_components(component_class=FloatingEffect):
             c.remove()

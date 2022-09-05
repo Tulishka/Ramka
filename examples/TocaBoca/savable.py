@@ -37,6 +37,9 @@ class Savable:
 
         return self
 
+    def on_full_load(self):
+        pass
+
     def get_init_dict(self):
 
         if isinstance(self, GameObject):

@@ -230,6 +230,8 @@ class GameManager:
         if opts['children'] and add_to_game:
             obj.layer.sort_object_children(obj)
 
+        obj.on_full_load()
+
         return obj
 
     @staticmethod
@@ -298,7 +300,7 @@ class GameManager:
         ap(lambda: Aquarium("mebel|aqua", (693, 278)).drop_zone_add("Aqua", Vector(0, 0), radius=200,
                                                                     accept_class=[Item, Pet, Chelik], max_items=20,
                                                                     attach_style=DropZone.attach_none)
-                                                                   )
+           )
 
         ap(lambda: Trash("mebel|trash", (693, 278)).drop_zone_add("Trash", Vector(0, -80), radius=60,
                                                                   accept_class=[Item],

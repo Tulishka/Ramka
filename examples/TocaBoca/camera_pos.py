@@ -60,6 +60,18 @@ class CameraPos(Draggable, GameObject):
             self.last_spd[1] = copysign(min(abs(self.last_spd[1]), 500), self.last_spd[1])
             self.last_position = self.transform.pos
         else:
+
+            # dspd = self.last_spd
+            # dspdl = dspd.length()
+            # if dspdl >= 0.1:
+            #     deacel = (100 + 0*self.last_spd.length_squared()) * deltaTime
+            #     if deacel < dspdl:
+            #         dspd.scale_to_length(deacel)
+            #
+            #     self.last_spd -= dspd
+            # else:
+            #     self.last_spd = Vector(0)
+
             self.last_spd *= 0.94
 
             if self.last_spd.length_squared() > 2:

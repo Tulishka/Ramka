@@ -21,6 +21,7 @@ class ObjectGenerator(ObjectGeneratorInterface, GameObject):
         if not isinstance(count, Iterable):
             count = [count]
         self.count = count
+        self.count_multiplier = 1.0
 
         self.__setup_interval(0)
 
@@ -31,7 +32,8 @@ class ObjectGenerator(ObjectGeneratorInterface, GameObject):
         interval = (self.period(self) if callable(self.period) else self.period) / len(self.count)
         self.__index = n
         self.__remain_count = self.count[self.__index](self, self.__index) if callable(self.count[self.__index]) else \
-        self.count[self.__index]
+            self.count[self.__index]
+        self.__remain_count *= self.count_multiplier
         self.__dec_in_sec = self.__remain_count / interval
         self.__acc = 0
         self.__time_limit = interval

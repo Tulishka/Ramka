@@ -80,7 +80,7 @@ class GameObject:
             if (clas is None or isinstance(c.gameObject, clas)) and (not callable(filter) or filter(c.gameObject)):
                 yield c.gameObject
             if recursive:
-                for v in c.gameObject.get_children(True):
+                for v in c.gameObject.get_children(recursive=recursive, clas=clas, filter=filter):
                     yield v
 
     def get_parent(self, clas=None, filter: Callable[[GameObject], bool] = None) -> GameObject:

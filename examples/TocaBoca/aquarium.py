@@ -21,7 +21,7 @@ class Puzirik(Sprite):
         self.g = -70
         self.faza = 3 * random()
         self.omega = random() * 4 + 1
-        self.amplituda = (random() * 80 - 40)*max_size
+        self.amplituda = (random() * 80 - 40) * max_size
 
     def update(self, deltaTime: float):
         super(Puzirik, self).update(deltaTime)
@@ -39,14 +39,16 @@ class Aquarium(Interier):
         super().__init__(*a, **b)
         tt = -self.get_size().y * 0.5
 
-        self.puz_fih = None
-        self.fih_cd = Cooldown(0.2)
+        self.puz_fish = None
+        self.fish_cd = Cooldown(0.2)
 
         def get_puz(g):
-            f = self.get_any_fih()
+            f = self.get_any_fish()
             if f:
-                p = Puzirik(tt,max(min(f.get_size().x/120,1.2),0.3)).pos(f.transform.pos)
+                p = Puzirik(tt, max(min(f.get_size().x / 120, 1.2), 0.3)).pos(
+                    f.transform.to_local_coord(self.transform, f.transform))
                 p.transform.set_parent(self)
+                p.parent_sort_me_by="9"+p.parent_sort_me_by
                 self.layer.sort_object_children(self)
                 p.use_parent_mask = True
                 return p
@@ -55,18 +57,18 @@ class Aquarium(Interier):
 
         self.puzgen.transform.set_parent(self)
 
-    def get_any_fih(self):
-        if self.puz_fih is None or self.fih_cd.ready:
-            self.fih_cd.start()
+    def get_any_fish(self):
+        if self.puz_fish is None or self.fish_cd.ready:
+            self.fish_cd.start()
             lst = list(self.get_children(clas=Creature, recursive=True))
             if lst:
-                self.puz_fih = choice(lst)
+                self.puz_fish = choice(lst)
             else:
-                self.puz_fih = None
-        return self.puz_fih
+                self.puz_fish = None
+        return self.puz_fish
 
     def on_full_load(self):
-        for c in self.get_children(True, clas=BaseItem):
+        for c in self.get_children(True, clas=BaseItem, recursion_deep=1):
             self.on_object_attached(c.get_parent(), c)
 
     def on_object_attached(self, dz: DropZone, object: Sprite):
@@ -75,7 +77,7 @@ class Aquarium(Interier):
 
     def on_object_detached(self, dz: DropZone, object: Sprite):
         object.use_parent_mask = False
-        if object == self.puz_fih:
-            self.puz_fih = None
+        if object == self.puz_fish:
+            self.puz_fish = None
         for c in object.get_components(component_class=FloatingEffect):
             c.remove()

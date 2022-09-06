@@ -189,7 +189,7 @@ class TurnToMoveDirection(Component):
         super().update(deltaTime)
 
         tr = self.gameObject.transform
-        if self.gameObject.is_dragged():
+        if self.gameObject.is_dragged() and (not pygame.key.get_mods() & pygame.KMOD_LSHIFT):
 
             if self.last_pos:
                 delta = tr.pos - self.last_pos
@@ -201,5 +201,7 @@ class TurnToMoveDirection(Component):
             elif delta.x < -3:
                 self.direction = -self.right_direction
 
+            tr.scale_x = math.copysign(tr.scale_x, self.direction)
+
         self.last_pos = tr.pos
-        tr.scale_x = math.copysign(tr.scale_x, self.direction)
+

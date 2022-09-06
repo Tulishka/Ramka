@@ -3,7 +3,7 @@ from random import choice, randint, random
 from typing import Callable
 
 from aquarium import Aquarium
-from fih import Fih
+from fish import Fish
 from trash import Trash
 from ramka.gameobject_animators import AngleAnimator
 from ramka.object_generator import ObjectGenerator
@@ -514,9 +514,9 @@ class GameManager:
         ap(lambda: Item("predmet|chuloc", (700, 100)))
         ap(lambda: Key("predmet|kay", (700, 100)))
         ap(lambda: HandableItem("predmet|brelok", (700, 100)))
-        ap(lambda: Fih("pets|acs", (700, 100)))
-        ap(lambda: Fih("pets|fih1", (700, 100)))
-        ap(lambda: Fih("pets|fih2", (700, 100)))
+        ap(lambda: Fish("pets|acs", (700, 100)))
+        ap(lambda: Fish("pets|fish1", (700, 100)))
+        ap(lambda: Fish("pets|fish2", (700, 100)))
 
     @classmethod
     def add_autogen_prefabs(cls):

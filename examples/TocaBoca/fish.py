@@ -5,7 +5,7 @@ from pet import Pet
 from ramka import Cooldown, Vector
 
 
-class Fih(Pet):
+class Fish(Pet):
     def __init__(self, *a, **b):
         super().__init__(*a, **b)
         for c in self.get_components(component_class=Blink):

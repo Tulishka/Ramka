@@ -74,13 +74,15 @@ class GameObject:
         # if self.transform.parent:
         #     self.layer.sort_object_children(self.transform.parent.gameObject)
 
-    def get_children(self, recursive=False, clas=None, filter: Callable[[GameObject], bool] = None) -> Iterable[
+    def get_children(self, recursive=False, clas=None, filter: Callable[[GameObject], bool] = None, recursion_deep=None) -> \
+    Iterable[
         GameObject]:
         for c in self.transform.children:
             if (clas is None or isinstance(c.gameObject, clas)) and (not callable(filter) or filter(c.gameObject)):
                 yield c.gameObject
-            if recursive:
-                for v in c.gameObject.get_children(recursive=recursive, clas=clas, filter=filter):
+            if recursive and (recursion_deep is None or recursion_deep > 0):
+                for v in c.gameObject.get_children(recursive=recursive, clas=clas, filter=filter,
+                                                   recursion_deep=None if recursion_deep is None else recursion_deep - 1):
                     yield v
 
     def get_parent(self, clas=None, filter: Callable[[GameObject], bool] = None) -> GameObject:

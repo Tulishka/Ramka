@@ -4,7 +4,8 @@ from random import randint
 import pygame.sprite
 
 from examples.Components.DragAndDrop import Draggable
-from ramka import Component, Sprite, Game, Cooldown, TransformLockX, defaultTransformModifier, TransformLockY, Transform
+from ramka import Component, Sprite, Game, Cooldown, TransformLockX, defaultTransformModifier, TransformLockY, \
+    Transform, Vector, GameObject
 
 
 class FallingDown(Component):
@@ -17,7 +18,6 @@ class FallingDown(Component):
 
         self.spd = 0
         self.g = 900
-        self.enabled = True
 
     def find_floor(self, start_y=None):
 
@@ -47,7 +47,7 @@ class FallingDown(Component):
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
-        if not self.enabled or isinstance(self.gameObject, Draggable) and self.gameObject.is_dragged():
+        if isinstance(self.gameObject, Draggable) and self.gameObject.is_dragged():
             self.spd = 0
             return
 
@@ -159,3 +159,47 @@ class AutoKill(Component):
         super().update(deltaTime)
         if self.gameObject.time > 3:
             Game.remove_object(self.gameObject)
+
+
+class FloatingEffect(Component):
+    amplitude = 7
+    freq = 3
+
+    def on_add(self):
+        self.pos = self.gameObject.transform.pos
+        self.start_time = Game.time
+
+    def update(self, deltaTime: float):
+        super(FloatingEffect, self).update(deltaTime)
+
+        self.gameObject.transform.pos = self.pos + Vector(0, FloatingEffect.amplitude * math.sin(
+            FloatingEffect.freq * self.start_time + self.gameObject.time))
+
+
+class TurnToMoveDirection(Component):
+    def __init__(self, game_object: GameObject, right_direction=1, *a, **b):
+        super().__init__(game_object,*a, **b)
+
+        self.direction = 1
+        self.last_pos = None
+
+        self.right_direction=-1 if right_direction<0 else 1
+
+    def update(self, deltaTime: float):
+        super().update(deltaTime)
+
+        tr = self.gameObject.transform
+        if self.gameObject.is_dragged():
+
+            if self.last_pos:
+                delta = tr.pos - self.last_pos
+            else:
+                delta = Vector(0)
+
+            if delta.x > 3:
+                self.direction = self.right_direction
+            elif delta.x < -3:
+                self.direction = -self.right_direction
+
+        self.last_pos = tr.pos
+        tr.scale_x = math.copysign(tr.scale_x, self.direction)

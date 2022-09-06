@@ -1,39 +1,27 @@
 from math import sin
 from random import random, choice
 
+from base_item_components import FloatingEffect
 from base_item import DropZone, BaseItem
 from creature import Creature
 from interier import Interier
 from ramka import Component, Vector, Sprite, Game, Cooldown
+from ramka.gameobject_animators import ScaleAnimator
 from ramka.object_generator import ObjectGenerator
 
 
-class FloatingEffect(Component):
-    amplitude = 7
-    freq = 3
-
-    def on_add(self):
-        self.pos = self.gameObject.transform.pos
-        self.start_time = Game.time
-
-    def update(self, deltaTime: float):
-        super(FloatingEffect, self).update(deltaTime)
-
-        self.gameObject.transform.pos = self.pos + Vector(0, FloatingEffect.amplitude * sin(
-            FloatingEffect.freq * self.start_time + self.gameObject.time))
-
-
 class Puzirik(Sprite):
-    def __init__(self, top_y):
+    def __init__(self, top_y, max_size):
         super().__init__("img/Particles/puz.png")
-        r = random() * 0.4 + 0.4
-        self.transform.scale = r, r
+        r = random() * max_size * 0.5 + max_size * 0.5
+        self.transform.scale = 0.1, 0.1
+        ScaleAnimator(self, r, 2)().kill()
         self.top_y = top_y
         self.spd = 0
         self.g = -70
         self.faza = 3 * random()
         self.omega = random() * 4 + 1
-        self.amplituda = random() * 80 - 40
+        self.amplituda = (random() * 80 - 40)*max_size
 
     def update(self, deltaTime: float):
         super(Puzirik, self).update(deltaTime)
@@ -52,12 +40,12 @@ class Aquarium(Interier):
         tt = -self.get_size().y * 0.5
 
         self.puz_fih = None
-        self.fih_cd = Cooldown(1)
+        self.fih_cd = Cooldown(0.2)
 
         def get_puz(g):
             f = self.get_any_fih()
             if f:
-                p = Puzirik(tt).pos(f.transform.pos)
+                p = Puzirik(tt,max(min(f.get_size().x/120,1.2),0.3)).pos(f.transform.pos)
                 p.transform.set_parent(self)
                 self.layer.sort_object_children(self)
                 p.use_parent_mask = True

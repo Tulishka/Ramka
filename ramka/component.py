@@ -12,6 +12,7 @@ class Component:
     def __init__(self, game_object: GameObject, auto_add=True, tag=""):
         self.gameObject = game_object
         self.component_tag=tag
+        self.enabled = True
         if auto_add:
             self.add(game_object)
 

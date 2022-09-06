@@ -190,7 +190,8 @@ class GameObject:
 
     def update_components(self, deltaTime: float):
         for c in self.components:
-            c.update(deltaTime)
+            if c.enabled:
+                c.update(deltaTime)
 
     def change_order(self, delta):
         self.layer.change_order(self, delta)

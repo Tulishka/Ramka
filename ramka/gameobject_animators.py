@@ -25,7 +25,7 @@ class BaseAnimator:
             break
 
         self.tl = tl if tl else Timeline(self.gameObject, tag=type(self).__name__)
-        self.new_val = new_val
+        self.new_val = self.validate_new_val(new_val)
         self.duration = duration
         self.delay = delay
 

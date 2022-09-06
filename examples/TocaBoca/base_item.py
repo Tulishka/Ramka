@@ -17,26 +17,12 @@ class BaseItem(Sprite):
     ...
 
 
-class DropZone(Draggable, Savable, Trigger):
-    attach_none = 0
-    attach_point = 1
-    attach_vertical = 2
-    attach_horizontal = 3
-
-    def __init__(self, parent: BaseItem, name, pos: Vector = None, radius=None, max_items=1, accept_class=[],
-                 pretty_point="center", attach_style=1, floor_y=None, parent_sort_order=None, **kwargs):
+class TriggerZone(Draggable, Savable, Trigger):
+    def __init__(self, parent: BaseItem, name, pos: Vector = None, radius=None, parent_sort_order=None, **kwargs):
         super().__init__(name, pos, radius, parent, color=(255, 0, 0), **kwargs)
-        self.max_items = max_items
-        self.accept_class = accept_class
-        self.attach_style = attach_style
-        self.floor_y = floor_y
+
         if parent_sort_order:
             self.parent_sort_me_by = parent_sort_order
-
-        if not isinstance(parent, BaseItem):
-            raise Exception("PrettyPoint: parent must be BaseItem!")
-
-        self.pretty_point = pretty_point
 
     @staticmethod
     def get_creation_params(dict, parent):
@@ -45,8 +31,65 @@ class DropZone(Draggable, Savable, Trigger):
             "name": dict["trigger_name"],
         }
 
+    def init_from_dict(self, opts):
+        super().init_from_dict(opts)
+        self.radius = opts['radius']
+        if 'poly' in opts:
+            if opts['poly']:
+                self.set_poly([Vector(t) for t in opts['poly']])
+
+    def get_init_dict(self):
+        res = super().get_init_dict()
+        res.update({
+            "radius": self.radius,
+            "trigger_name": self.trigger_name,
+            "poly": [tuple(t) for t in self._poly] if self._poly else None,
+        })
+        return res
+
+    @staticmethod
+    def interactive():
+        return pygame.key.get_mods() & pygame.KMOD_LCTRL
+
+    def on_drag_start(self):
+        return self.interactive()
+
+    @Game.on_key_down
+    def on_key_press(self, keys):
+        if self.interactive() and self.touch_test(Input.mouse_pos):
+            if 1073741911 in keys:
+                self.radius += 10
+            elif 1073741910 in keys:
+                self.radius -= 10
+                if self.radius < 20:
+                    self.radius = 10
+
+    def draw(self, dest: pygame.Surface):
+        if self.interactive():
+            super().draw(dest)
+
+
+class DropZone(TriggerZone):
+    attach_none = 0
+    attach_point = 1
+    attach_vertical = 2
+    attach_horizontal = 3
+
+    def __init__(self, parent: BaseItem, name, pos: Vector = None, radius=None, max_items=1, accept_class=[],
+                 pretty_point="center", attach_style=1, floor_y=None, parent_sort_order=None, **kwargs):
+        super().__init__(parent, name, pos, radius, parent_sort_order, **kwargs)
+        self.max_items = max_items
+        self.accept_class = accept_class
+        self.attach_style = attach_style
+        self.floor_y = floor_y
+
+        if not isinstance(parent, BaseItem):
+            raise Exception("PrettyPoint: parent must be BaseItem!")
+
+        self.pretty_point = pretty_point
+
     def can_attach_object(self, object: GameObject):
-        return (self.trigger_name!="Pocket" or object.get_size()[0]<self.radius*1.5) and self.max_items > len(
+        return (self.trigger_name != "Pocket" or object.get_size()[0] < self.radius * 1.5) and self.max_items > len(
             self.transform.children) and (not self.accept_class or any(
             isinstance(object, t) for t in self.accept_class)) and self.get_parent().can_accept_dropzone_object(self,
                                                                                                                 object)
@@ -86,48 +129,20 @@ class DropZone(Draggable, Savable, Trigger):
         super().init_from_dict(opts)
         self.max_items = opts['max_items']
         self.accept_class = [GameClasses.get_class(t) for t in opts['accept_class']]
-        self.radius = opts['radius']
         self.pretty_point = opts.get("pretty_point", "center")
         self.attach_style = opts.get("attach_style", DropZone.attach_point)
         self.floor_y = opts.get("floor_y", None)
-        if 'poly' in opts:
-            if opts['poly']:
-                self.set_poly([Vector(t) for t in opts['poly']])
 
     def get_init_dict(self):
         res = super().get_init_dict()
         res.update({
             "max_items": self.max_items,
             "accept_class": [t.__name__ for t in self.accept_class],
-            "radius": self.radius,
-            "trigger_name": self.trigger_name,
-            "poly": [tuple(t) for t in self._poly] if self._poly else None,
             "pretty_point": self.pretty_point,
             "floor_y": self.floor_y,
             "attach_style": self.attach_style
         })
         return res
-
-    @staticmethod
-    def interactive():
-        return pygame.key.get_mods() & pygame.KMOD_LCTRL
-
-    def on_drag_start(self):
-        return self.interactive()
-
-    @Game.on_key_down
-    def on_key_press(self, keys):
-        if self.interactive() and self.touch_test(Input.mouse_pos):
-            if 1073741911 in keys:
-                self.radius += 10
-            elif 1073741910 in keys:
-                self.radius -= 10
-                if self.radius < 20:
-                    self.radius = 10
-
-    def draw(self, dest: pygame.Surface):
-        if self.interactive():
-            super().draw(dest)
 
 
 class PrettyPoint(Draggable, Trigger):
@@ -369,7 +384,7 @@ class BaseItem(Savable, Iconable, Sprite):
             self.state_next()
 
     @Game.on_mouse_down
-    def on_mouse_down(self,buttons):
+    def on_mouse_down(self, buttons):
         self.mouse_start_point = Input.mouse_pos
 
     def update(self, deltaTime: float):

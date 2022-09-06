@@ -3,6 +3,7 @@ from random import choice, randint, random
 from typing import Callable
 
 from aquarium import Aquarium
+from dispenser import DispenserZone
 from fish import Fish
 from trash import Trash
 from ramka.gameobject_animators import AngleAnimator
@@ -505,7 +506,14 @@ class GameManager:
         ap(lambda: HandableItem("predmet|pad1", (650, 100)))
         ap(lambda: HandableItem("predmet|bymajniPlanhet", (650, 100)))
         ap(lambda: Item("predmet|mani", (650, 100)))
-        ap(lambda: HandableItem("predmet|kupis", (650, 100)))
+
+        def disp1():
+            t = HandableItem("predmet|kupis", (650, 100))
+            dz = DispenserZone(t, "Dispenser", "HandableItem@predmet@kup",radius=20)
+            return t
+
+        ap(disp1)
+
         ap(lambda: HandableItem("predmet|kup", (650, 100)))
         ap(lambda: Item("predmet|kormushka", (700, 100)))
         ap(lambda: Item("predmet|duhi", (700, 100)))
@@ -524,6 +532,10 @@ class GameManager:
 
     @classmethod
     def create_object_from_prefab(cls, prefab, add_to_game=True, pos=None, start_drag=False):
+
+        if isinstance(prefab, str):
+            prefab = GameManager.prefabs[prefab]
+
         p = prefab["factory"]()
 
         if add_to_game:

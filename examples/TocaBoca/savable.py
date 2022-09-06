@@ -1,5 +1,5 @@
 import uuid
-from typing import Dict
+from typing import Dict, Tuple, List
 
 from ramka import Sprite, GameObject, Game, Camera
 
@@ -13,7 +13,7 @@ class Savable:
         return self.uuid
 
     @staticmethod
-    def get_creation_params(dict, parent) -> Dict:
+    def get_creation_params(dict, parent) -> Tuple[List,Dict]:
         return [], {}
 
     def init_from_dict(self, dict: Dict[str, any]):

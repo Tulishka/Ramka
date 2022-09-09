@@ -12,10 +12,12 @@ class ObjectGenerator(ObjectGeneratorInterface, GameObject):
                  factory: Callable[[ObjectGeneratorInterface], Any],
                  period: Union[float, Callable[[ObjectGeneratorInterface], float]],
                  count: Union[int, Callable[[ObjectGeneratorInterface, int], int], List[
-                     Union[int, Callable[[ObjectGeneratorInterface, int], int]]]]
+                     Union[int, Callable[[ObjectGeneratorInterface, int], int]]]],
+                 loop_callback: Callable[[ObjectGeneratorInterface], None] = None
                  ):
         super().__init__()
 
+        self.loop_callback = loop_callback
         self.factory = factory
         self.period = period
         if not isinstance(count, Iterable):
@@ -61,4 +63,6 @@ class ObjectGenerator(ObjectGeneratorInterface, GameObject):
             self.spawn(n)
 
         if self.__time_limit <= 0:
+            if callable(self.loop_callback):
+                self.loop_callback(self)
             self.__setup_interval(self.__index + 1)

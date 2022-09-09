@@ -2,8 +2,9 @@ import gc
 from random import choice, randint, random
 from typing import Callable
 
-from aquarium import Aquarium
+from aquarium import Aquarium, AquariumItem
 from dispenser import DispenserZone
+from parfum import Parfum
 from fish import Fish
 from trash import Trash
 from ramka.gameobject_animators import AngleAnimator
@@ -302,6 +303,10 @@ class GameManager:
                                                                     accept_class=[Item, Pet, Chelik], max_items=20,
                                                                     attach_style=DropZone.attach_none)
            )
+        ap(lambda: AquariumItem("predmet|acqarium", (693, 278)).drop_zone_add("Aqua", Vector(0, 0), radius=50,
+                                                                    accept_class=[Item, Pet], max_items=20,
+                                                                    )
+           )
 
         ap(lambda: Trash("mebel|trash", (693, 278)).drop_zone_add("Trash", Vector(0, -80), radius=60,
                                                                   accept_class=[Item],
@@ -516,7 +521,7 @@ class GameManager:
 
         ap(lambda: HandableItem("predmet|kup", (650, 100)))
         ap(lambda: Item("predmet|kormushka", (700, 100)))
-        ap(lambda: Item("predmet|duhi", (700, 100)))
+        ap(lambda: Parfum("predmet|duhi", (700, 100)))
         ap(lambda: Item("predmet|kosmetik", (700, 100)))
         ap(lambda: HandableItem("predmet|karandah", (700, 100)))
         ap(lambda: Item("predmet|chuloc", (700, 100)))

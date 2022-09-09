@@ -168,22 +168,25 @@ class FloatingEffect(Component):
     def on_add(self):
         self.pos = self.gameObject.transform.pos
         self.start_time = Game.time
+        self.amp = 0
 
     def update(self, deltaTime: float):
         super(FloatingEffect, self).update(deltaTime)
 
-        self.gameObject.transform.pos = self.pos + Vector(0, FloatingEffect.amplitude * math.sin(
+        if self.amp < FloatingEffect.amplitude:
+            self.amp += FloatingEffect.amplitude * 0.02
+        self.gameObject.transform.pos = self.pos + Vector(0, self.amp * math.sin(
             FloatingEffect.freq * self.start_time + self.gameObject.time))
 
 
 class TurnToMoveDirection(Component):
     def __init__(self, game_object: GameObject, right_direction=1, *a, **b):
-        super().__init__(game_object,*a, **b)
+        super().__init__(game_object, *a, **b)
 
         self.direction = 1
         self.last_pos = None
 
-        self.right_direction=-1 if right_direction<0 else 1
+        self.right_direction = -1 if right_direction < 0 else 1
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
@@ -204,4 +207,3 @@ class TurnToMoveDirection(Component):
             tr.scale_x = math.copysign(tr.scale_x, self.direction)
 
         self.last_pos = tr.pos
-

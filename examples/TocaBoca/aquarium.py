@@ -4,6 +4,7 @@ from random import random, choice
 from base_item_components import FloatingEffect
 from base_item import DropZone, BaseItem
 from creature import Creature
+from item import Item
 from interier import Interier
 from ramka import Component, Vector, Sprite, Game, Cooldown
 from ramka.gameobject_animators import ScaleAnimator
@@ -34,10 +35,10 @@ class Puzirik(Sprite):
             Game.remove_object(self)
 
 
-class Aquarium(Interier):
-    def __init__(self, *a, **b):
-        super().__init__(*a, **b)
-        tt = -self.get_size().y * 0.5
+class AquariumBase:
+    def init(self):
+
+        tt = -self.get_size().y * 0.5 + 10
 
         self.puz_fish = None
         self.fish_cd = Cooldown(0.2)
@@ -48,7 +49,7 @@ class Aquarium(Interier):
                 p = Puzirik(tt, max(min(f.get_size().x / 120, 1.2), 0.3)).pos(
                     f.transform.to_local_coord(self.transform, f.transform))
                 p.transform.set_parent(self)
-                p.parent_sort_me_by="9"+p.parent_sort_me_by
+                p.parent_sort_me_by = "9" + p.parent_sort_me_by
                 self.layer.sort_object_children(self)
                 p.use_parent_mask = True
                 return p
@@ -72,7 +73,7 @@ class Aquarium(Interier):
             self.on_object_attached(c.get_parent(), c)
 
     def on_object_attached(self, dz: DropZone, object: Sprite):
-        FloatingEffect(object)
+        self.timers.set_timeout(0.4, lambda *a: FloatingEffect(object))
         object.use_parent_mask = True
 
     def on_object_detached(self, dz: DropZone, object: Sprite):
@@ -81,3 +82,15 @@ class Aquarium(Interier):
             self.puz_fish = None
         for c in object.get_components(component_class=FloatingEffect):
             c.remove()
+
+
+class Aquarium(AquariumBase, Interier):
+    def __init__(self, *a, **b):
+        super().__init__(*a, **b)
+        self.init()
+
+
+class AquariumItem(AquariumBase, Item):
+    def __init__(self, *a, **b):
+        super().__init__(*a, **b)
+        self.init()

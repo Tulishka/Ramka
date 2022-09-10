@@ -30,6 +30,8 @@ class ObjectGenerator(ObjectGeneratorInterface, GameObject):
     def __setup_interval(self, n):
         if n >= len(self.count):
             n = 0
+            if callable(self.loop_callback):
+                self.loop_callback(self)
 
         interval = (self.period(self) if callable(self.period) else self.period) / len(self.count)
         self.__index = n
@@ -63,6 +65,4 @@ class ObjectGenerator(ObjectGeneratorInterface, GameObject):
             self.spawn(n)
 
         if self.__time_limit <= 0:
-            if callable(self.loop_callback):
-                self.loop_callback(self)
             self.__setup_interval(self.__index + 1)

@@ -21,38 +21,39 @@ def size_interp(time):
 
 class Oblachko(Sprite):
     max_size = 2
-    angle = 30
+    angle = 45
 
     def __init__(self, dir):
         super().__init__("img/Particles/puz.png")
         r = random() * Oblachko.max_size * 0.5 + Oblachko.max_size * 0.5
-        self.transform.scale = 0.2, 0.2
+        self.transform.scale = 0.3, 0.3
         self.spd = Vector(dir, 0).rotate(randint(-Oblachko.angle, Oblachko.angle))
-        self.life_time = 2 + random() * 2
+        self.lspd=randint(600,800)
+        self.life_time = 1 + random() * 0.7
         ScaleAnimator(self, r, self.life_time, interp_func=size_interp)().kill()
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
 
-        step = self.spd * deltaTime * spd_interp(self.time / self.life_time) * 500
+        step = self.spd * deltaTime * spd_interp(self.time / self.life_time) * self.lspd
 
         self.transform.pos += step
 
-        if self.time > self.life_time:
+        if self.time >= self.life_time-0.1:
             Game.remove_object(self)
 
 
 class Parfum(Item):
     def __init__(self, *a, **b):
         super().__init__(*a, **b)
-        self.pretty_points.update({"soplo": (0, 0)})
+        self.pretty_points.update({"soplo": (-10, -25)})
         TurnToMoveDirection(self, right_direction=-1)
 
     @Game.on_mouse_down(button=3)
     def pshik(self):
-        p = ObjectGenerator(self.create_particle, 0.2, 14, loop_callback=lambda x: Game.remove_object(x))
+        p = ObjectGenerator(self.create_particle, 0.7, [14,7,3], loop_callback=lambda x: Game.remove_object(x))
         Game.add_object(p)
 
     def create_particle(self, c):
-        o = Oblachko(1 if self.transform.scale_x < 0 else -1).pos(self.transform.add_to_vector(self.get_pretty_point("soplo")))
+        o = Oblachko(1 if self.transform.scale_x < 0 else -1).pos(self.transform.pos+self.get_pretty_point("soplo"))
         return o

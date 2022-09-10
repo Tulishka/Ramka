@@ -158,6 +158,8 @@ class Game:
 
     @staticmethod
     def remove_object(game_object: GameObject):
+        game_object.visible = False
+        game_object.enabled = False
 
         if game_object not in Game.gameObjects:
             return

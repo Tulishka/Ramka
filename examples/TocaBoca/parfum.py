@@ -40,6 +40,7 @@ class Oblachko(Sprite):
         self.transform.pos += step
 
         if self.time >= self.life_time-0.1:
+
             Game.remove_object(self)
 
 

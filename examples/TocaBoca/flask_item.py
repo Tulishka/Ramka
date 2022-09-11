@@ -12,18 +12,19 @@ class FlaskWithLiquid(HandableItem):
         fh = int(h * self.filling)
         o = pygame.Surface((h, fh), flags=pygame.SRCALPHA)
         o.fill(color)
-        self.color=color
+        self.color = color
         self.liquid = Sprite(o)
         self.liquid.use_parent_mask = True
         self.liquid.image_offset = Vector(0, -h * 0.5 + fh * 0.5)
         self.liquid.transform.modifier = RotationNone()
 
         self.liquid.transform.set_parent(self)
-        Game.add_object(self.liquid)
+
 
 
     def on_enter_game(self):
-        self.layer.sort_object_children(self)
+        Game.add_object(self.liquid)
+        # self.layer.sort_object_children(self)
 
 
 class FlaskWithRedLiquid(FlaskWithLiquid):

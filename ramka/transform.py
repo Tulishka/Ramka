@@ -61,6 +61,7 @@ class Transform(TransformBase):
     def __add_child(self, child: Transform):
         if child not in self.children:
             self.children.append(child)
+            self.children.sort(key=lambda x: x.gameObject._parent_sort_me_by)
             Game._notify_event_listeners(child.gameObject, "on_child_add", notified_object=self.gameObject,
                                          check_parent_recursively=True)
 

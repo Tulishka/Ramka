@@ -81,12 +81,15 @@ class Iconable:
                     ani = self.curr_animation()
 
             img = ani.get_image(0)
-            pos = self.transform.pos
-            self.transform.pos = self.get_size() * 0.5
-            for ch in self.get_children(True):
-                ch.draw(img)
 
-            self.transform.pos = pos
+            if self.transform.children:
+                img = img.copy()
+                pos = self.transform.pos
+                self.transform.pos = self.get_size() * 0.5
+                for ch in self.get_children(True):
+                    ch.draw(img)
+
+                self.transform.pos = pos
 
             # if hasattr(self, "front_object") and self.front_object:
             #     img = img.copy()

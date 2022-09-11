@@ -7,7 +7,7 @@ from game_classes import GameClasses
 from base_item_components import Blink
 from iconable import Iconable
 from savable import Savable
-from typing import Dict, Union, Tuple
+from typing import Dict, Union, Tuple, List, Iterable
 from ramka import GameObject, Sprite, Game, Animation, Vector, Input
 from ramka.gameobject_animators import PosAnimator
 from ramka.trigger import Trigger
@@ -75,7 +75,8 @@ class DropZone(TriggerZone):
     attach_vertical = 2
     attach_horizontal = 3
 
-    def __init__(self, parent: BaseItem, name, pos: Vector = None, radius=None, max_items=1, accept_class=[],
+    def __init__(self, parent: BaseItem, name, pos: Vector = None, radius=None, max_items=1,
+                 accept_class: Iterable = [],
                  pretty_point="center", attach_style=1, floor_y=None, parent_sort_order=None, **kwargs):
         super().__init__(parent, name, pos, radius, parent_sort_order, **kwargs)
         self.max_items = max_items

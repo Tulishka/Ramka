@@ -351,7 +351,7 @@ class GameManager:
         ap(lambda: Item("mebel|flower13", (693, 278)))
         ap(lambda: Interier("mebel|flower14", (693, 278)))
 
-        ap(lambda: PaintDesk("mebel|desk", (693, 278)).drop_zone_add("Head",(225,267),radius=10,accept_class=[FlaskWithLiquid])
+        ap(lambda: PaintDesk("mebel|desk", (693, 278)).drop_zone_add("Color",(225,267),radius=30,accept_class=[FlaskWithLiquid])
            )
 
         ap(lambda: Interier("mebel|ramka", (693, 278)))

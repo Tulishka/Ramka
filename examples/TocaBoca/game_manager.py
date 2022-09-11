@@ -4,6 +4,7 @@ from typing import Callable
 
 from aquarium import Aquarium, AquariumItem
 from dispenser import DispenserZone
+from paint_desk import PaintDesk
 from parfum import Parfum
 from fish import Fish
 from trash import Trash
@@ -298,14 +299,21 @@ class GameManager:
                                                                        floor_y=0,
                                                                        poly=[(-120, -100), (120, -100), (120, 10),
                                                                              (-120, 10)]))
+        ap(lambda: Interier("mebel|table1", (693, 278)).drop_zone_add("Flat", Vector(0, 60), radius=160,
+                                                                       accept_class=[Item, Pet], max_items=20,
+                                                                       pretty_point="bottom",
+                                                                       attach_style=DropZone.attach_none,
+                                                                       floor_y=0,
+                                                                       poly=[(-120, -100), (120, -100), (120, 10),
+                                                                             (-120, 10)]))
 
         ap(lambda: Aquarium("mebel|aqua", (693, 278)).drop_zone_add("Aqua", Vector(0, 0), radius=200,
                                                                     accept_class=[Item, Pet, Chelik], max_items=20,
                                                                     attach_style=DropZone.attach_none)
            )
         ap(lambda: AquariumItem("predmet|acqarium", (693, 278)).drop_zone_add("Aqua", Vector(0, 0), radius=50,
-                                                                    accept_class=[Item, Pet], max_items=20,
-                                                                    )
+                                                                              accept_class=[Item, Pet], max_items=20,
+                                                                              )
            )
 
         ap(lambda: Trash("mebel|trash", (693, 278)).drop_zone_add("Trash", Vector(0, -80), radius=60,
@@ -341,8 +349,12 @@ class GameManager:
         ap(lambda: Item("mebel|flower13", (693, 278)))
         ap(lambda: Interier("mebel|flower14", (693, 278)))
 
+        ap(lambda: PaintDesk("mebel|desk", (693, 278)))
+
         ap(lambda: Interier("mebel|ramka", (693, 278)))
         ap(lambda: Interier("mebel|ramka2", (693, 278)))
+        ap(lambda: Interier("mebel|kartina1", (693, 278)))
+        ap(lambda: Interier("mebel|kartina2", (693, 278)))
 
         ap(lambda: Interier("mebel|plokati1", (693, 278)))
         ap(lambda: Interier("mebel|plokati2", (693, 278)))
@@ -362,6 +374,10 @@ class GameManager:
         ap(lambda: Interier("mebel|pillow", (160, 545)).drop_zone_add("Seat", Vector(0, -50), radius=90,
                                                                       pretty_point="seat",
                                                                       accept_class=[Chelik, Pet]))
+
+        ap(lambda: Interier("mebel|kachela", (160, 545)).drop_zone_add("Seat", Vector(0, -50), radius=90,
+                                                                      pretty_point="seat",
+                                                                      ))
 
         ap(lambda: Interier("mebel|kreslo", (160, 545)).drop_zone_add("Seat", Vector(0, -50), radius=90,
                                                                       pretty_point="seat",
@@ -514,7 +530,7 @@ class GameManager:
 
         def disp1():
             t = HandableItem("predmet|kupis", (650, 100))
-            dz = DispenserZone(t, "Dispenser", "HandableItem@predmet@kup",radius=20)
+            dz = DispenserZone(t, "Dispenser", "HandableItem@predmet@kup", radius=20)
             return t
 
         ap(disp1)

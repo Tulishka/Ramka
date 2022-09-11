@@ -544,14 +544,14 @@ class GameManager:
 
         if True:
             import flask_item as fi
+
+            def add(p):
+                ap(lambda: p("predmet|probirca", (650, 100)))
+
             for i, o in fi.__dict__.items():
                 if i.startswith("FlaskWith"):
-                    ap(lambda: o("predmet|probirca", (650, 100)))
+                    add(o)
 
-        # ap(lambda: FlaskWithLiquid("predmet|probirca", (650, 100)))
-        # ap(lambda: FlaskWithRedLiquid("predmet|probirca", (650, 100)))
-        # ap(lambda: FlaskWithPinkLiquid("predmet|probirca", (650, 100)))
-        # ap(lambda: FlaskWithPurpleLiquid("predmet|probirca", (650, 100)))
 
         ap(lambda: HandableItem("predmet|kup", (650, 100)))
         ap(lambda: Item("predmet|kormushka", (700, 100)))

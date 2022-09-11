@@ -238,6 +238,9 @@ class BaseItem(Savable, Iconable, Sprite):
         if "blink1" in self.animations:
             Blink(self)
 
+        if "mask" in self.animations:
+            self.collision_image = self.animations["mask"].get_image(0)
+
         self.front_object = None
         if isinstance(anim, str):
             front_anim = BaseItem.create_animation(anim, "_f")
@@ -353,6 +356,8 @@ class BaseItem(Savable, Iconable, Sprite):
                 obj["blink" + i] = Animation(f, 5, True)
             elif f[-5].isdigit():
                 obj[f"state{f[-5]}"] = Animation(f, 5, True)
+            elif f[-5] == "i":
+                obj["mask"] = Animation(f, 5, True)
         return obj
 
     def drop_zone_add(self, name, pos: Vector = None, radius=35, max_items=1, accept_class=[],

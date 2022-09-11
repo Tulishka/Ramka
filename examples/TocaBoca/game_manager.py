@@ -4,6 +4,8 @@ from typing import Callable
 
 from aquarium import Aquarium, AquariumItem
 from dispenser import DispenserZone
+from flask_item import *
+
 from paint_desk import PaintDesk
 from parfum import Parfum
 from fish import Fish
@@ -300,12 +302,12 @@ class GameManager:
                                                                        poly=[(-120, -100), (120, -100), (120, 10),
                                                                              (-120, 10)]))
         ap(lambda: Interier("mebel|table1", (693, 278)).drop_zone_add("Flat", Vector(0, 60), radius=160,
-                                                                       accept_class=[Item, Pet], max_items=20,
-                                                                       pretty_point="bottom",
-                                                                       attach_style=DropZone.attach_none,
-                                                                       floor_y=0,
-                                                                       poly=[(-120, -100), (120, -100), (120, 10),
-                                                                             (-120, 10)]))
+                                                                      accept_class=[Item, Pet], max_items=20,
+                                                                      pretty_point="bottom",
+                                                                      attach_style=DropZone.attach_none,
+                                                                      floor_y=0,
+                                                                      poly=[(-120, -100), (120, -100), (120, 10),
+                                                                            (-120, 10)]))
 
         ap(lambda: Aquarium("mebel|aqua", (693, 278)).drop_zone_add("Aqua", Vector(0, 0), radius=200,
                                                                     accept_class=[Item, Pet, Chelik], max_items=20,
@@ -376,8 +378,8 @@ class GameManager:
                                                                       accept_class=[Chelik, Pet]))
 
         ap(lambda: Interier("mebel|kachela", (160, 545)).drop_zone_add("Seat", Vector(0, -50), radius=90,
-                                                                      pretty_point="seat",
-                                                                      ))
+                                                                       pretty_point="seat",
+                                                                       ))
 
         ap(lambda: Interier("mebel|kreslo", (160, 545)).drop_zone_add("Seat", Vector(0, -50), radius=90,
                                                                       pretty_point="seat",
@@ -534,6 +536,22 @@ class GameManager:
             return t
 
         ap(disp1)
+
+        ap(lambda: Item("predmet|podProbirnik", (20, 20))
+           .drop_zone_add("kolb", Vector(-21.0, -8.0), radius=20, accept_class=[])
+           .drop_zone_add("kolb", Vector(-1.0, -8.0), radius=20, accept_class=[])
+           .drop_zone_add("kolb", Vector(20.0, -8.0), radius=20, accept_class=[]))
+
+        if True:
+            import flask_item as fi
+            for i, o in fi.__dict__.items():
+                if i.startswith("FlaskWith"):
+                    ap(lambda: o("predmet|probirca", (650, 100)))
+
+        # ap(lambda: FlaskWithLiquid("predmet|probirca", (650, 100)))
+        # ap(lambda: FlaskWithRedLiquid("predmet|probirca", (650, 100)))
+        # ap(lambda: FlaskWithPinkLiquid("predmet|probirca", (650, 100)))
+        # ap(lambda: FlaskWithPurpleLiquid("predmet|probirca", (650, 100)))
 
         ap(lambda: HandableItem("predmet|kup", (650, 100)))
         ap(lambda: Item("predmet|kormushka", (700, 100)))

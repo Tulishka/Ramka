@@ -18,9 +18,11 @@ class FlaskWithLiquid(HandableItem):
         self.liquid.image_offset = Vector(0, -h * 0.5 + fh * 0.5)
         self.liquid.transform.modifier = RotationNone()
 
-    def on_enter_game(self):
         self.liquid.transform.set_parent(self)
         Game.add_object(self.liquid)
+
+
+    def on_enter_game(self):
         self.layer.sort_object_children(self)
 
 

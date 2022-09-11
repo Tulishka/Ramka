@@ -69,6 +69,9 @@ class Iconable:
     def _get_icon(self, size=55, offset=(0, 0), background=(100, 150, 100), border=(50, 110, 50),
                   animation_name: str = None, border_radius=16, angle=0, scale_contain=False):
 
+        # if hasattr(self,"anim_path"):
+        #     print(self.anim_path)
+
         if isinstance(self, Sprite):
             if animation_name is None:
                 animation_name = self.state.animation
@@ -80,7 +83,7 @@ class Iconable:
                 if not ani:
                     ani = self.curr_animation()
 
-            img = ani.get_image(0)
+            img = self.prepare_image()
 
             if self.transform.children:
                 img = img.copy()

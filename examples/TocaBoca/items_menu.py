@@ -14,6 +14,7 @@ from ramka.gameobject_animators import ScaleAnimator, AngleAnimator
 
 
 class ItemMenu(GameObject):
+    interp_fs = [interp_func_cubic, interp_func_spring]
 
     def __init__(self, prefabs: Iterable, on_item_down: Callable):
         super().__init__()
@@ -22,6 +23,7 @@ class ItemMenu(GameObject):
         self.back.fill((0, 0, 0, 200))
 
         self.prefabs = list(prefabs)
+        self.prefab_created = 0
 
         self.navbar: NavBar = None
 
@@ -46,39 +48,48 @@ class ItemMenu(GameObject):
         DragAndDropController.controller.cancel_drag()
         DragAndDropController.controller.enabled = False
 
-        def fac(prefab):
-            def de(navbat, btn):
-                if not navbat.present:
-                    if self.on_item_down:
-                        self.on_item_down(prefab)
-                    Game.remove_object(self)
+    def _item_action(self, prefab):
+        def de(navbat, btn):
+            if not navbat.present:
+                if self.on_item_down:
+                    self.on_item_down(prefab)
+                Game.remove_object(self)
 
-            return de
+        return de
 
-        f = [interp_func_cubic, interp_func_spring]
+    def update(self, deltaTime: float):
+        super().update(deltaTime)
+        self.create_buttons_batch()
 
-        for i, p in enumerate(self.prefabs):
-            p["object"].update_icon_args(size=80)
-            pid = p["object"].type_uid
+    def create_buttons_batch(self):
+        if self.prefab_created < len(self.prefabs):
+            for i, p in enumerate(self.prefabs[self.prefab_created:]):
+                if i > 1:
+                    break
 
-            if isinstance(p["object"], Creature):
-                present = Game.get_object(clas=BaseItem, filter=lambda x: x.type_uid == pid)
-                sub = Circle(radius=4, color=(0, 255, 0) if not present else (200, 0, 0))
-            else:
-                sub = None
-                present = False
+                self.prefab_created += 1
 
-            nb = self.navbar.add_btn(p["object"], action=fac(p), sub_obj=sub)
-            nb.present = present
-            nb.transform.scale = 0.05, 0.05
-            t = 0.05 + 0.25 * random()
-            if random() > 0.7:
-                t += random() * 0.2
-            ScaleAnimator(nb, Vector(1.0), t)().kill()
-            if random() > 0.6:
-                nb.transform.angle = 10 + random() * 200
-                AngleAnimator(nb, 0, 0.3 + 0.25 * random(), delay=t + (1 - random()) * t * 0.5,
-                              interp_func=choice(f))().kill()
+                p["object"].update_icon_args(size=80)
+                pid = p["object"].type_uid
+
+                if isinstance(p["object"], Creature):
+                    present = Game.get_object(clas=BaseItem, filter=lambda x: x.type_uid == pid)
+                    sub = Circle(radius=4, color=(0, 255, 0) if not present else (200, 0, 0))
+                else:
+                    sub = None
+                    present = False
+
+                nb = self.navbar.add_btn(p["object"], action=self._item_action(p), sub_obj=sub)
+                nb.present = present
+                nb.transform.scale = 0.05, 0.05
+                t = 0.05 + 0.25 * random()
+                if random() > 0.7:
+                    t += random() * 0.2
+                ScaleAnimator(nb, Vector(1.0), t)().kill()
+                if random() > 0.6:
+                    nb.transform.angle = 10 + random() * 200
+                    AngleAnimator(nb, 0, 0.3 + 0.25 * random(), delay=t + (1 - random()) * t * 0.5,
+                                  interp_func=choice(ItemMenu.interp_fs))().kill()
 
     def on_leave_game(self):
         super().on_leave_game()

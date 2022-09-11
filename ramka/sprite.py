@@ -192,6 +192,8 @@ class Sprite(GameObject):
             self.prepare_mask()
             # self.replace_color((61,52,53),(10,0,10),0.08)
 
+        return img
+
     def draw(self, dest: pygame.Surface):
         self.prepare_image()
         if self.opacity:

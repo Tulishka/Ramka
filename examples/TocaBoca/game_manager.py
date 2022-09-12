@@ -392,6 +392,22 @@ class GameManager:
         ap(lambda: Interier("mebel|bed2", (160, 545)).drop_zone_add("Sleep", Vector(0, -50), radius=90,
                                                                     accept_class=[Chelik, Pet]))
 
+        ap(lambda: Interier("mebel|polka", (160, 545))
+           .drop_zone_add("Flat", Vector(0, 60), radius=160,
+                          accept_class=[Item, Pet], max_items=20,
+                          pretty_point="bottom",
+                          attach_style=DropZone.attach_none,
+                          floor_y=0,
+                          poly=[(-120, -100), (120, -100), (120, 10),
+                                (-120, 10)])
+           .drop_zone_add("Flat", Vector(0, -60), radius=160,
+                          accept_class=[Item, Pet], max_items=20,
+                          pretty_point="bottom",
+                          attach_style=DropZone.attach_none,
+                          floor_y=0,
+                          poly=[(-120, -100), (120, -100), (120, 10),
+                                (-120, 10)]))
+
         ap(lambda: Shkaf("mebel|shkaf1", (160, 545))
            .drop_zone_add("Flat", Vector(0, 60), radius=160,
                           accept_class=[Item, Pet], max_items=20,
@@ -503,6 +519,14 @@ class GameManager:
            )
 
         ap(lambda: Bag("predmet|rykzak", (600, 100)).drop_zone_add("Bag", Vector(0, 0), max_items=100))
+        ap(lambda: Bag("predmet|shkatulka", (600, 100)).drop_zone_add("dgf", Vector(0, 0), radius=80,
+                                                                      max_items=20,
+                                                                      pretty_point="bottom",
+                                                                      attach_style=DropZone.attach_none,
+                                                                      floor_y=0,
+                                                                      poly=[(-45, -70), (45, -70), (45, 10),
+                                                                            (-45, 10)]))
+
         ap(lambda: Transport("transport|Hors1", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150,
                                                                           pretty_point="seat"))
         ap(lambda: Transport("transport|Hors2", (600, 100)).drop_zone_add("Saddle", Vector(0, 0), radius=150,

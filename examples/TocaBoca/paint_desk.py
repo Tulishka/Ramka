@@ -19,6 +19,7 @@ class PaintDesk(Interier):
         self.clear()
         self.spread = 10
         self.default_color = (0, 0, 0)
+        self.brush_sizes = [5, 10, 20]
         self.color = self.default_color
         self.last_draw_point = None
 
@@ -28,6 +29,13 @@ class PaintDesk(Interier):
     @Game.on_mouse_up(button=1, hover=False)
     def end_paint(self):
         self.last_draw_point = None
+
+    @Game.on_key_down
+    def select_brush_size(self, keys):
+        k = {pygame.K_1, pygame.K_2, pygame.K_3}.intersection(keys)
+        if k and self.touch_test(Input.mouse_pos):
+            k = list(k)[0] - pygame.K_1
+            self.spread = self.brush_sizes[k]
 
     def on_object_attached(self, dz: DropZone, object: Sprite):
         if hasattr(object, "color"):
@@ -64,4 +72,4 @@ class PaintDesk(Interier):
         p = self.screen_pos() - PaintDesk.size2
         dest.blit(self.surface, p)
         if self.touch_test(Input.mouse_pos):
-            pygame.draw.circle(dest, self.color, Input.mouse_pos, self.spread, 1)
+            pygame.draw.circle(dest, self.color, Input.mouse_pos, self.spread, 2)

@@ -20,8 +20,6 @@ class FlaskWithLiquid(HandableItem):
 
         self.liquid.transform.set_parent(self)
 
-
-
     def on_enter_game(self):
         Game.add_object(self.liquid)
         # self.layer.sort_object_children(self)
@@ -40,3 +38,13 @@ class FlaskWithPurpleLiquid(FlaskWithLiquid):
 class FlaskWithPinkLiquid(FlaskWithLiquid):
     def __init__(self, anim, pos, *a, **b):
         super().__init__(anim, pos, (255, 105, 180), *a, **b)
+
+
+class FlaskWithWiteLiquid(FlaskWithLiquid):
+    def __init__(self, anim, pos, *a, **b):
+        super().__init__(anim, pos, (255, 255, 255), *a, **b)
+
+
+class FlaskWithGreenLiquid(FlaskWithLiquid):
+    def __init__(self, anim, pos, *a, **b):
+        super().__init__(anim, pos, (0, 255, 0), *a, **b)

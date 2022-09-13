@@ -66,7 +66,7 @@ class PaintDesk(Interier):
         if k and self.touch_test(Input.mouse_pos):
             if pygame.K_DELETE in k:
                 self.clear()
-            if pygame.K_INSERT in k and not self.empty:
+            elif pygame.K_INSERT in k and not self.empty:
                 self.save_painting()
             else:
                 k = list(k)[0] - pygame.K_1

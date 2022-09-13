@@ -2,16 +2,21 @@ from random import randint, random
 
 import pygame
 
+from painting import Painting
 from base_item import DropZone
 from flask_item import FlaskWithLiquid
 from examples.Components.DragAndDrop import DragAndDropController
 from interier import Interier
 from ramka import Vector, Game, Input, Sprite
+import os
+import time
 
 
 class PaintDesk(Interier):
     size = (420, 548)
     size2 = Vector(size) * 0.5 - Vector(1, 1)
+
+    paints_dir = "paintings"
 
     def __init__(self, *a, **b):
         super().__init__(*a, **b)
@@ -22,20 +27,50 @@ class PaintDesk(Interier):
         self.brush_sizes = [5, 10, 20]
         self.color = self.default_color
         self.last_draw_point = None
+        self.empty = True
 
     def clear(self):
         self.surface.fill((255, 255, 255))
+        self.empty = True
 
     @Game.on_mouse_up(button=1, hover=False)
     def end_paint(self):
         self.last_draw_point = None
+        self.empty = False
+
+    def save_painting(self):
+        if self.empty:
+            return
+
+        tm = time.strftime("%Y%m%d_%H%M%S")
+        suf = ""
+        os.makedirs(".\\img\\" + PaintDesk.paints_dir, exist_ok=True)
+        fname = ""
+        for s in range(99):
+            suf = "c" + str(s)
+            fname = ".\\img\\" + PaintDesk.paints_dir + "\\" + tm + suf + ".png"
+            if not os.path.exists(fname):
+                break
+
+        mm = pygame.transform.smoothscale(self.surface, (PaintDesk.size[0] // 2, PaintDesk.size[1] // 2))
+        pygame.draw.rect(mm, (128, 128, 128), pygame.Rect((0, 0), mm.get_size()), 1)
+        pygame.image.save(mm, fname)
+
+        tm = tm + suf
+        Game.add_object(Painting(PaintDesk.paints_dir + "|" + tm, self.transform.pos))
+
 
     @Game.on_key_down
-    def select_brush_size(self, keys):
-        k = {pygame.K_1, pygame.K_2, pygame.K_3}.intersection(keys)
+    def on_keys(self, keys):
+        k = {pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_DELETE, pygame.K_INSERT}.intersection(keys)
         if k and self.touch_test(Input.mouse_pos):
-            k = list(k)[0] - pygame.K_1
-            self.spread = self.brush_sizes[k]
+            if pygame.K_DELETE in k:
+                self.clear()
+            if pygame.K_INSERT in k and not self.empty:
+                self.save_painting()
+            else:
+                k = list(k)[0] - pygame.K_1
+                self.spread = self.brush_sizes[k]
 
     def on_object_attached(self, dz: DropZone, object: Sprite):
         if hasattr(object, "color"):
@@ -73,3 +108,4 @@ class PaintDesk(Interier):
         dest.blit(self.surface, p)
         if self.touch_test(Input.mouse_pos):
             pygame.draw.circle(dest, self.color, Input.mouse_pos, self.spread, 2)
+            pygame.draw.circle(dest, (0, 0, 0), Input.mouse_pos, self.spread + 1, 1)

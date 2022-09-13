@@ -35,6 +35,7 @@ from chelik import Chelik
 from handable_item import HandableItem
 from interier import Interier
 from item import Item
+from painting import Painting
 from pet import Pet
 from lighting import Lighting, LightItem
 from base_item import *

@@ -213,6 +213,7 @@ class BaseItem(Savable, Iconable, Sprite):
             animations = BaseItem.animation_cache[anim]
         else:
             animations = BaseItem.create_animation(anim)
+            # BaseItem.animation_cache[anim] = animations
 
         self.anim_path = anim
 
@@ -347,18 +348,22 @@ class BaseItem(Savable, Iconable, Sprite):
         name = a[-1]
         obj = {}
         files = list(glob.glob(f".\\img\\{directory}\\{name}{suffix}??.png"))
-        files.sort()
-        for f in files:
-            if f[-5] == "m":
-                if f[-6].isdigit():
-                    i = f[-6]
-                else:
-                    i = '1'
-                obj["blink" + i] = Animation(f, 5, True)
-            elif f[-5].isdigit():
-                obj[f"state{f[-5]}"] = Animation(f, 5, True)
-            elif f[-5] == "i":
-                obj["mask"] = Animation(f, 5, True)
+        if files:
+            files.sort()
+            for f in files:
+                if f[-5] == "m":
+                    if f[-6].isdigit():
+                        i = f[-6]
+                    else:
+                        i = '1'
+                    obj["blink" + i] = Animation(f, 5, True)
+                elif f[-5].isdigit():
+                    obj[f"state{f[-5]}"] = Animation(f, 5, True)
+                elif f[-5] == "i":
+                    obj["mask"] = Animation(f, 5, True)
+        elif not suffix:
+            print(f".\\img\\{directory}\\{name}.png")
+            obj["default"] = Animation(f".\\img\\{directory}\\{name}.png", 5, True)
         return obj
 
     def drop_zone_add(self, name, pos: Vector = None, radius=35, max_items=1, accept_class=[],

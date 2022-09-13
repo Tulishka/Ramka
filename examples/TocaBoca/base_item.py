@@ -362,7 +362,6 @@ class BaseItem(Savable, Iconable, Sprite):
                 elif f[-5] == "i":
                     obj["mask"] = Animation(f, 5, True)
         elif not suffix:
-            print(f".\\img\\{directory}\\{name}.png")
             obj["default"] = Animation(f".\\img\\{directory}\\{name}.png", 5, True)
         return obj
 

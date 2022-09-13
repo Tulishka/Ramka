@@ -90,7 +90,7 @@ class DropZone(TriggerZone):
         self.pretty_point = pretty_point
 
     def can_attach_object(self, object: GameObject):
-        return (self.trigger_name != "Pocket" or object.get_size()[0] < self.radius * 1.5) and self.max_items > len(
+        return self.visible and (self.trigger_name != "Pocket" or object.get_size()[0] < self.radius * 1.5) and self.max_items > len(
             self.transform.children) and (not self.accept_class or any(
             isinstance(object, t) for t in self.accept_class)) and self.get_parent().can_accept_dropzone_object(self,
                                                                                                                 object)
@@ -333,7 +333,7 @@ class BaseItem(Savable, Iconable, Sprite):
         }
 
     def can_accept_dropzone_object(self, dropzone: DropZone, obj: Sprite):
-        return obj.get_size().x < self.get_size().x and dropzone.visible
+        return obj.get_size().x < self.get_size().x
 
     def on_object_attached(self, dz: DropZone, object: Sprite):
         pass

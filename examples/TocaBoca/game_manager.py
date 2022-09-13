@@ -4,6 +4,7 @@ from typing import Callable
 
 from aquarium import Aquarium, AquariumItem
 from dispenser import DispenserZone
+from hook import Hook
 from flask_item import *
 
 from paint_desk import PaintDesk
@@ -352,7 +353,8 @@ class GameManager:
         ap(lambda: Item("mebel|flower13", (693, 278)))
         ap(lambda: Interier("mebel|flower14", (693, 278)))
 
-        ap(lambda: PaintDesk("mebel|desk", (693, 278)).drop_zone_add("Color",(225,267),radius=30,accept_class=[FlaskWithLiquid])
+        ap(lambda: PaintDesk("mebel|desk", (693, 278)).drop_zone_add("Color", (225, 267), radius=30,
+                                                                     accept_class=[FlaskWithLiquid])
            )
 
         ap(lambda: Interier("mebel|ramka", (693, 278)))
@@ -451,6 +453,8 @@ class GameManager:
 
         ap(lambda: Interier("mebel|bed1", (1850, 545)).drop_zone_add("Sleep", Vector(0, -50), radius=90,
                                                                      accept_class=[Chelik, Pet]))
+
+        ap(lambda: Hook("mebel|kruk", (1850, 545)).drop_zone_add("hkhk", Vector(0, -50), radius=50, ))
 
         ap(lambda: Interier("mebel|bed3", (2750, 540))
            .drop_zone_add("Sleep", Vector(-70, -85), radius=90, accept_class=[Chelik, Pet])
@@ -577,7 +581,6 @@ class GameManager:
             for i, o in fi.__dict__.items():
                 if i.startswith("FlaskWith"):
                     add(o)
-
 
         ap(lambda: HandableItem("predmet|kup", (650, 100)))
         ap(lambda: Item("predmet|kormushka", (700, 100)))

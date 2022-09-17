@@ -122,6 +122,10 @@ class Transform(TransformBase):
 
         return target
 
+    def to_my_local_coord(self,target: Union[Vector, TransformBase, Transform.GameObject]) -> Vector:
+        return self.to_local_coord(self,target,local_target=False)
+
+
     def to_parent_local_coord(self, target: Union[Vector, TransformBase, Transform.GameObject],
                               local_target: bool = True) -> Vector:
         return self.to_local_coord(self.parent, target, local_target)

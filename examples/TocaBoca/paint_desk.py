@@ -33,6 +33,7 @@ class PaintDesk(Interier):
         self.surface.fill((255, 255, 255))
         self.empty = True
 
+
     @Game.on_mouse_up(button=1, hover=False)
     def end_paint(self):
         self.last_draw_point = None
@@ -62,12 +63,19 @@ class PaintDesk(Interier):
 
     @Game.on_key_down
     def on_keys(self, keys):
-        k = {pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_DELETE, pygame.K_INSERT}.intersection(keys)
+        k = {pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_DELETE, pygame.K_INSERT, pygame.K_SPACE}.intersection(keys)
         if k and self.touch_test(Input.mouse_pos):
             if pygame.K_DELETE in k:
                 self.clear()
             elif pygame.K_INSERT in k:
                 self.save_painting()
+            elif pygame.K_SPACE in k:
+                obj = DragAndDropController.controller.get_dragged_object()
+                if isinstance(obj,Sprite):
+                    if obj.sprite.image:
+                        p = self.transform.to_local_coord(self.transform, obj.screen_pos(), False)+obj.get_rotated_offset(obj.transform)+PaintDesk.size2
+                        self.surface.blit(obj.sprite.image,p-Vector(obj.sprite.rect.width//2,obj.sprite.rect.height//2))
+                        # obj.draw_childs(self.surface, p)
             else:
                 k = list(k)[0] - pygame.K_1
                 self.spread = self.brush_sizes[k]

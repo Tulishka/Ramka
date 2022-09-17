@@ -74,9 +74,10 @@ class GameObject:
         # if self.transform.parent:
         #     self.layer.sort_object_children(self.transform.parent.gameObject)
 
-    def get_children(self, recursive=False, clas=None, filter: Callable[[GameObject], bool] = None, recursion_deep=None) -> \
-    Iterable[
-        GameObject]:
+    def get_children(self, recursive=False, clas=None, filter: Callable[[GameObject], bool] = None,
+                     recursion_deep=None) -> \
+            Iterable[
+                GameObject]:
         for c in self.transform.children:
             if (clas is None or isinstance(c.gameObject, clas)) and (not callable(filter) or filter(c.gameObject)):
                 yield c.gameObject
@@ -272,3 +273,12 @@ class GameObject:
 
     def __setitem__(self, key, value):
         self.props[key] = value
+
+    def draw_childs(self, surf, to_pos=None):
+        wpos = self.transform.pos
+        if to_pos:
+            self.transform.pos = to_pos
+        for ch in self.get_children(True):
+            ch.draw(surf)
+        if to_pos:
+            self.transform.pos = wpos

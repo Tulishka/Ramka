@@ -90,9 +90,15 @@ class PaintDesk(Interier):
         if hasattr(object, "color"):
             self.color = self.default_color
 
+    @Game.on_mouse_down(button=1)
+    def click_once(self):
+        if pygame.key.get_mods() & pygame.KMOD_LALT and not DragAndDropController.controller.get_dragged_object():
+            pass
+
+
     @Game.on_mouse_down(button=1, continuos=True)
     def paint(self):
-        if pygame.key.get_mods() & pygame.KMOD_LSHIFT or DragAndDropController.controller.get_dragged_object():
+        if pygame.key.get_mods() & pygame.KMOD_LALT or pygame.key.get_mods() & pygame.KMOD_LSHIFT or DragAndDropController.controller.get_dragged_object():
             return False
 
         # dt = Game.deltaTime()

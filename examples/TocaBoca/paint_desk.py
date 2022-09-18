@@ -33,7 +33,6 @@ class PaintDesk(Interier):
         self.surface.fill((255, 255, 255))
         self.empty = True
 
-
     @Game.on_mouse_up(button=1, hover=False)
     def end_paint(self):
         self.last_draw_point = None
@@ -60,7 +59,6 @@ class PaintDesk(Interier):
         tm = tm + suf
         Game.add_object(Painting(PaintDesk.paints_dir + "|" + tm, self.transform.pos))
 
-
     @Game.on_key_down
     def on_keys(self, keys):
         k = {pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_DELETE, pygame.K_INSERT, pygame.K_SPACE}.intersection(keys)
@@ -71,11 +69,15 @@ class PaintDesk(Interier):
                 self.save_painting()
             elif pygame.K_SPACE in k:
                 obj = DragAndDropController.controller.get_dragged_object()
-                if isinstance(obj,Sprite):
+                if isinstance(obj, Sprite):
                     if obj.sprite.image:
-                        p = self.transform.to_local_coord(self.transform, obj.screen_pos(), False)+obj.get_rotated_offset(obj.transform)+PaintDesk.size2
-                        self.surface.blit(obj.sprite.image,p-Vector(obj.sprite.rect.width//2,obj.sprite.rect.height//2))
-                        # obj.draw_childs(self.surface, p)
+                        p = self.transform.to_local_coord(self.transform, obj.screen_pos(),
+                                                          False) + obj.get_rotated_offset(
+                            obj.transform) + PaintDesk.size2
+                        self.surface.blit(obj.sprite.image,
+                                          p - Vector(obj.sprite.rect.width // 2, obj.sprite.rect.height // 2))
+                        ps = obj.transform.pos - obj.screen_pos()
+                        obj.draw_childs(self.surface, ps + p)
             else:
                 k = list(k)[0] - pygame.K_1
                 self.spread = self.brush_sizes[k]
@@ -114,6 +116,6 @@ class PaintDesk(Interier):
         super().draw(dest)
         p = self.screen_pos() - PaintDesk.size2
         dest.blit(self.surface, p)
-        if self.touch_test(Input.mouse_pos):
+        if self.touch_test(Input.mouse_pos) and not DragAndDropController.controller.get_dragged_object():
             pygame.draw.circle(dest, self.color, Input.mouse_pos, self.spread, 2)
             pygame.draw.circle(dest, (0, 0, 0), Input.mouse_pos, self.spread + 1, 1)

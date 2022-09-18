@@ -11,7 +11,7 @@ from ramka import Component, Sprite, Game, Cooldown, TransformLockX, defaultTran
 class FallingDown(Component):
     floor_y = 800
     max_floor_y = 900
-    floor_find_object_class = Sprite
+
 
     def __init__(self, game_obj: Sprite):
         super().__init__(game_obj)
@@ -20,6 +20,8 @@ class FallingDown(Component):
         self.g = 900
 
     def find_floor(self, start_y=None):
+
+        from interier import Interier
 
         r = self.gameObject.get_rect()
         t, b, l, r, cx = r.y, r.bottom, r.left, r.right, r.centerx
@@ -30,7 +32,7 @@ class FallingDown(Component):
             sp = obj.get_rect()
             return sp.bottom > m and (sp.x < cx < sp.right)
 
-        objs = Game.get_objects(clas=FallingDown.floor_find_object_class,
+        objs = Game.get_objects(clas=Interier,
                                 filter=lambda x: colid(x),
                                 revers=True)
 

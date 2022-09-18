@@ -7,7 +7,7 @@ from base_item import DropZone
 from flask_item import FlaskWithLiquid
 from examples.Components.DragAndDrop import DragAndDropController
 from interier import Interier
-from ramka import Vector, Game, Input, Sprite
+from ramka import Vector, Game, Input, Sprite, Camera, Cooldown
 import os
 import time
 
@@ -21,6 +21,11 @@ class PaintDesk(Interier):
     def __init__(self, *a, **b):
         super().__init__(*a, **b)
         self.surface = pygame.Surface(PaintDesk.size)
+
+        self.undo = []
+        self.max_undos = 50
+        self.undo_cd=Cooldown(0.2)
+
         self.clear()
         self.spread = 10
         self.default_color = (0, 0, 0)
@@ -29,9 +34,26 @@ class PaintDesk(Interier):
         self.last_draw_point = None
         self.empty = True
 
+
+    def push_undo(self, surface_to_copy, pos):
+        if self.undo_cd.ready:
+            self.undo_cd.start()
+            img=surface_to_copy.copy()
+            self.undo.append({"image": img, "pos": pos})
+            if len(self.undo) > self.max_undos:
+                del self.undo[0]
+
+    def do_undo(self):
+        if self.undo:
+            u = self.undo.pop()
+            self.surface.blit(u["image"], u["pos"])
+
     def clear(self):
+        if self.undo:
+            self.push_undo(self.surface,(0,0))
         self.surface.fill((255, 255, 255))
         self.empty = True
+
 
     @Game.on_mouse_up(button=1, hover=False)
     def end_paint(self):
@@ -61,16 +83,20 @@ class PaintDesk(Interier):
 
     @Game.on_key_down
     def on_keys(self, keys):
-        k = {pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_DELETE, pygame.K_INSERT, pygame.K_SPACE}.intersection(keys)
+        k = {pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_DELETE, pygame.K_INSERT, pygame.K_SPACE, pygame.K_BACKSPACE}.intersection(keys)
         if k and self.touch_test(Input.mouse_pos):
             if pygame.K_DELETE in k:
                 self.clear()
             elif pygame.K_INSERT in k:
                 self.save_painting()
+            elif pygame.K_BACKSPACE in k:
+                self.do_undo()
             elif pygame.K_SPACE in k:
                 obj = DragAndDropController.controller.get_dragged_object()
                 if isinstance(obj, Sprite):
                     if obj.sprite.image:
+                        self.push_undo(self.surface, (0, 0))
+
                         p = self.transform.to_local_coord(self.transform, obj.screen_pos(),
                                                           False) + obj.get_rotated_offset(
                             obj.transform) + PaintDesk.size2
@@ -93,8 +119,12 @@ class PaintDesk(Interier):
     @Game.on_mouse_down(button=1)
     def click_once(self):
         if pygame.key.get_mods() & pygame.KMOD_LALT and not DragAndDropController.controller.get_dragged_object():
-            pass
+            p = self.get_surface_coord(Input.mouse_pos)
+            col = self.surface.get_at((int(p.x), int(p.y)))
+            Game.add_object(FlaskWithLiquid("predmet|probirca", Camera.main.mouse_world_pos(), col))
 
+    def get_surface_coord(self, target):
+        return self.transform.to_local_coord(self.transform, target, False) + PaintDesk.size2
 
     @Game.on_mouse_down(button=1, continuos=True)
     def paint(self):
@@ -102,7 +132,10 @@ class PaintDesk(Interier):
             return False
 
         # dt = Game.deltaTime()
-        p = self.transform.to_local_coord(self.transform, Input.mouse_pos, False) + PaintDesk.size2
+        p = self.get_surface_coord(Input.mouse_pos)
+
+        if p!=self.last_draw_point:
+            self.push_undo(self.surface,(0,0))
 
         if self.last_draw_point:
             pygame.draw.line(self.surface, self.color, self.last_draw_point, p, int(self.spread * 2.2))

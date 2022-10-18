@@ -9,3 +9,10 @@ GameManager.init()
 GameManager.prepare_scene("game1")
 
 Game.run()
+
+# todo: закладки в меню вещей (Персонажи, интерьер, вещи, транспорт)
+# todo: объект локация
+# todo: выбор локации / переход между локациями
+# todo: particle generator
+
+

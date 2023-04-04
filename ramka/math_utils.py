@@ -142,3 +142,12 @@ def interp_func_cubic(x):
 
 def interp_func_spring(x):
     return 0.5 * (2 + (2 * x - 1) ** 3 - (2 * x - 1) ** 2)
+
+
+def interp_quadratic_bezier(t, p0, p1, p2):
+    return (1 - t) ** 2 * p0 + 2 * (1 - t) * t * p1 + t ** 2 * p2
+
+
+def interp_cubic_bezier(t, p0, p1, p2, p3):
+    return (1 - t) ** 3 * p0 + 3 * (1 - t) ** 2 * t * p1 + 3 * (1 - t) * t ** 2 * p2 + t ** 3 * p3
+

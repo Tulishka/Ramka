@@ -254,7 +254,7 @@ class Bee(Sprite):
         self.СкоростьДрейфа = 20
         self.ВременнойСдвигДрейфа = randint(0, 50) / 25
 
-        self.pollen = self.create_pollen()
+        self.pollen: Pollen = None  # self.create_pollen()
 
         self.auto_harvest = False
         self.auto_dest = None
@@ -277,8 +277,12 @@ class Bee(Sprite):
 
     @Game.on_message(name="trigger.exit")
     def trex2(self, *a):
-
         print("exit")
+
+
+    def on_enter_game(self):
+        self.pollen=self.create_pollen()
+        self.pollen.layer.change_order_before(self.pollen, self)
 
     def create_pollen(self):
         pollen = Pollen(Bee.pollen_pic)
@@ -487,11 +491,11 @@ for i in range(flower_count):
     flower.transform.scale_xy = 3, 3
 
 # СОЗДАНИЕ КОРОЛЕВЫ ==============
-qwin_bee = Bee("1", 2)
+qwin_bee = Bee("", 2)
 Game.add_object(qwin_bee)
 qwin_bee.transform.xy = 100, 100
 
-qwin_bee.auto_harvest = True
+qwin_bee.auto_harvest = False
 qwin_bee.auto_dest_offset = Vector(4, -16)
 
 # СОЗДАНИЕ КОРОНЫ ==============
@@ -521,11 +525,11 @@ Game.add_object(spider)
 spider.transform.xy = 100, Game.высотаЭкрана - 48
 spider.transform.scale_xy = 3, 3
 
-mask_test = Sprite("./sprites/flower.png")
-mask_test.transform.pos = 0, -10
-mask_test.use_parent_mask =True
-mask_test.transform.set_parent(spider)
-Game.add_object(mask_test)
+# mask_test = Sprite("./sprites/flower.png")
+# mask_test.transform.pos = 0, -10
+# mask_test.use_parent_mask =True
+# mask_test.transform.set_parent(spider)
+# Game.add_object(mask_test)
 
 
 # hat=Sprite(flower_pic)
@@ -571,6 +575,6 @@ Game.add_object(cam)
 # cam.set_focus(d, lock_y=True)
 
 Game.add_object(
-    Trigger("triger 1", parent=qwin_bee, radius=50, color=(255, 0, 0)).set_n_poly(5, 180).set_watch_for(ObjectFilter(clas=Flower)))
+    Trigger("triger 1", parent=qwin_bee, radius=50).set_n_poly(5, 180).set_watch_for(ObjectFilter(clas=Flower)))
 
 Game.run()

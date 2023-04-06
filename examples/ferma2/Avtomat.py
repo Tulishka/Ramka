@@ -13,7 +13,8 @@ class AvtomatIcon(MiniMapItem):
     def get_radius(self):
         return 4
 
-class Avtomat(AvtomatIcon,Sprite):
+
+class Avtomat(AvtomatIcon, Sprite):
     def __init__(self, image, work_time=10, product_type=None, product_image=None, required_res={}, autostart=None,
                  product_count=1):
         super().__init__(image)

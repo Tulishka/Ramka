@@ -9,15 +9,15 @@ Game.цветФона = 200, 200, 255
 
 class Bot(Sprite):
     def __init__(self):
-        super().__init__("../examples/ira_sprites/pet?.png")
+        super().__init__("ira_sprites/pet?.png")
         self.skorost = 200
         put = [(264, 468), (226, 224), (441, 171), (741, 638)]
         self.path = Path(put)
         self.pos = PathPosition()
         self.pos1 = PathPosition()
         self.pos2 = PathPosition()
-        self.p1 = Sprite("../examples/ira_sprites/wheel.png")
-        self.p2 = Sprite("../examples/ira_sprites/pylka.png")
+        self.p1 = Sprite("ira_sprites/wheel.png")
+        self.p2 = Sprite("ira_sprites/pylka.png")
         self.spd1 = 200
         self.spd2 = 400
 

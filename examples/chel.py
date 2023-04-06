@@ -19,7 +19,7 @@ class Hat(Sprite):
 
 class Unicorn(Sprite):
     def __init__(self):
-        super().__init__("ira_sprites/pet*.png")
+        super().__init__("ira_sprites/ang/pet*.png")
 
         self.owner = None
         self.owner_offset = Vector(-8, -16)  # смещение
@@ -130,7 +130,7 @@ class Totem(Sprite):
             if len(cc) > 0:
                 ig = cc[0][0]
                 c = list(Game.get_objects(clas=Unicorn, filter=lambda x: x.owner == ig))
-                if len(c) < 1:
+                if len(c) < 3:
 
                     d = list(Game.get_objects(clas=Balloon, filter=lambda x: x.owner == ig))
                     if len(d) >= 4:
@@ -401,7 +401,8 @@ class Base(Sprite):
         else:
             self.spd *= self.fric[inair]
 
-        self.state.animation = "fly" if inair else "walk" if dx else "idle" if self.spd.length_squared() < 25 else "ski",""
+        self.state.animation = "fly" if inair else "walk" if dx else "idle" if self.spd.length_squared() < 25 else "ski"
+
 
         self.transform.scale_x = abs(self.transform.scale_x) * self.vz
 
@@ -511,11 +512,7 @@ girl1.def_parent = root
 
 girl = Base('2')
 Game.add_object(girl)
-girl.transform.scale_xy = 0.4, 0.4
-
-ut = Unicorn()
-ut.owner = girl1
-Game.add_object(ut)
+girl.transform.scale_xy = 0.8, 0.8
 
 
 

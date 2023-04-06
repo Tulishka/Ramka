@@ -42,7 +42,7 @@ m2 = Magazin2()
 Game.add_object(m2)
 m2.transform.pos = Game.ширинаЭкрана - 100, Game.высотаЭкрана - 200
 
-boti = [Carrier_bot, Carrier_bot, Sadavad_bot, Hayrester_bot]
+boti = [Carrier_bot, Carrier_bot, Carrier_bot, Sadavad_bot, Sadavad_bot, Hayrester_bot]
 for k in boti:
     cr = k()
     Game.add_object(cr)

@@ -14,16 +14,25 @@ class Head(Sprite):
     def __init__(self):
         super().__init__("./sprites/sneak_head.png")
         self.transform.scale_xy = 1, 1
+        self.spd = Vector(0.0)
+        self.max_spd=2000
+        self.accel = 2600
 
     def update(self, deltaTime: float):
         super().update(deltaTime)
 
         dir = Vector(Input.get("Horizontal"), Input.get("Vertical"))
-        v = 600 * deltaTime * dir
-        np = self.transform.pos + v
+        self.spd += self.accel * deltaTime * dir
+
         if dir.length_squared() > 0:
             self.transform.look_at_ip(self.transform.pos + dir, False)
-        self.transform.pos = np
+        self.transform.pos += self.spd * deltaTime
+
+        if self.spd.length_squared()>self.max_spd*self.max_spd:
+            self.spd.scale_to_length(self.max_spd)
+
+        self.spd *=0.95
+
 
 
 class Body(Sprite):

@@ -1,8 +1,5 @@
-import math
 import random
 from random import randint
-
-import pygame
 
 from ramka import *
 from ramka.effects import Effects
